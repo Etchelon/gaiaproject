@@ -47,7 +47,7 @@ const UserGames = ({ kind }: UserGamesProps) => {
 		<div className={classes.wrapper}>
 			<div className={classes.header}>
 				<Typography variant="h5" className="gaia-font">
-					{kind === "waiting" ? "Games waiting for you!" : `Your ${kind} games`}
+					{kind === "waiting" ? "Games waiting for you" : `Your ${kind} games`}
 				</Typography>
 				<div className={classes.spacer}></div>
 				<div className={classes.actions}>
