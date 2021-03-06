@@ -1,0 +1,685 @@
+{
+	"hexPositions": [
+		{
+			"row": 0,
+			"column": 2
+		},
+		{
+			"row": 1,
+			"column": 1
+		},
+		{
+			"row": 1,
+			"column": 3
+		},
+		{
+			"row": 2,
+			"column": 0
+		},
+		{
+			"row": 2,
+			"column": 2
+		},
+		{
+			"row": 2,
+			"column": 4
+		},
+		{
+			"row": 3,
+			"column": 1
+		},
+		{
+			"row": 3,
+			"column": 3
+		},
+		{
+			"row": 4,
+			"column": 0
+		},
+		{
+			"row": 4,
+			"column": 2
+		},
+		{
+			"row": 4,
+			"column": 4
+		},
+		{
+			"row": 5,
+			"column": 1
+		},
+		{
+			"row": 5,
+			"column": 3
+		},
+		{
+			"row": 6,
+			"column": 0
+		},
+		{
+			"row": 6,
+			"column": 2
+		},
+		{
+			"row": 6,
+			"column": 4
+		},
+		{
+			"row": 7,
+			"column": 1
+		},
+		{
+			"row": 7,
+			"column": 3
+		},
+		{
+			"row": 8,
+			"column": 2
+		}
+	],
+	"mapShapes": [
+		{
+			"shapeId": 1,
+			"usedSectors": ["1", "5outlined", "2", "3", "6outlined", "4", "7outlined"],
+			"sectorPositions": [
+				{
+					"row": 0,
+					"column": 3
+				},
+				{
+					"row": 1,
+					"column": 8
+				},
+				{
+					"row": 7,
+					"column": 0
+				},
+				{
+					"row": 8,
+					"column": 5
+				},
+				{
+					"row": 9,
+					"column": 10
+				},
+				{
+					"row": 15,
+					"column": 2
+				},
+				{
+					"row": 16,
+					"column": 7
+				}
+			]
+		},
+		{
+			"shapeId": 2,
+			"usedSectors": ["1", "5outlined", "2", "3", "6outlined", "4", "7outlined"],
+			"sectorPositions": [
+				{
+					"row": 0,
+					"column": 3
+				},
+				{
+					"row": 1,
+					"column": 8
+				},
+				{
+					"row": 7,
+					"column": 0
+				},
+				{
+					"row": 8,
+					"column": 5
+				},
+				{
+					"row": 9,
+					"column": 10
+				},
+				{
+					"row": 15,
+					"column": 2
+				},
+				{
+					"row": 16,
+					"column": 7
+				}
+			]
+		},
+		{
+			"shapeId": 3,
+			"usedSectors": ["1", "2", "3", "4", "5", "6", "7", "8"],
+			"sectorPositions": [
+				{
+					"row": 0,
+					"column": 1
+				},
+				{
+					"row": 1,
+					"column": 6
+				},
+				{
+					"row": 2,
+					"column": 11
+				},
+				{
+					"row": 8,
+					"column": 3
+				},
+				{
+					"row": 9,
+					"column": 8
+				},
+				{
+					"row": 15,
+					"column": 0
+				},
+				{
+					"row": 16,
+					"column": 5
+				},
+				{
+					"row": 17,
+					"column": 10
+				}
+			]
+		},
+		{
+			"shapeId": 4,
+			"usedSectors": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+			"sectorPositions": [
+				{
+					"row": 0,
+					"column": 3
+				},
+				{
+					"row": 1,
+					"column": 8
+				},
+				{
+					"row": 2,
+					"column": 13
+				},
+				{
+					"row": 7,
+					"column": 0
+				},
+				{
+					"row": 8,
+					"column": 5
+				},
+				{
+					"row": 9,
+					"column": 10
+				},
+				{
+					"row": 10,
+					"column": 15
+				},
+				{
+					"row": 15,
+					"column": 2
+				},
+				{
+					"row": 16,
+					"column": 7
+				},
+				{
+					"row": 17,
+					"column": 12
+				}
+			]
+		},
+		{
+			"shapeId": 5,
+			"usedSectors": ["1", "5outlined", "2", "3", "6outlined", "4", "7outlined"],
+			"sectorPositions": [
+				{
+					"row": 0,
+					"column": 3
+				},
+				{
+					"row": 1,
+					"column": 8
+				},
+				{
+					"row": 7,
+					"column": 0
+				},
+				{
+					"row": 8,
+					"column": 5
+				},
+				{
+					"row": 9,
+					"column": 10
+				},
+				{
+					"row": 15,
+					"column": 2
+				},
+				{
+					"row": 16,
+					"column": 7
+				}
+			]
+		},
+		{
+			"shapeId": 6,
+			"usedSectors": ["10", "1", "5", "9", "2", "3", "6", "8", "4", "7"],
+			"sectorPositions": [
+				{
+					"row": 0,
+					"column": 3
+				},
+				{
+					"row": 1,
+					"column": 8
+				},
+				{
+					"row": 2,
+					"column": 13
+				},
+				{
+					"row": 7,
+					"column": 0
+				},
+				{
+					"row": 8,
+					"column": 5
+				},
+				{
+					"row": 9,
+					"column": 10
+				},
+				{
+					"row": 10,
+					"column": 15
+				},
+				{
+					"row": 15,
+					"column": 2
+				},
+				{
+					"row": 16,
+					"column": 7
+				},
+				{
+					"row": 17,
+					"column": 12
+				}
+			]
+		}
+	],
+	"sectors": [
+		{
+			"id": "1",
+			"planets": [
+				{
+					"hexIndex": 6,
+					"planetType": 1
+				},
+				{
+					"hexIndex": 7,
+					"planetType": 0
+				},
+				{
+					"hexIndex": 8,
+					"planetType": 2
+				},
+				{
+					"hexIndex": 10,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 17,
+					"planetType": 5
+				},
+				{
+					"hexIndex": 18,
+					"planetType": 3
+				}
+			]
+		},
+		{
+			"id": "2",
+			"planets": [
+				{
+					"hexIndex": 0,
+					"planetType": 4
+				},
+				{
+					"hexIndex": 1,
+					"planetType": 5
+				},
+				{
+					"hexIndex": 7,
+					"planetType": 6
+				},
+				{
+					"hexIndex": 10,
+					"planetType": 2
+				},
+				{
+					"hexIndex": 11,
+					"planetType": 1
+				},
+				{
+					"hexIndex": 16,
+					"planetType": 3
+				},
+				{
+					"hexIndex": 17,
+					"planetType": 8
+				}
+			]
+		},
+		{
+			"id": "3",
+			"planets": [
+				{
+					"hexIndex": 0,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 6,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 10,
+					"planetType": 4
+				},
+				{
+					"hexIndex": 12,
+					"planetType": 6
+				},
+				{
+					"hexIndex": 16,
+					"planetType": 0
+				},
+				{
+					"hexIndex": 18,
+					"planetType": 2
+				}
+			]
+		},
+		{
+			"id": "4",
+			"planets": [
+				{
+					"hexIndex": 0,
+					"planetType": 4
+				},
+				{
+					"hexIndex": 4,
+					"planetType": 3
+				},
+				{
+					"hexIndex": 8,
+					"planetType": 6
+				},
+				{
+					"hexIndex": 11,
+					"planetType": 5
+				},
+				{
+					"hexIndex": 12,
+					"planetType": 1
+				},
+				{
+					"hexIndex": 15,
+					"planetType": 0
+				}
+			]
+		},
+		{
+			"id": "5",
+			"planets": [
+				{
+					"hexIndex": 0,
+					"planetType": 6
+				},
+				{
+					"hexIndex": 5,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 6,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 10,
+					"planetType": 3
+				},
+				{
+					"hexIndex": 16,
+					"planetType": 5
+				},
+				{
+					"hexIndex": 18,
+					"planetType": 2
+				}
+			]
+		},
+		{
+			"id": "5outlined",
+			"planets": [
+				{
+					"hexIndex": 0,
+					"planetType": 6
+				},
+				{
+					"hexIndex": 5,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 6,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 10,
+					"planetType": 3
+				},
+				{
+					"hexIndex": 16,
+					"planetType": 5
+				}
+			]
+		},
+		{
+			"id": "6",
+			"planets": [
+				{
+					"hexIndex": 2,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 6,
+					"planetType": 1
+				},
+				{
+					"hexIndex": 7,
+					"planetType": 0
+				},
+				{
+					"hexIndex": 14,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 15,
+					"planetType": 2
+				},
+				{
+					"hexIndex": 17,
+					"planetType": 8
+				}
+			]
+		},
+		{
+			"id": "6outlined",
+			"planets": [
+				{
+					"hexIndex": 2,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 7,
+					"planetType": 0
+				},
+				{
+					"hexIndex": 14,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 15,
+					"planetType": 2
+				},
+				{
+					"hexIndex": 17,
+					"planetType": 8
+				}
+			]
+		},
+		{
+			"id": "7",
+			"planets": [
+				{
+					"hexIndex": 2,
+					"planetType": 1
+				},
+				{
+					"hexIndex": 3,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 4,
+					"planetType": 3
+				},
+				{
+					"hexIndex": 11,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 12,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 18,
+					"planetType": 4
+				}
+			]
+		},
+		{
+			"id": "7outlined",
+			"planets": [
+				{
+					"hexIndex": 3,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 4,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 11,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 12,
+					"planetType": 1
+				},
+				{
+					"hexIndex": 18,
+					"planetType": 4
+				}
+			]
+		},
+		{
+			"id": "8",
+			"planets": [
+				{
+					"hexIndex": 0,
+					"planetType": 0
+				},
+				{
+					"hexIndex": 4,
+					"planetType": 6
+				},
+				{
+					"hexIndex": 5,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 11,
+					"planetType": 5
+				},
+				{
+					"hexIndex": 12,
+					"planetType": 4
+				},
+				{
+					"hexIndex": 16,
+					"planetType": 8
+				}
+			]
+		},
+		{
+			"id": "9",
+			"planets": [
+				{
+					"hexIndex": 1,
+					"planetType": 5
+				},
+				{
+					"hexIndex": 2,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 5,
+					"planetType": 6
+				},
+				{
+					"hexIndex": 11,
+					"planetType": 4
+				},
+				{
+					"hexIndex": 12,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 13,
+					"planetType": 1
+				}
+			]
+		},
+		{
+			"id": "10",
+			"planets": [
+				{
+					"hexIndex": 2,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 5,
+					"planetType": 8
+				},
+				{
+					"hexIndex": 6,
+					"planetType": 2
+				},
+				{
+					"hexIndex": 12,
+					"planetType": 7
+				},
+				{
+					"hexIndex": 13,
+					"planetType": 0
+				},
+				{
+					"hexIndex": 16,
+					"planetType": 3
+				}
+			]
+		}
+	]
+}

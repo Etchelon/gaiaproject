@@ -1,0 +1,8 @@
+bin/
+obj/
+.idea/
+.vs/
+.vscode/
+linuxapp/
+.DS_Store
+.devcontainer/devcontainer.env

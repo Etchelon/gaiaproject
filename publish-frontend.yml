@@ -1,0 +1,47 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - Frontend/*
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+  workingDirectory: 'Frontend/StarGate'
+  displayName: 'npm install'
+
+- script: |
+    npm run build
+  workingDirectory: 'Frontend/StarGate'
+  env:
+    GENERATE_SOURCEMAP: false
+    REACT_APP_API_BASE_URL: 'https://gaiaproject.azurewebsites.net'
+    REACT_APP_AUTH0_DOMAIN: $(REACT_APP_AUTH0_DOMAIN)
+    REACT_APP_AUTH0_CLIENT_ID: $(REACT_APP_AUTH0_CLIENT_ID)
+    REACT_APP_AUTH0_AUDIENCE: $(REACT_APP_AUTH0_AUDIENCE)
+    REACT_APP_AUTH0_SCOPE: $(REACT_APP_AUTH0_SCOPE)
+  displayName: 'Production build'
+
+- task: AzureFileCopy@3
+  inputs:
+    SourcePath: 'Frontend/StarGate/build'
+    azureSubscription: $(AZURE_SUBSCRIPTION_NAME)
+    Destination: 'AzureBlob'
+    storage: $(AZURE_STORAGE_NAME)
+    ContainerName: '$web'
+    CleanTargetBeforeCopy: true

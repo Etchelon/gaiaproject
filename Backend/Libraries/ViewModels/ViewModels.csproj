@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<RootNamespace>GaiaProject.ViewModels</RootNamespace>
+		<AssemblyName>GaiaProject.ViewModels</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Engine\Engine.csproj" />
+	</ItemGroup>
+</Project>

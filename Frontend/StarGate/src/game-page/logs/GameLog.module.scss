@@ -1,0 +1,51 @@
+.systemLog {
+	padding: 8px;
+	background-color: white;
+	color: black;
+	font-size: 1.2rem;
+}
+
+.playerLog {
+	padding: 4px 8px !important;
+	position: relative;
+
+	.mainLog {
+		font-size: 0.75rem;
+	}
+
+	.rollbackButton {
+		display: none;
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		cursor: pointer;
+	}
+
+	&:hover .rollbackButton {
+		display: block;
+	}
+}
+
+.playerSubLog {
+	display: flex;
+	align-items: center;
+	padding: 2px 0;
+
+	.avatar {
+		display: none;
+	}
+
+	.mainLog {
+		font-size: 0.6rem;
+	}
+
+	&.anotherPlayer {
+		padding: 4px;
+		.avatar {
+			display: block;
+			height: auto;
+			margin-right: 4px;
+			visibility: visible;
+		}
+	}
+}

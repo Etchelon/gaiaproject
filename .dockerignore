@@ -1,0 +1,10 @@
+.devcontainer/
+.git/
+.vscode/
+Frontend/
+Test/
+ToDebug/
+**/bin/
+**/obj/
+*.bat
+*.sh
