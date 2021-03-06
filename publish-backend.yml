@@ -14,6 +14,8 @@ resources:
 - repo: self
 
 variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '1798d961-7b4d-45e7-a0df-e1cc0cc91e94'
   imageRepository: 'gaiaproject_backend'
   containerRegistry: 'etchelon.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
