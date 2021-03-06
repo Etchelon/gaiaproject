@@ -37,10 +37,11 @@ steps:
     REACT_APP_AUTH0_SCOPE: $(REACT_APP_AUTH0_SCOPE)
   displayName: 'Production build'
 
-- task: AzureFileCopy@4
+- task: AzureFileCopy@3
   inputs:
     SourcePath: 'Frontend/StarGate/build'
     azureSubscription: 'Andrea Bertoldo 45€/month (27352222-c6c7-4fed-8669-6cdcd1f93dcf)'
     Destination: 'AzureBlob'
     storage: 'gaiaproject'
     ContainerName: '$web'
+    CleanTargetBeforeCopy: true
