@@ -10,6 +10,14 @@ trigger:
     include:
     - Backend/*
 
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - Backend/*
+
 resources:
 - repo: self
 
