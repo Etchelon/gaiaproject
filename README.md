@@ -1,7 +1,7 @@
 # Gaia Project
 
-[![Frontend](https://dev.azure.com/etchelon/Gaia%20Project/_apis/build/status/GitHub%20-%20Publish%20Frontend?branchName=main)](https://dev.azure.com/etchelon/Gaia%20Project/_build/latest?definitionId=12&branchName=main)
-[![Backend](https://dev.azure.com/etchelon/Gaia%20Project/_apis/build/status/GitHub%20-%20Publish%20Backend?branchName=main)](https://dev.azure.com/etchelon/Gaia%20Project/_build/latest?definitionId=13&branchName=main)
+Frontend [![Frontend](https://dev.azure.com/etchelon/Gaia%20Project/_apis/build/status/GitHub%20-%20Publish%20Frontend?branchName=main "Frontend pipeline")](https://dev.azure.com/etchelon/Gaia%20Project/_build/latest?definitionId=12&branchName=main)
+Backend [![Backend](https://dev.azure.com/etchelon/Gaia%20Project/_apis/build/status/GitHub%20-%20Publish%20Backend?branchName=main "Backend pipeline")](https://dev.azure.com/etchelon/Gaia%20Project/_build/latest?definitionId=13&branchName=main)
 
 Full implementation of the Gaia Project board game as a web app.
 
