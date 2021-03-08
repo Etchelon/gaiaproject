@@ -1,5 +1,8 @@
 # Gaia Project
 
+[![Frontend](https://dev.azure.com/etchelon/Gaia%20Project/_apis/build/status/GitHub%20-%20Publish%20Frontend?branchName=main)](https://dev.azure.com/etchelon/Gaia%20Project/_build/latest?definitionId=12&branchName=main)
+[![Backend](https://dev.azure.com/etchelon/Gaia%20Project/_apis/build/status/GitHub%20-%20Publish%20Backend?branchName=main)](https://dev.azure.com/etchelon/Gaia%20Project/_build/latest?definitionId=13&branchName=main)
+
 Full implementation of the Gaia Project board game as a web app.
 
 The app is optimized for desktop and also works nicely on mobile but it's not optimal: the game has lots of information to show but there's not much space on a mobile screen for all of those :)
