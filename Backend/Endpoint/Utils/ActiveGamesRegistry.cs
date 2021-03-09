@@ -52,17 +52,17 @@ namespace GaiaProject.Endpoint.Utils
 			GetUsersInGame(gameId).Remove(userId);
 		}
 
-		internal void SetUserInactiveOnAllGames(string userId)
-		{
-			foreach (var (__, users) in GamesAndUsers)
-			{
-				users.Remove(userId);
-			}
-		}
-
 		public int CountActiveUsersInGame(string gameId)
 		{
 			return GetUsersInGame(gameId).Count;
+		}
+
+		public List<string> GetUserGames(string userId)
+		{
+			return GamesAndUsers
+				.Where(o => o.Value.Contains(userId))
+				.Select(o => o.Key)
+				.ToList();
 		}
 	}
 }
