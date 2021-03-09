@@ -327,7 +327,7 @@ const GamePage = () => {
 					<StatusBar game={game} playerId={currentPlayer.id} />
 				</div>
 				<Grid container className={classes.wrapper}>
-					<Grid item className={classes.boardArea} xs={12} md={9} xl={10}>
+					<Grid item className={classes.boardArea} xs={12} md={9}>
 						<div ref={activeViewContainerRef} className={classes.activeViewContainer}>
 							{activeView === ActiveView.Map && activeViewDimensions && (
 								<MainView
@@ -390,7 +390,7 @@ const GamePage = () => {
 						</Tabs>
 					</Grid>
 					{!useMobileLayout && (
-						<Grid item className={classes.controlArea} xs={12} md={3} xl={2}>
+						<Grid item className={classes.controlArea} xs={12} md={3}>
 							{PlayerBoxesAndLogs}
 						</Grid>
 					)}
