@@ -6,18 +6,16 @@ import FormatAlignCenterIcon from "@material-ui/icons/FormatAlignCenter";
 import MapIcon from "@material-ui/icons/Map";
 import StarIcon from "@material-ui/icons/Star";
 import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
-import { HubConnection } from "@microsoft/signalr";
 import _ from "lodash";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { Subscription } from "rxjs";
-import { GameStateDto, PlayerInGameDto } from "../dto/interfaces";
-import { useToasts } from "../toast/ToastManager";
+import { GamePhase } from "../dto/enums";
+import { PlayerInGameDto } from "../dto/interfaces";
 import { ElementSize, useAssetUrl, useCurrentUser } from "../utils/hooks";
-import hubClient from "../utils/hub-client";
 import { localizeEnum } from "../utils/localization";
-import { Nullable } from "../utils/miscellanea";
+import { isMobileOrTablet, Nullable } from "../utils/miscellanea";
 import AuctionDialog from "./dialogs/auction/AuctionDialog";
 import ConversionsDialog from "./dialogs/conversions/ConversionsDialog";
 import SelectRaceDialog from "./dialogs/select-race/SelectRaceDialog";
@@ -28,6 +26,7 @@ import PlayerAreas from "./game-board/player-area/PlayerAreas";
 import PlayerBox from "./game-board/player-box/PlayerBox";
 import ResearchBoard from "./game-board/research-board/ResearchBoard";
 import ScoringBoard from "./game-board/scoring-board/ScoringBoard";
+import { useGamePageSignalRConnection } from "./game-page-signalr-hook";
 import useStyles from "./game-page.styles";
 import GameLog from "./logs/GameLog";
 import MainView from "./main-view/MainView";
@@ -35,7 +34,6 @@ import StatusBar from "./status-bar/StatusBar";
 import {
 	clearStatus,
 	fetchActiveGame,
-	gameUpdated,
 	rollbackGameAtAction,
 	selectActiveGame,
 	selectActiveGameStatus,
@@ -44,71 +42,34 @@ import {
 	selectCurrentPlayer,
 	selectPlayers,
 	setActiveView,
-	setConnectedToGame,
-	setConnecting,
 	setCurrentUser,
-	setDisconnected,
-	setDisconnecting,
-	setOnlineUsers,
 	setStatusFromWorkflow,
 	setStatusMessage,
 	setWaitingForAction,
 	unloadActiveGame,
-	userJoined,
-	userLeft,
 } from "./store/active-game.slice";
 import { WorkflowContext } from "./WorkflowContext";
 import { ActionWorkflow } from "./workflows/action-workflow.base";
 import { ActiveView } from "./workflows/types";
 import { fromAction, fromDecision } from "./workflows/utils";
 
-//#region Manage SignalR connection
-
-async function startGameEventsListener(gameId: string): Promise<HubConnection> {
-	const connection = await hubClient.getConnection();
-	if (!connection) {
-		throw new Error("Hub Connection unavailable.");
-	}
-
-	await connection.send("JoinGame", gameId);
-	return connection;
-}
-
-async function leaveGame(gameId: string): Promise<Nullable<HubConnection>> {
-	if (!hubClient.isConnected()) {
-		console.warn("Hub Connection unavailable.");
-		return null;
-	}
-
-	const connection = await hubClient.getConnection();
-	try {
-		await connection.send("LeaveGame", gameId);
-		return connection;
-	} catch (err) {
-		console.warn("Hub doesn't see we're leaving the game because of this error", err);
-		return null;
-	}
-}
-
-//#endregion
-
 const DIALOG_VIEWS = [ActiveView.RaceSelectionDialog, ActiveView.AuctionDialog, ActiveView.ConversionDialog, ActiveView.SortIncomesDialog, ActiveView.TerransConversionsDialog];
 const isDialogView = (view: ActiveView) => _.includes(DIALOG_VIEWS, view);
 const closeHoverTimeout: any = { value: undefined };
 const PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO = 1.439;
 
-interface GamePageParams {
+interface GamePageRouteParams {
 	id: string;
 }
 
 const GamePage = () => {
 	const classes = useStyles();
 	const useMobileLayout = useMediaQuery("(max-width: 600px)");
-	const { id } = useParams<GamePageParams>();
+	const { id } = useParams<GamePageRouteParams>();
 	const { push } = useHistory();
 	const dispatch = useDispatch();
-	const { open: openToast } = useToasts();
 	const playersTurnAudioUrl = useAssetUrl("Sounds/PlayersTurn.wav");
+	const { connectToHub, disconnectFromHub } = useGamePageSignalRConnection(id, closeWorkflow);
 
 	const user = useCurrentUser();
 	const game = useSelector(selectActiveGame);
@@ -148,11 +109,11 @@ const GamePage = () => {
 
 	//#region Setup workflow context
 
-	const closeWorkflow = (): void => {
+	function closeWorkflow(): void {
 		activeWorkflowSub?.unsubscribe();
 		setActiveWorkflowSub(null);
 		setActiveWorkflow(null);
-	};
+	}
 
 	const startWorkflow = (workflow: ActionWorkflow): void => {
 		const sub = workflow.currentState$.subscribe(state => {
@@ -177,74 +138,6 @@ const GamePage = () => {
 	};
 
 	//#endregion
-
-	const onGameStateChanged = useCallback((newState: string) => {
-		closeWorkflow();
-		const newGameState = JSON.parse(newState) as GameStateDto;
-		dispatch(gameUpdated(newGameState));
-	}, []);
-
-	const onUserJoined = useCallback((userId: string) => {
-		dispatch(userJoined(userId));
-	}, []);
-
-	const onUserLeft = useCallback((userId: string) => {
-		dispatch(userLeft(userId));
-	}, []);
-
-	const onSetOnlineUsers = useCallback((userIds: string[]) => {
-		dispatch(setOnlineUsers(userIds));
-	}, []);
-
-	const turnOffListeners = (connection: HubConnection) => {
-		connection.off("GameStateChanged", onGameStateChanged);
-		connection.off("UserJoinedGame", onUserJoined);
-		connection.off("UserLeftGame", onUserLeft);
-		connection.off("SetOnlineUsers", onSetOnlineUsers);
-	};
-	const turnOnListeners = (connection: HubConnection) => {
-		connection.on("GameStateChanged", onGameStateChanged);
-		connection.on("UserJoinedGame", onUserJoined);
-		connection.on("UserLeftGame", onUserLeft);
-		connection.on("SetOnlineUsers", onSetOnlineUsers);
-	};
-
-	const connectToHub = () => {
-		dispatch(setConnecting());
-		startGameEventsListener(id)
-			.then(connection => {
-				connection.onreconnecting = () => {
-					dispatch(setConnecting());
-					turnOffListeners(connection);
-				};
-				connection.onreconnected = () => {
-					dispatch(setConnectedToGame(id));
-					turnOnListeners(connection);
-				};
-
-				dispatch(setConnectedToGame(id));
-				turnOffListeners(connection);
-				turnOnListeners(connection);
-			})
-			.catch(err => {
-				openToast({
-					message: "Could not connect to the server for updates, try to rejoin the game",
-					type: "warning",
-				});
-			});
-	};
-
-	const disconnectFromHub = () => {
-		dispatch(setDisconnecting());
-		leaveGame(id).then(connection => {
-			if (connection) {
-				connection.onreconnecting = _.noop;
-				connection.onreconnected = _.noop;
-				turnOffListeners(connection);
-			}
-			dispatch(setDisconnected());
-		});
-	};
 
 	//#region onInit: load the game
 
@@ -284,7 +177,7 @@ const GamePage = () => {
 			if (isActive) {
 				connectToHub();
 			} else {
-				disconnectFromHub();
+				isMobileOrTablet() && disconnectFromHub();
 			}
 		};
 		const onVisibilityChange = () => {
@@ -392,6 +285,7 @@ const GamePage = () => {
 
 	const activeViewName = localizeEnum(activeView, "ActiveView");
 	const isGameCreator = game.createdBy.id === currentPlayer.id;
+	const canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
 
 	const hoveredPlayerAreaDimensions = {
 		width: 0,
@@ -422,7 +316,7 @@ const GamePage = () => {
 			))}
 			{_.map([...game.gameLogs].reverse(), (log, index) => (
 				<div key={index} className={classes.gameLog}>
-					<GameLog log={log} canRollback={isGameCreator} doRollback={actionId => dispatch(rollbackGameAtAction({ gameId: game.id, actionId }))} />
+					<GameLog log={log} canRollback={canRollback} doRollback={actionId => dispatch(rollbackGameAtAction({ gameId: game.id, actionId }))} />
 				</div>
 			))}
 		</div>
@@ -435,7 +329,7 @@ const GamePage = () => {
 					<StatusBar game={game} playerId={currentPlayer.id} />
 				</div>
 				<Grid container className={classes.wrapper}>
-					<Grid item className={classes.boardArea} xs={12} md={9} xl={10}>
+					<Grid item className={classes.boardArea} xs={12} md={9}>
 						<div ref={activeViewContainerRef} className={classes.activeViewContainer}>
 							{activeView === ActiveView.Map && activeViewDimensions && (
 								<MainView
@@ -498,7 +392,7 @@ const GamePage = () => {
 						</Tabs>
 					</Grid>
 					{!useMobileLayout && (
-						<Grid item className={classes.controlArea} xs={12} md={3} xl={2}>
+						<Grid item className={classes.controlArea} xs={12} md={3}>
 							{PlayerBoxesAndLogs}
 						</Grid>
 					)}

@@ -1,6 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { createMuiTheme, createStyles, makeStyles, ThemeProvider } from "@material-ui/core";
+import { createStyles, makeStyles } from "@material-ui/core";
 import _ from "lodash";
+import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AuthenticatedRoute from "../auth/AuthenticatedRoute";
@@ -11,7 +12,6 @@ import UserGames from "../games/UserGames";
 import Home from "../home/Home";
 import ManageProfile from "../manage-profile/ManageProfile";
 import NewGamePage from "../new-game/NewGamePage";
-import ToastManager, { Toast, ToastContext } from "../toast/ToastManager";
 import Unauthorized from "../unauthorized/Unauthorized";
 import httpClient from "../utils/http-client";
 import hubClient from "../utils/hub-client";
@@ -32,12 +32,6 @@ const useStyles = makeStyles(() =>
 	})
 );
 
-const theme = createMuiTheme({
-	palette: {
-		type: "dark",
-	},
-});
-
 const onAuthenticated = async (auth0User: any): Promise<boolean> => {
 	const result = await httpClient.put<{ user: UserInfoDto; isFirstLogin: boolean }>(`api/Users/LoggedIn/${auth0User.sub}`, auth0User);
 	if (_.isNil(result)) {
@@ -52,17 +46,7 @@ const App = () => {
 	const { getAccessTokenSilently, isAuthenticated, isLoading, user } = useAuth0();
 	httpClient.setBearerTokenFactory(getAccessTokenSilently);
 	hubClient.setBearerTokenFactory(getAccessTokenSilently);
-
-	const [toasts, setToasts] = useState<Toast[]>([]);
-	const openToast = (t: Toast) => {
-		t.id = _.uniqueId("app_toast_");
-		setToasts([...toasts, t]);
-	};
-	const closeToast = (id: string) => {
-		const toasts_ = _.reject(toasts, t => t.id === id);
-		setToasts(toasts_);
-	};
-
+	const { enqueueSnackbar } = useSnackbar();
 	const [isReady, setIsReady] = useState(false);
 
 	useEffect(() => {
@@ -70,16 +54,19 @@ const App = () => {
 			return;
 		}
 
-		Promise.all([hubClient.openConnection(), onAuthenticated(user)]).then(results => {
-			const [__, isFirstLogin] = results;
-			if (isFirstLogin) {
-				openToast({ type: "info", message: "It's your first login, you should choose a username and provide other information to compile your profile" });
-				navigationService.navigateTo("/profile");
-				return;
-			}
-
-			setIsReady(true);
-		});
+		onAuthenticated(user)
+			.then(isFirstLogin => {
+				if (isFirstLogin) {
+					enqueueSnackbar("It's your first login, you should choose a username and provide other information to compile your profile", {
+						variant: "info",
+					});
+					navigationService.navigateTo("/profile");
+				}
+				return hubClient.openConnection();
+			})
+			.then(() => {
+				setIsReady(true);
+			});
 	}, [isAuthenticated]);
 
 	if (isLoading) {
@@ -87,41 +74,36 @@ const App = () => {
 	}
 
 	return (
-		<ThemeProvider theme={theme}>
-			<ToastContext.Provider value={{ toasts, open: openToast, close: closeToast }}>
-				<Router>
-					<div className={classes.root}>
-						<AppFrame>
-							<Switch>
-								<AuthenticatedRoute path="/profile">
-									<ManageProfile />
-								</AuthenticatedRoute>
-								<AuthenticatedRoute path="/games">
-									<UserGames kind="active" />
-								</AuthenticatedRoute>
-								<AuthenticatedRoute path="/history">
-									<UserGames kind="finished" />
-								</AuthenticatedRoute>
-								<AuthenticatedRoute path="/new-game">
-									<NewGamePage />
-								</AuthenticatedRoute>
-								<Route path="/game/:id">{isReady && <GamePage />}</Route>
-								<Route exact path="/">
-									<Home />
-								</Route>
-								<Route exact path="/unauthorized">
-									<Unauthorized />
-								</Route>
-								<Route path="*">
-									<NotFound />
-								</Route>
-							</Switch>
-						</AppFrame>
-					</div>
-				</Router>
-				<ToastManager />
-			</ToastContext.Provider>
-		</ThemeProvider>
+		<Router>
+			<div className={classes.root}>
+				<AppFrame>
+					<Switch>
+						<AuthenticatedRoute path="/profile">
+							<ManageProfile />
+						</AuthenticatedRoute>
+						<AuthenticatedRoute path="/games">
+							<UserGames kind="active" />
+						</AuthenticatedRoute>
+						<AuthenticatedRoute path="/history">
+							<UserGames kind="finished" />
+						</AuthenticatedRoute>
+						<AuthenticatedRoute path="/new-game">
+							<NewGamePage />
+						</AuthenticatedRoute>
+						<Route path="/game/:id">{isReady && <GamePage />}</Route>
+						<Route exact path="/">
+							<Home />
+						</Route>
+						<Route exact path="/unauthorized">
+							<Unauthorized />
+						</Route>
+						<Route path="*">
+							<NotFound />
+						</Route>
+					</Switch>
+				</AppFrame>
+			</div>
+		</Router>
 	);
 };
 

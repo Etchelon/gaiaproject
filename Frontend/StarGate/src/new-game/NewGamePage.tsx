@@ -16,11 +16,11 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { format } from "date-fns";
 import _ from "lodash";
+import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { MapShape, RaceSelectionMode, TurnOrderSelectionMode } from "../dto/enums";
 import { CreateGameCommand, UserInfoDto } from "../dto/interfaces";
-import { useToasts } from "../toast/ToastManager";
 import httpClient from "../utils/http-client";
 import { Nullable } from "../utils/miscellanea";
 import useStyles from "./new-game-page.styles";
@@ -32,7 +32,7 @@ const DEFAULT_STARTING_VPS = 10;
 const NewGamePage = () => {
 	const classes = useStyles();
 	const history = useHistory();
-	const { open: openToast } = useToasts();
+	const { enqueueSnackbar } = useSnackbar();
 	const [open, setOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [searchedUsers, setSearchedUsers] = useState<UserInfoDto[]>([]);
@@ -52,7 +52,7 @@ const NewGamePage = () => {
 			setSearchedUsers(selectableUsers);
 			setIsLoading(false);
 		} catch (err) {
-			openToast({ type: "error", message: "Error trying to search for users. Try again later", duration: 5000 });
+			enqueueSnackbar("Error trying to search for users. Try again later", { variant: "error" });
 			setSearchedUsers([]);
 		}
 	}, 500);
