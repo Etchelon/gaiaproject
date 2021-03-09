@@ -3,10 +3,10 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import _ from "lodash";
+import { useSnackbar } from "notistack";
 import { useEffect, useReducer } from "react";
 import placeholder from "../assets/person.png";
 import { UserInfoDto } from "../dto/interfaces";
-import { useToasts } from "../toast/ToastManager";
 import { useCurrentUser } from "../utils/hooks";
 import httpClient from "../utils/http-client";
 import userInfoService from "../utils/user-info.service";
@@ -22,7 +22,7 @@ const reducer = (state: UserInfoDto, action: { property: keyof UserInfoDto | "se
 };
 
 const ManageProfile = () => {
-	const { open: openToast } = useToasts();
+	const { enqueueSnackbar } = useSnackbar();
 	const user = useCurrentUser()!;
 	const [userInfo, dispatch] = useReducer(reducer, _.cloneDeep(user));
 
@@ -37,7 +37,7 @@ const ManageProfile = () => {
 	const updateProfile = async () => {
 		await httpClient.put(`api/Users/UpdateProfile/${userInfo.id}`, userInfo, { readAsString: true });
 		userInfoService.update(userInfo);
-		openToast({ message: "Profile updated!", type: "success" });
+		enqueueSnackbar("Profile updated!", { variant: "success" });
 	};
 
 	return (
