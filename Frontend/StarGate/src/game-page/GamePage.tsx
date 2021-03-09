@@ -11,6 +11,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { Subscription } from "rxjs";
+import { GamePhase } from "../dto/enums";
 import { PlayerInGameDto } from "../dto/interfaces";
 import { ElementSize, useAssetUrl, useCurrentUser } from "../utils/hooks";
 import { localizeEnum } from "../utils/localization";
@@ -284,6 +285,7 @@ const GamePage = () => {
 
 	const activeViewName = localizeEnum(activeView, "ActiveView");
 	const isGameCreator = game.createdBy.id === currentPlayer.id;
+	const canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
 
 	const hoveredPlayerAreaDimensions = {
 		width: 0,
@@ -314,7 +316,7 @@ const GamePage = () => {
 			))}
 			{_.map([...game.gameLogs].reverse(), (log, index) => (
 				<div key={index} className={classes.gameLog}>
-					<GameLog log={log} canRollback={isGameCreator} doRollback={actionId => dispatch(rollbackGameAtAction({ gameId: game.id, actionId }))} />
+					<GameLog log={log} canRollback={canRollback} doRollback={actionId => dispatch(rollbackGameAtAction({ gameId: game.id, actionId }))} />
 				</div>
 			))}
 		</div>
