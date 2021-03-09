@@ -42,7 +42,7 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: Docker@2
-      condition: eq($(Build.SourceBranch), 'refs/heads/main')
+      condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
       displayName: Build and push an image to container registry
       inputs:
         command: buildAndPush
@@ -52,7 +52,7 @@ stages:
         tags: |
           $(tag)
     - task: Docker@2
-      condition: ne($(Build.SourceBranch), 'refs/heads/main')
+      condition: ne(variables['Build.SourceBranch'], 'refs/heads/main')
       displayName: Build the app to check everything is ok
       inputs:
         command: build
