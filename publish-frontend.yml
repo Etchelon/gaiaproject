@@ -22,6 +22,9 @@ pr:
 pool:
   vmImage: 'windows-latest'
 
+variables:
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+
 steps:
 - task: NodeTool@0
   inputs:
@@ -46,6 +49,7 @@ steps:
   displayName: 'Production build'
 
 - task: AzureFileCopy@3
+  condition: isMain
   inputs:
     SourcePath: 'Frontend/StarGate/build'
     azureSubscription: 'Andrea Bertoldo 45€/month (27352222-c6c7-4fed-8669-6cdcd1f93dcf)'
