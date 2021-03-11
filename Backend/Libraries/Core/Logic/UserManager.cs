@@ -69,5 +69,10 @@ namespace GaiaProject.Core.Logic
 		{
 			await _userDataProvider.UpdateUser(user);
 		}
+
+		public async Task<List<Notification>> GetUserNotifications(string userId, DateTime earlierThan)
+		{
+			return await this._userDataProvider.GetUserNotifications(userId, earlierThan, 10);
+		}
 	}
 }

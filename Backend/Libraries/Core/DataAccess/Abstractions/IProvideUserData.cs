@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GaiaProject.Core.Model;
@@ -15,5 +16,7 @@ namespace GaiaProject.Core.DataAccess.Abstractions
 		Task<User[]> GetAllUsers();
 		Task<string> CreateUser(User user);
 		Task UpdateUser(User user);
+		Task<List<Notification>> GetUserNotifications(string userId, DateTime earlierThan, int pageSize);
+		Task<string> CreateUserNotification(Notification notification);
 	}
 }

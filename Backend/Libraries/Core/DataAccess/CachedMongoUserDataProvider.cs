@@ -99,5 +99,17 @@ namespace GaiaProject.Core.DataAccess
 			await _mongoUserProvider.UpdateUser(user);
 			this.FlushUser(user);
 		}
+
+		private static string UserNotificationsKey(string userId) => $"_user_{userId}_notifications";
+
+		public async Task<List<Notification>> GetUserNotifications(string userId, DateTime earlierThan, int pageSize)
+		{
+			return await _mongoUserProvider.GetUserNotifications(userId, earlierThan, pageSize);
+		}
+
+		public async Task<string> CreateUserNotification(Notification notification)
+		{
+			return await this._mongoUserProvider.CreateUserNotification(notification);
+		}
 	}
 }

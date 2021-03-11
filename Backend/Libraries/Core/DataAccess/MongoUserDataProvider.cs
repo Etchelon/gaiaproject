@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GaiaProject.Common.Database;
@@ -65,6 +66,19 @@ namespace GaiaProject.Core.DataAccess
 				Builders<User>.Update.Set(u => u.Avatar, user.Avatar)
 			);
 			await _repository.UpdateOneAsync(u => u.Id == user.Id, updateDefinition);
+		}
+
+		public async Task<List<Notification>> GetUserNotifications(string userId, DateTime earlierThan, int pageSize)
+		{
+			var filter = Builders<Notification>.Filter.Lt(n => n.Timestamp, earlierThan);
+			var sorter = Builders<Notification>.Sort.Descending(n => n.Timestamp);
+			return await _repository.GetPaginatedAsync(filter, sorter, 0, pageSize);
+		}
+
+		public async Task<string> CreateUserNotification(Notification notification)
+		{
+			await _repository.AddOneAsync(notification);
+			return notification.Id;
 		}
 	}
 }
