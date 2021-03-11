@@ -1,9 +1,9 @@
 ﻿using System;
+using GaiaProject.Common.Database.Abstractions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using ScoreSheets.Common.Database.Abstractions;
 
-namespace ScoreSheets.Common.Database
+namespace GaiaProject.Common.Database
 {
 	public abstract class MongoEntity : IMongoEntity
 	{

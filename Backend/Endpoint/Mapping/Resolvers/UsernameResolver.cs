@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using GaiaProject.Engine.Logic;
+using GaiaProject.Core.Logic;
 
 namespace GaiaProject.Endpoint.Mapping.Resolvers
 {

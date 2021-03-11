@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using GaiaProject.Common;
+using GaiaProject.Common.Utils;
 using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Model;
 using GaiaProject.Engine.Model.Board;
@@ -72,7 +74,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 
 		private MapService()
 		{
-			var executablePath = ScoreSheets.Common.Filesystem.Utils.GetExecutingDirectoryName();
+			var executablePath = Common.Filesystem.Utils.GetExecutingDirectoryName();
 			var path = Path.Combine(executablePath, "Logic/Board/Map/MapData.json");
 			var mapDataFile = File.ReadAllText(path, Encoding.UTF8);
 			var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };

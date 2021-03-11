@@ -1,11 +1,11 @@
 using System;
+using GaiaProject.Common.Database;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDbGenericRepository.Attributes;
-using ScoreSheets.Common.Database;
 
-namespace ScoreSheets.Common.Entities
+namespace GaiaProject.Common.Entities
 {
-	[CollectionName("ScoreSheets.BackgroundOperation")]
+	[CollectionName("GaiaProject.BackgroundOperation")]
 	public class BackgroundOperation : MongoEntity
 	{
 		public string OperationAuthorUsername { get; set; }

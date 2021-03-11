@@ -1,4 +1,4 @@
-namespace ScoreSheets.Common.Types
+namespace GaiaProject.Common.Types
 {
 	public abstract class TypedIdentifier<T>
 	{

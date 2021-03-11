@@ -1,6 +1,6 @@
 using System;
 
-namespace ScoreSheets.Common.Attributes
+namespace GaiaProject.Common.Attributes
 {
 	[AttributeUsage(AttributeTargets.Class)]
 	public class GameManagerAttribute : Attribute

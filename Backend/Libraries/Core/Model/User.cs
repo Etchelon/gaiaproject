@@ -1,8 +1,8 @@
 ﻿using System;
+using GaiaProject.Common.Database;
 using MongoDbGenericRepository.Attributes;
-using ScoreSheets.Common.Database;
 
-namespace GaiaProject.Engine.Model.Players
+namespace GaiaProject.Core.Model
 {
 	[CollectionName("GaiaProject.Users")]
 	public class User : MongoEntity

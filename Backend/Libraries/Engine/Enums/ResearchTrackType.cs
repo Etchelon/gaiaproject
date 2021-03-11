@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using ScoreSheets.Common.Reflection;
+using GaiaProject.Common.Reflection;
 
 namespace GaiaProject.Engine.Enums
 {

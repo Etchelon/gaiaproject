@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GaiaProject.Common.Reflection;
 using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Logic;
 using GaiaProject.Engine.Logic.Board.Map;
@@ -17,7 +18,6 @@ using GaiaProject.ViewModels.AvailableActions;
 using GaiaProject.ViewModels.Decisions;
 using GaiaProject.ViewModels.Players;
 using Newtonsoft.Json;
-using ScoreSheets.Common.Reflection;
 
 namespace GaiaProject.Endpoint.Mapping.Resolvers
 {

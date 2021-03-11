@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-namespace ScoreSheets.Common.Reflection
+namespace GaiaProject.Common.Reflection
 {
 	public static class ReflectionUtils
 	{

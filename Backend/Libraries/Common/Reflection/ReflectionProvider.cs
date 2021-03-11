@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ScoreSheets.Common.Exceptions;
+using GaiaProject.Common.Exceptions;
 
-namespace ScoreSheets.Common.Reflection
+namespace GaiaProject.Common.Reflection
 {
 	public static class ReflectionProvider
 	{

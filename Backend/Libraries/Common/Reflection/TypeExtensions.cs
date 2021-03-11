@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ScoreSheets.Common.Reflection
+namespace GaiaProject.Common.Reflection
 {
 	public static class TypeExtensions
 	{

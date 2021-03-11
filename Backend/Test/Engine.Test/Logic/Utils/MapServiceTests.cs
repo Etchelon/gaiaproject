@@ -15,15 +15,15 @@ using Xunit.Abstractions;
 namespace Engine.Test.Logic.Utils
 {
 
-	public class MapServiceTests : IClassFixture<TestDataProvider>
+	public class MapServiceTests : IClassFixture<TestGameDataProvider>
 	{
 		private readonly ITestOutputHelper testOutputHelper;
-		private readonly IProvideData dataProvider;
+		private readonly IProvideGameData _gameDataProvider;
 
-		public MapServiceTests(ITestOutputHelper testOutputHelper, TestDataProvider dataProvider)
+		public MapServiceTests(ITestOutputHelper testOutputHelper, TestGameDataProvider gameDataProvider)
 		{
 			this.testOutputHelper = testOutputHelper;
-			this.dataProvider = dataProvider;
+			this._gameDataProvider = gameDataProvider;
 			var converter = new XunitConsoleForwarder(testOutputHelper);
 			Console.SetOut(converter);
 		}
@@ -31,7 +31,7 @@ namespace Engine.Test.Logic.Utils
 		[Fact]
 		public async Task FindHexesWithinRange3_Test1()
 		{
-			var game = await dataProvider.GetGame("ROUNDS_GAME");
+			var game = await _gameDataProvider.GetGame("ROUNDS_GAME");
 			var mapService = new MapService(game.BoardState.Map);
 			var centralHex = mapService.GetHexAt(5, 12);
 			var hexesWithinDistance = mapService.FindHexesWithinDistance(centralHex, 3);
@@ -46,7 +46,7 @@ namespace Engine.Test.Logic.Utils
 		[Fact]
 		public async Task FindHexesWithinRange3_Test2()
 		{
-			var game = await dataProvider.GetGame("ROUNDS_GAME");
+			var game = await _gameDataProvider.GetGame("ROUNDS_GAME");
 			var mapService = new MapService(game.BoardState.Map);
 			var centralHex = mapService.GetHexAt(3, 12);
 			var hexesWithinDistance = mapService.FindHexesWithinDistance(centralHex, 3);
@@ -61,7 +61,7 @@ namespace Engine.Test.Logic.Utils
 		[Fact]
 		public async Task FindHexesInAllMap()
 		{
-			var game = await dataProvider.GetGame("ROUNDS_GAME");
+			var game = await _gameDataProvider.GetGame("ROUNDS_GAME");
 			var mapService = new MapService(game.BoardState.Map);
 			var centralHex = mapService.GetHexAt(12, 7);
 			var hexesWithinDistance = mapService.FindHexesWithinDistance(centralHex, 7);

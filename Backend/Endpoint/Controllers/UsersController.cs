@@ -1,8 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
-using GaiaProject.Engine.Logic;
-using GaiaProject.Engine.Model.Players;
+using GaiaProject.Core.Logic;
+using GaiaProject.Core.Model;
 using GaiaProject.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

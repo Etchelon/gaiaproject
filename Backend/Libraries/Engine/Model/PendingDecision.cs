@@ -1,7 +1,7 @@
-﻿using GaiaProject.Engine.Enums;
+﻿using GaiaProject.Common.Reflection;
+using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Model.Decisions;
 using MongoDB.Bson.Serialization.Attributes;
-using ScoreSheets.Common.Reflection;
 
 namespace GaiaProject.Engine.Model
 {

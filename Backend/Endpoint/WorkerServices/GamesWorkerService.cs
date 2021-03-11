@@ -3,6 +3,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
+using GaiaProject.Common.Reflection;
+using GaiaProject.Core.Logic;
 using GaiaProject.Endpoint.Hubs;
 using GaiaProject.Endpoint.Mapping.Resolvers;
 using GaiaProject.Endpoint.Utils;
@@ -19,7 +21,6 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using ScoreSheets.Common.Reflection;
 
 namespace GaiaProject.Endpoint.WorkerServices
 {

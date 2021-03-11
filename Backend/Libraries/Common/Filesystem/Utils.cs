@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace ScoreSheets.Common.Filesystem
+namespace GaiaProject.Common.Filesystem
 {
 	public static class Utils
 	{

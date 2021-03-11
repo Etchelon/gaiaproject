@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ScoreSheets.Common.Reflection
+namespace GaiaProject.Common.Reflection
 {
 	public class TypeWithInterfaces
 	{

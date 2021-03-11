@@ -1,4 +1,4 @@
-﻿namespace ScoreSheets.Common
+﻿namespace GaiaProject.Common
 {
 	public static class Constants
 	{

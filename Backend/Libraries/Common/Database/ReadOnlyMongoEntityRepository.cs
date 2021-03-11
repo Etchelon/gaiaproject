@@ -2,7 +2,7 @@
 using MongoDbGenericRepository;
 using MongoDbGenericRepository.Abstractions;
 
-namespace ScoreSheets.Common.Database
+namespace GaiaProject.Common.Database
 {
 	public class ReadOnlyMongoEntityRepository : ReadOnlyMongoRepository<string>
 	{

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GaiaProject.Common;
+using GaiaProject.Common.Extensions;
 using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Logic.Board.Map;
 using GaiaProject.Engine.Model.Board;

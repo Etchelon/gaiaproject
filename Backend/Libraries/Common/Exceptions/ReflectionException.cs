@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ScoreSheets.Common.Exceptions
+namespace GaiaProject.Common.Exceptions
 {
 	public class ReflectionException : Exception
 	{

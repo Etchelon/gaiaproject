@@ -1,4 +1,4 @@
-﻿namespace ScoreSheets.Common.Bus
+﻿namespace GaiaProject.Common.Bus
 {
 	public interface IMessage
 	{

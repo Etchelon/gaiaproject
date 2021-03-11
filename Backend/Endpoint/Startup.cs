@@ -1,5 +1,9 @@
 using System.Threading.Tasks;
 using AutoMapper;
+using GaiaProject.Common.Database;
+using GaiaProject.Core.DataAccess;
+using GaiaProject.Core.DataAccess.Abstractions;
+using GaiaProject.Core.Logic;
 using GaiaProject.Endpoint.Authentication;
 using GaiaProject.Endpoint.Hubs;
 using GaiaProject.Endpoint.Utils;
@@ -20,7 +24,6 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using MongoDbGenericRepository;
 using Newtonsoft.Json;
-using ScoreSheets.Common.Database;
 using SendGrid.Extensions.DependencyInjection;
 
 namespace GaiaProject.Endpoint
@@ -58,9 +61,12 @@ namespace GaiaProject.Endpoint
 			services.AddAutoMapper(GetType().Assembly);
 
 			services.AddSingleton(services);
-			services.AddTransient<MongoDataProvider>();
-			services.AddTransient<CachedMongoDataProvider>();
-			services.AddTransient<IProvideData, CachedMongoDataProvider>();
+			services.AddTransient<MongoUserDataProvider>();
+			services.AddTransient<CachedMongoUserDataProvider>();
+			services.AddTransient<IProvideUserData, CachedMongoUserDataProvider>();
+			services.AddTransient<MongoGameDataProvider>();
+			services.AddTransient<CachedMongoGameDataProvider>();
+			services.AddTransient<IProvideGameData, CachedMongoGameDataProvider>();
 			services.AddSingleton(serviceProvider =>
 			{
 				var logger = serviceProvider.GetRequiredService<ILogger<ActiveGamesRegistry>>();
@@ -70,7 +76,7 @@ namespace GaiaProject.Endpoint
 			services.AddTransient<GameManager>();
 			services.AddTransient<UserManager>();
 			services.AddTransient<GamesWorkerService>();
-			services.AddTransient(serviceProvider => new MapService(4, GaiaProject.Engine.Enums.MapShape.Standard4P));
+			services.AddTransient(_ => new MapService(4, GaiaProject.Engine.Enums.MapShape.Standard4P));
 
 			services.AddSendGrid(options =>
 			{
