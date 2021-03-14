@@ -62,8 +62,6 @@ const activeUserSlice = createSlice({
 			state.unreadNotificationsCount = Math.max(state.unreadNotificationsCount - 1, 0);
 			const notification = _.find(state.notifications, n => n.id === action.payload)!;
 			notification.isRead = true;
-			const index = _.findIndex(state.notifications, notification);
-			state.notifications = state.notifications.splice(index, 1, notification);
 		},
 	},
 });

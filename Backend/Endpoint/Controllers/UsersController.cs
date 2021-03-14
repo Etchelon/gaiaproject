@@ -133,7 +133,7 @@ namespace GaiaProject.Endpoint.Controllers
 		public async Task<IActionResult> SetNotificationRead(string id)
 		{
 			await _userManager.SetNotificationRead(UserId, id);
-			return Ok();
+			return NoContent();
 		}
 	}
 }
