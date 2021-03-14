@@ -16,6 +16,9 @@ namespace GaiaProject.Core.Model
 		public NotificationType Type { get; protected set; }
 
 		[BsonRequired]
+		public DateTime DateCreated { get; set; }
+
+		[BsonRequired]
 		public string TargetUserId { get; set; }
 
 		[BsonRequired]

@@ -2,8 +2,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { fillParent, fillWindow } from "../utils/miscellanea";
 
 const drawerWidth = 240;
-const MOBILE_TOOLBAR_HEIGHT = 56;
-const TOOLBAR_HEIGHT = 64;
+const TOOLBAR_HEIGHT = 48;
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -30,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
 				duration: theme.transitions.duration.leavingScreen,
 			}),
 			overflowX: "hidden",
-			width: theme.spacing(9) + 1,
+			width: theme.spacing(7) + 1,
 		},
 		sectionHeader: {
 			padding: theme.spacing(2, 2, 0),
@@ -54,12 +53,21 @@ const useStyles = makeStyles((theme: Theme) =>
 				display: "none",
 			},
 		},
+		notifications: {
+			marginLeft: "auto",
+		},
 		// necessary for content to be below app bar
-		toolbar: theme.mixins.toolbar,
+		toolbar: {
+			height: TOOLBAR_HEIGHT,
+		},
 		appDrawer: {
 			height: "100%",
 			display: "flex",
 			flexDirection: "column",
+			"& .MuiListItem-root.MuiListItem-gutters": {
+				paddingLeft: theme.spacing(1),
+				paddingRight: theme.spacing(1),
+			},
 			"& .MuiListItemIcon-root": {
 				minWidth: "unset",
 				marginLeft: "8px",
@@ -84,10 +92,7 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		content: {
 			flexGrow: 1,
-			height: `calc(100% - ${MOBILE_TOOLBAR_HEIGHT}px)`,
-			[theme.breakpoints.up("sm")]: {
-				height: `calc(100% - ${TOOLBAR_HEIGHT}px)`,
-			},
+			height: `calc(100% - ${TOOLBAR_HEIGHT}px)`,
 		},
 	})
 );

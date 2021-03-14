@@ -68,11 +68,25 @@ namespace GaiaProject.Core.DataAccess
 			await _repository.UpdateOneAsync(u => u.Id == user.Id, updateDefinition);
 		}
 
+		public async Task<long> CountUnreadNotifications(string userId)
+		{
+			var filter = Builders<Notification>.Filter.Eq(n => n.TargetUserId, userId);
+			filter &= Builders<Notification>.Filter.Eq(n => n.IsRead, false);
+			return await _repository.CountAsync(filter);
+		}
+
 		public async Task<List<Notification>> GetUserNotifications(string userId, DateTime earlierThan, int pageSize)
 		{
-			var filter = Builders<Notification>.Filter.Lt(n => n.Timestamp, earlierThan);
-			var sorter = Builders<Notification>.Sort.Descending(n => n.Timestamp);
+			var filter = Builders<Notification>.Filter.Eq(n => n.TargetUserId, userId);
+			filter &= Builders<Notification>.Filter.Lt(n => n.DateCreated, earlierThan);
+			var sorter = Builders<Notification>.Sort.Descending(n => n.DateCreated);
 			return await _repository.GetPaginatedAsync(filter, sorter, 0, pageSize);
+		}
+
+		public async Task SetNotificationRead(string notificationId)
+		{
+			var updateDefinition = Builders<Notification>.Update.Set(n => n.IsRead, true);
+			await _repository.UpdateOneAsync(n => n.Id == notificationId, updateDefinition);
 		}
 
 		public async Task<string> CreateUserNotification(Notification notification)

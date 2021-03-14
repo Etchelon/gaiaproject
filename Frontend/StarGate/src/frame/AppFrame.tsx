@@ -15,7 +15,8 @@ import AppBarImg from "../assets/Resources/splash.jpg";
 import navigationService from "../utils/navigation.service";
 import useStyles from "./appFrame.styles";
 import AppDrawer from "./drawer/AppDrawer";
-import { selectIsDrawerOpen } from "./store/user-preferences.slice";
+import Notifications from "./notifications/Notifications";
+import { selectIsDrawerOpen } from "./store/active-user.slice";
 
 interface AppFrameProps {
 	children: any;
@@ -51,7 +52,7 @@ const AppFrame = ({ children }: AppFrameProps) => {
 		<div className={classes.root}>
 			<CssBaseline />
 			<AppBar position="fixed" className={classes.appBar}>
-				<Toolbar>
+				<Toolbar variant="dense">
 					<IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} className={classes.menuButton}>
 						<MenuIcon />
 					</IconButton>
@@ -61,6 +62,11 @@ const AppFrame = ({ children }: AppFrameProps) => {
 							Gaia Project
 						</Typography>
 					</Link>
+					{isAuthenticated && (
+						<div className={classes.notifications}>
+							<Notifications />
+						</div>
+					)}
 				</Toolbar>
 			</AppBar>
 			{useMobileLayout && (

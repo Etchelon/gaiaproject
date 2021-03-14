@@ -1,4 +1,5 @@
-import { RefObject, useEffect, useLayoutEffect, useState } from "react";
+import _ from "lodash";
+import { createRef, RefObject, useEffect, useLayoutEffect, useState } from "react";
 import { UserInfoDto } from "../dto/interfaces";
 import { Nullable } from "./miscellanea";
 import userInfoService from "./user-info.service";
@@ -90,4 +91,52 @@ export function useCurrentUser(): Nullable<UserInfoDto> {
 		};
 	}, []);
 	return currentUser;
+}
+
+export interface ScrollableNode {
+	clientHeight: number;
+	addEventListener(eventName: string, handlerFn: (...args: any[]) => any): void;
+	removeEventListener(eventName: string, handlerFn: (...args: any[]) => any): void;
+}
+
+/**
+ * Check if an element is in viewport
+ * @param offset - Number of pixels up to the observable element from the top
+ * @param throttleMilliseconds - Throttle observable listener, in ms
+ */
+export default function useVisibility<Element extends HTMLElement>(
+	parentScrollable: Nullable<ScrollableNode | (Window & typeof globalThis)>,
+	offset = 0,
+	throttleMilliseconds = 100
+): [boolean, RefObject<Element>] {
+	const [isVisible, setIsVisible] = useState(false);
+	const currentElement = createRef<Element>();
+
+	const onScroll = _.throttle(() => {
+		if (!currentElement.current) {
+			setIsVisible(false);
+			return;
+		}
+		const scrollableHeight = parentScrollable === window ? window.innerHeight : (parentScrollable as ScrollableNode)?.clientHeight;
+		const top = currentElement.current.getBoundingClientRect().top;
+		const inViewport = top + offset >= 0 && top - offset <= scrollableHeight;
+		setIsVisible(inViewport);
+	}, throttleMilliseconds);
+
+	useEffect(() => {
+		if (parentScrollable === null) {
+			return;
+		}
+		parentScrollable.addEventListener("scroll", onScroll);
+		return () => parentScrollable.removeEventListener("scroll", onScroll);
+	});
+
+	useEffect(() => {
+		if (parentScrollable === null) {
+			return;
+		}
+		onScroll();
+	}, [parentScrollable]);
+
+	return [isVisible, currentElement];
 }

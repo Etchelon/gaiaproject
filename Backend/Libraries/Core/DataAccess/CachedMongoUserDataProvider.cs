@@ -100,16 +100,30 @@ namespace GaiaProject.Core.DataAccess
 			this.FlushUser(user);
 		}
 
+		#region TODO: implement caching for notifications
+
 		private static string UserNotificationsKey(string userId) => $"_user_{userId}_notifications";
+
+		public async Task<long> CountUnreadNotifications(string userId)
+		{
+			return await _mongoUserProvider.CountUnreadNotifications(userId);
+		}
 
 		public async Task<List<Notification>> GetUserNotifications(string userId, DateTime earlierThan, int pageSize)
 		{
 			return await _mongoUserProvider.GetUserNotifications(userId, earlierThan, pageSize);
 		}
 
+		public async Task SetNotificationRead(string notificationId)
+		{
+			await _mongoUserProvider.SetNotificationRead(notificationId);
+		}
+
 		public async Task<string> CreateUserNotification(Notification notification)
 		{
 			return await this._mongoUserProvider.CreateUserNotification(notification);
 		}
+
+		#endregion
 	}
 }

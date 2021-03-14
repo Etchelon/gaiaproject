@@ -7,6 +7,7 @@ import {
 	FinalScoringTileType,
 	GamePhase,
 	MapShape,
+	NotificationType,
 	PendingDecisionType,
 	PlanetType,
 	PowerActionType,
@@ -433,4 +434,16 @@ export interface ActionDto {
 export interface IvitsExpandFederationInfoDto {
 	RequiredPower: number;
 	CanTakeMoreTokens: boolean;
+}
+
+export interface NotificationDto {
+	id: string;
+	type: NotificationType;
+	timestamp: string;
+	text: string;
+	isRead: boolean;
+}
+
+export interface GameNotificationDto extends NotificationDto {
+	gameId: string;
 }

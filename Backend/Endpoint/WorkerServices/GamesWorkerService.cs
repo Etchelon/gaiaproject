@@ -1,20 +1,15 @@
-using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
-using GaiaProject.Common.Reflection;
 using GaiaProject.Core.Logic;
 using GaiaProject.Endpoint.Hubs;
 using GaiaProject.Endpoint.Mapping.Resolvers;
 using GaiaProject.Endpoint.Utils;
 using GaiaProject.Engine.Commands;
-using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Logic;
 using GaiaProject.Engine.Model;
-using GaiaProject.Engine.Model.Actions;
 using GaiaProject.ViewModels;
-using GaiaProject.ViewModels.Actions;
 using GaiaProject.ViewModels.Players;
 using GaiaProject.ViewModels.Users;
 using Microsoft.AspNetCore.SignalR;
@@ -24,6 +19,13 @@ using Newtonsoft.Json.Serialization;
 
 namespace GaiaProject.Endpoint.WorkerServices
 {
+	public enum NotificationReason
+	{
+		GameStarted,
+		YourTurn,
+		GameEnded,
+	}
+
 	public class GamesWorkerService
 	{
 		private readonly IMapper _mapper;
@@ -95,14 +97,14 @@ namespace GaiaProject.Endpoint.WorkerServices
 			var game = await _gameManager.CreateGame(command, createdBy);
 			if (game.ActivePlayerId != createdBy)
 			{
-				NotifyPlayersAsync(game);
+				NotifyPlayersAsync(game, NotificationReason.GameStarted);
 			}
 			return game.Id;
 		}
 
 		internal async Task<HandleActionResult> HandleAction(string gameId, string userId, JToken action)
 		{
-			var actualAction = GetActualAction(action);
+			var actualAction = ActionMapper.GetActualAction(action);
 			actualAction.PlayerId = userId;
 			actualAction.PlayerUsername = await _userManager.GetUsername(userId);
 			var result = await _gameManager.HandleAction(gameId, actualAction);
@@ -115,270 +117,7 @@ namespace GaiaProject.Endpoint.WorkerServices
 
 		#region Helpers
 
-		private PlayerAction GetActualAction(JToken action)
-		{
-			var actionType = (ActionType)action.Value<int>(nameof(ActionViewModel.Type));
-			var phase = actionType.GetAttributeOfType<AvailableInPhaseAttribute>().Phase;
-			return phase == GamePhase.Setup
-				? GetSetupAction(action)
-				: GetRoundsAction(action);
-		}
-
-		private PlayerAction GetSetupAction(JToken action)
-		{
-			var type = action.Value<int>(nameof(ActionViewModel.Type));
-			var typeEnum = (ActionType)type;
-			switch (typeEnum)
-			{
-				default:
-					throw new NotImplementedException();
-				case ActionType.SelectRace:
-					{
-						var actionVm = action.ToObject<SelectRaceActionViewModel>();
-						return new SelectRaceAction
-						{
-							Race = actionVm.Race,
-						};
-					}
-				case ActionType.BidForRace:
-					{
-						var actionVm = action.ToObject<BidForRaceActionViewModel>();
-						return new BidForRaceAction
-						{
-							Race = actionVm.Race,
-							Points = actionVm.Points,
-						};
-					}
-				case ActionType.PlaceInitialStructure:
-					{
-						var actionVm = action.ToObject<PlaceInitialStructureActionViewModel>();
-						return new PlaceInitialStructureAction
-						{
-							TargetHexId = actionVm.HexId,
-						};
-					}
-				case ActionType.SelectStartingRoundBooster:
-					{
-						var actionVm = action.ToObject<SelectRoundBoosterActionViewModel>();
-						return new SelectStartingRoundBoosterAction
-						{
-							Booster = actionVm.Booster,
-						};
-					}
-			}
-		}
-
-		private PlayerAction GetRoundsAction(JToken action)
-		{
-			var type = action.Value<int>(nameof(ActionViewModel.Type));
-			var typeEnum = (ActionType)type;
-			switch (typeEnum)
-			{
-				default:
-					throw new NotImplementedException();
-				case ActionType.PassTurn:
-					{
-						return new PassTurnAction();
-					}
-				case ActionType.ColonizePlanet:
-					{
-						var actionVm = action.ToObject<ColonizePlanetActionViewModel>();
-						return new ColonizePlanetAction
-						{
-							TargetHexId = actionVm.HexId,
-						};
-					}
-				case ActionType.UpgradeExistingStructure:
-					{
-						var actionVm = action.ToObject<UpgradeExistingStructureActionViewModel>();
-						return new UpgradeExistingStructureAction
-						{
-							TargetHexId = actionVm.HexId,
-							TargetBuildingType = actionVm.TargetBuilding
-						};
-					}
-				case ActionType.ResearchTechnology:
-					{
-						var actionVm = action.ToObject<ResearchTechnologyActionViewModel>();
-						return new ResearchTechnologyAction
-						{
-							TrackId = actionVm.Track
-						};
-					}
-				case ActionType.ChooseTechnologyTile:
-					{
-						var actionVm = action.ToObject<ChooseTechnologyTileActionViewModel>();
-						return new ChooseTechnologyTileAction
-						{
-							TileId = actionVm.TileId,
-							Advanced = actionVm.Advanced,
-							CoveredTileId = (StandardTechnologyTileType?)actionVm.CoveredTileId
-						};
-					}
-				case ActionType.ChargePower:
-					{
-						var actionVm = action.ToObject<ChargeOrDeclinePowerActionViewModel>();
-						return new ChargePowerAction
-						{
-							Accepted = actionVm.Accepted
-						};
-					}
-				case ActionType.Pass:
-					{
-						var actionVm = action.ToObject<PassActionViewModel>();
-						return new PassAction
-						{
-							SelectedRoundBooster = actionVm.SelectedRoundBooster,
-						};
-					}
-				case ActionType.Conversions:
-					{
-						var actionVm = action.ToObject<ConversionsActionViewModel>();
-						return new ConversionsAction
-						{
-							Conversions = actionVm.Conversions
-						};
-					}
-				case ActionType.StartGaiaProject:
-					{
-						var actionVm = action.ToObject<StartGaiaProjectActionViewModel>();
-						return new StartGaiaProjectAction
-						{
-							HexId = actionVm.HexId
-						};
-					}
-				case ActionType.SortIncomes:
-					{
-						var actionVm = action.ToObject<SortIncomesActionViewModel>();
-						return new SortIncomesAction
-						{
-							SortedIncomes = actionVm.SortedIncomes
-						};
-					}
-				case ActionType.Power:
-					{
-						var actionVm = action.ToObject<PowerActionViewModel>();
-						return new PowerAction
-						{
-							ActionId = actionVm.Id
-						};
-					}
-				case ActionType.Qic:
-					{
-						var actionVm = action.ToObject<QicActionViewModel>();
-						return new QicAction
-						{
-							ActionId = actionVm.Id
-						};
-					}
-				case ActionType.UseTechnologyTile:
-					{
-						var actionVm = action.ToObject<UseTechnologyTileActionViewModel>();
-						return new UseTechnologyTileAction
-						{
-							TileId = actionVm.TileId,
-							Advanced = actionVm.Advanced
-						};
-					}
-				case ActionType.UseRoundBooster:
-					{
-						return new UseRoundBoosterAction();
-					}
-				case ActionType.BescodsResearchProgress:
-					{
-						return new BescodsResearchProgressAction();
-					}
-				case ActionType.IvitsPlaceSpaceStation:
-					{
-						var actionVm = action.ToObject<IvitsPlaceSpaceStationActionViewModel>();
-						return new IvitsPlaceSpaceStationAction
-						{
-							HexId = actionVm.HexId
-						};
-					}
-				case ActionType.AmbasSwapPlanetaryInstituteAndMine:
-					{
-						var actionVm = action.ToObject<AmbasSwapPlanetaryInstituteAndMineActionViewModel>();
-						return new AmbasSwapPlanetaryInstituteAndMineAction
-						{
-							HexId = actionVm.HexId
-						};
-					}
-				case ActionType.FiraksDowngradeResearchLab:
-					{
-						var actionVm = action.ToObject<FiraksDowngradeResearchLabActionViewModel>();
-						return new FiraksDowngradeResearchLabAction
-						{
-							HexId = actionVm.HexId
-						};
-					}
-				case ActionType.ItarsBurnPowerForTechnologyTile:
-					{
-						return new ItarsBurnPowerForTechnologyTileAction();
-					}
-				case ActionType.TerransDecideIncome:
-					{
-						var actionVm = action.ToObject<TerransDecideIncomeActionViewModel>();
-						return new TerransDecideIncomeAction
-						{
-							Credits = actionVm.Credits,
-							Ores = actionVm.Ores,
-							Knowledge = actionVm.Knowledge,
-							Qic = actionVm.Qic
-						};
-					}
-				case ActionType.UseRightAcademy:
-					{
-						return new UseRightAcademyAction();
-					}
-				case ActionType.FormFederation:
-					{
-						var actionVm = action.ToObject<FormFederationActionViewModel>();
-						return new FormFederationAction
-						{
-							SelectedBuildings = actionVm.SelectedBuildings,
-							SelectedSatellites = actionVm.SelectedSatellites,
-							SelectedFederationToken = actionVm.SelectedFederationToken
-						};
-					}
-				case ActionType.PlaceLostPlanet:
-					{
-						var actionVm = action.ToObject<PlaceLostPlanetActionViewModel>();
-						return new PlaceLostPlanetAction
-						{
-							HexId = actionVm.HexId
-						};
-					}
-				case ActionType.RescoreFederationToken:
-					{
-						var actionVm = action.ToObject<RescoreFederationTokenActionViewModel>();
-						return new RescoreFederationTokenAction
-						{
-							Token = actionVm.Token
-						};
-					}
-				case ActionType.TaklonsLeech:
-					{
-						var actionVm = action.ToObject<TaklonsLeechActionViewModel>();
-						return new TaklonsLeechAction
-						{
-							Accepted = actionVm.Accepted,
-							ChargeFirstThenToken = actionVm.ChargeFirstThenToken
-						};
-					}
-				case ActionType.AcceptOrDeclineLastStep:
-					{
-						var actionVm = action.ToObject<AcceptOrDeclineLastStepActionViewModel>();
-						return new AcceptOrDeclineLastStepAction
-						{
-							Accepted = actionVm.Accepted,
-							Track = actionVm.Track
-						};
-					}
-			}
-		}
-
-		private async Task NotifyPlayersAsync(GaiaProjectGame game)
+		private async Task NotifyPlayersAsync(GaiaProjectGame game, NotificationReason reason = NotificationReason.YourTurn)
 		{
 			var gameId = game.Id;
 			var gameVm = MapGameState(game);
@@ -399,7 +138,7 @@ namespace GaiaProject.Endpoint.WorkerServices
 
 				onlineUsers.ForEach(async playerId => await NotifyPlayerBySignalR(playerId, payload));
 				var offlineUsers = game.Players.Where(p => !onlineUsers.Contains(p.Id)).Select(p => p.Id).ToList();
-				offlineUsers.ForEach(async playerId => await NotifyPlayerByMail(playerId, gameVm));
+				offlineUsers.ForEach(async playerId => await SendDelayedNotifications(playerId, gameVm, NotificationReason.GameEnded));
 				return;
 			}
 
@@ -419,7 +158,7 @@ namespace GaiaProject.Endpoint.WorkerServices
 			}
 			else
 			{
-				await NotifyPlayerByMail(activePlayerId, gameVm);
+				await SendDelayedNotifications(activePlayerId, gameVm, reason);
 			}
 
 			var otherOnlinePlayers = onlineUsers.Where(userId => userId != activePlayerId).ToList();
@@ -443,16 +182,22 @@ namespace GaiaProject.Endpoint.WorkerServices
 
 		private async Task NotifyPlayerBySignalR(string id, string payload)
 		{
-			// Intentionally notify players in async way to avoid blocking the user who performed the action
 			var auth0Id = (await _userManager.GetUser(id)).Identifier;
 			await _hubContext.Clients.User(auth0Id).SendAsync(GaiaHub.GameStateChanged, payload);
 		}
 
-		private async Task NotifyPlayerByMail(string activePlayerId, GameStateViewModel gameVm)
+		private async Task SendDelayedNotifications(string userId, GameStateViewModel gameVm, NotificationReason reason)
 		{
-			var user = await _userManager.GetUser(activePlayerId);
-			var message = _mailHelper.GetEmail(user, gameVm);
-			await this._mailService.Send(message);
+			var user = await _userManager.GetUser(userId);
+			var mailMessage = _mailHelper.GetEmail(user, gameVm);
+			await this._mailService.Send(mailMessage);
+			var notificationMessage = reason switch
+			{
+				NotificationReason.GameStarted => $"Game {gameVm.Name} has started",
+				NotificationReason.YourTurn => $"It's your turn to move in game {gameVm.Name}",
+				NotificationReason.GameEnded => $"Game {gameVm.Name} has ended",
+			};
+			await _userManager.NotifyUserForGame(userId, gameVm.Id, notificationMessage);
 		}
 
 		private GameStateViewModel MapGameState(GaiaProjectGame game, string userId = null)

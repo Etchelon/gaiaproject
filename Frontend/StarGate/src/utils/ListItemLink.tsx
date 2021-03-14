@@ -4,7 +4,7 @@ import { ElementType, forwardRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 const ListItemLink = <T extends ElementType>(props: ListItemProps<T>) => {
-	const { icon, primary, to } = props;
+	const { icon, primary, secondary, to } = props;
 
 	const CustomLink = useMemo(() => forwardRef((linkProps, ref: any) => <Link ref={ref} to={to} {...linkProps} />), [to]);
 
@@ -16,7 +16,12 @@ const ListItemLink = <T extends ElementType>(props: ListItemProps<T>) => {
 						<ListItemIcon>{icon}</ListItemIcon>
 					</Tooltip>
 				)}
-				<ListItemText primary={primary} primaryTypographyProps={{ className: "gaia-font", style: { fontSize: "0.8rem" } }} />
+				<ListItemText
+					primary={primary}
+					primaryTypographyProps={{ className: "gaia-font", style: { fontSize: "0.8rem" } }}
+					secondary={secondary}
+					secondaryTypographyProps={{ className: "gaia-font", style: { fontSize: "0.65rem" } }}
+				/>
 			</ListItem>
 		</li>
 	);

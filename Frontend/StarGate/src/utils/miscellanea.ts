@@ -1,4 +1,5 @@
 import { Theme } from "@material-ui/core";
+import { formatDistance } from "date-fns";
 import _ from "lodash";
 import { GamePhase } from "../dto/enums";
 import { GameStateDto, HexDto } from "../dto/interfaces";
@@ -134,4 +135,10 @@ export function isMobileOrTablet() {
 		}
 	})(navigator.userAgent || navigator.vendor || (window as any).opera);
 	return check;
+}
+
+export function prettyTimestamp(isoDate: string): string {
+	const date = Date.parse(isoDate);
+	const now = Date.now();
+	return formatDistance(date, now, { addSuffix: true });
 }

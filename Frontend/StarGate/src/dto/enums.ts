@@ -252,3 +252,8 @@ export enum SortableIncomeType {
 	Power,
 	PowerToken,
 }
+
+export enum NotificationType {
+	Generic,
+	Game,
+}

@@ -70,9 +70,32 @@ namespace GaiaProject.Core.Logic
 			await _userDataProvider.UpdateUser(user);
 		}
 
+		public async Task<long> CountUnreadNotifications(string userId)
+		{
+			return await this._userDataProvider.CountUnreadNotifications(userId);
+		}
+
 		public async Task<List<Notification>> GetUserNotifications(string userId, DateTime earlierThan)
 		{
 			return await this._userDataProvider.GetUserNotifications(userId, earlierThan, 10);
+		}
+
+		public async Task SetNotificationRead(string userId, string notificationId)
+		{
+			// TODO: validation that this notification is targeted towards userId?
+			await this._userDataProvider.SetNotificationRead(notificationId);
+		}
+
+		public async Task NotifyUserForGame(string userId, string gameId, string message)
+		{
+			var notification = new GameNotification
+			{
+				DateCreated = DateTime.Now,
+				TargetUserId = userId,
+				GameId = gameId,
+				Text = message,
+			};
+			await this._userDataProvider.CreateUserNotification(notification);
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using GaiaProject.Core.Logic;
 using GaiaProject.Core.Model;
@@ -110,6 +111,28 @@ namespace GaiaProject.Endpoint.Controllers
 				Avatar = profile.Avatar,
 			};
 			await _userManager.UpdateUser(user);
+			return Ok();
+		}
+
+		[HttpGet]
+		public async Task<ActionResult<Notification[]>> CountUnreadNotifications()
+		{
+			var count = await _userManager.CountUnreadNotifications(UserId);
+			return Ok(count);
+		}
+
+		[HttpGet]
+		public async Task<ActionResult<NotificationViewModel[]>> GetUserNotifications(DateTime earlierThan, bool alsoUnread)
+		{
+			var notifications = await _userManager.GetUserNotifications(UserId, earlierThan);
+			var dtos = _mapper.Map<NotificationViewModel[]>(notifications);
+			return Ok(dtos);
+		}
+
+		[HttpPut("{id}")]
+		public async Task<IActionResult> SetNotificationRead(string id)
+		{
+			await _userManager.SetNotificationRead(UserId, id);
 			return Ok();
 		}
 	}
