@@ -3,7 +3,7 @@ using MongoDB.Driver;
 using MongoDbGenericRepository;
 using MongoDbGenericRepository.Abstractions;
 
-namespace ScoreSheets.Common.Database
+namespace GaiaProject.Common.Database
 {
 	public class MongoEntityRepository : BaseMongoRepository<string>
 	{

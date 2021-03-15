@@ -12,8 +12,8 @@ import ListItemLink from "../../utils/ListItemLink";
 import { Nullable } from "../../utils/miscellanea";
 import userInfoService from "../../utils/user-info.service";
 import useStyles from "../appFrame.styles";
-import { UserPreferencesState } from "../store/types";
-import { loadUserPreferences, selectUserPreferences } from "../store/user-preferences.slice";
+import { loadUserPreferences, selectUserPreferences } from "../store/active-user.slice";
+import { ActiveUserState } from "../store/types";
 import UserBox from "./user-box/UserBox";
 
 interface AppSection {
@@ -45,7 +45,7 @@ const AppDrawer = () => {
 
 		const userPreferencesStr = window.localStorage.getItem(storageKey(auth0User.sub));
 		if (userPreferencesStr) {
-			const userPreferences_ = JSON.parse(userPreferencesStr) as UserPreferencesState;
+			const userPreferences_ = JSON.parse(userPreferencesStr) as ActiveUserState;
 			dispatch(loadUserPreferences(userPreferences_));
 		}
 	}, []);

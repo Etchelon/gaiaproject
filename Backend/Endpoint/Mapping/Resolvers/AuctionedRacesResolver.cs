@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using GaiaProject.Engine.Logic;
+using GaiaProject.Core.Logic;
 using GaiaProject.Engine.Model.Setup;
 using GaiaProject.ViewModels;
 

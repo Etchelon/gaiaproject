@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using GaiaProject.Engine.Logic.Utils;
 using GaiaProject.ViewModels.Game;
 using System;
+using GaiaProject.Core.Model;
 using GaiaProject.Engine.Model.Setup;
 
 namespace GaiaProject.Endpoint.Mapping
@@ -65,18 +66,17 @@ namespace GaiaProject.Endpoint.Mapping
 
 			#region Players
 
-			CreateMap<User, UserViewModel>();
 			CreateMap<PlayerInGame, PlayerInfoViewModel>()
 				.ForMember(dst => dst.AvatarUrl, opt => opt.MapFrom<UserAvatarResolver, string>(src => src.Id))
 				.ForMember(dst => dst.RaceName, opt => opt.MapFrom(src => RaceUtils.GetName(src.RaceId ?? Race.None)))
 				.ForMember(dst => dst.Color, opt => opt.MapFrom(src => RaceUtils.GetColor(src.RaceId ?? Race.None)))
 				.ForMember(dst => dst.Points, opt => opt.MapFrom(src => src.State != null ? src.State.Points : 10))
 				.ForMember(dst => dst.IsActive, opt => opt.MapFrom((src, _, __, ctx) =>
-					(ctx.Items["Game"] as GaiaProjectGame).ActivePlayerId == src.Id))
+					((GaiaProjectGame)ctx.Items["Game"]).ActivePlayerId == src.Id))
 				;
 			CreateMap<PlayerInGame, PlayerInGameViewModel>()
 				.BeforeMap((p, vm, ctx) => ctx.Items["Player"] = p)
-				.ForMember(dst => dst.IsActive, opt => opt.MapFrom((src, _, __, ctx) => (ctx.Items["Game"] as GaiaProjectGame).ActivePlayerId == src.Id))
+				.ForMember(dst => dst.IsActive, opt => opt.MapFrom((src, _, __, ctx) => ((GaiaProjectGame)ctx.Items["Game"]).ActivePlayerId == src.Id))
 				.AfterMap((p, vm, ctx) => ctx.Items.Remove("Player"));
 			CreateMap<PlayerState, PlayerStateViewModel>()
 				.ForMember(dst => dst.TempTerraformingSteps, opt => opt.MapFrom(src => src.TempTerraformationSteps))
@@ -202,6 +202,18 @@ namespace GaiaProject.Endpoint.Mapping
 				.ForMember(dst => dst.GameLogs, opt => opt.MapFrom(src => MapLogs(src)))
 				.ForMember(dst => dst.AuctionState, opt => opt.MapFrom(src => src.Setup != null ? src.Setup.AuctionState : null))
 				;
+
+			#region Users
+
+			CreateMap<User, UserViewModel>();
+			CreateMap<Notification, NotificationViewModel>()
+				.ForMember(dst => dst.Type, opt => opt.Ignore())
+				;
+			CreateMap<GameNotification, GameNotificationViewModel>()
+				.IncludeBase<Notification, NotificationViewModel>()
+				;
+
+			#endregion
 		}
 
 		private int GetRows(Map map)
@@ -299,8 +311,8 @@ namespace GaiaProject.Endpoint.Mapping
 
 		private string GetBuildingsFederation(Building building, ResolutionContext ctx)
 		{
-			var game = ctx.Items["Game"] as GaiaProjectGame;
-			var hex = ctx.Items["Hex"] as Hex;
+			var game = (GaiaProjectGame)ctx.Items["Game"];
+			var hex = (Hex)ctx.Items["Hex"];
 			var playerId = building.PlayerId;
 			var player = game.GetPlayer(playerId);
 			var hexFederation = player.State.Federations.SingleOrDefault(fed => fed.HexIds.Contains(hex.Id));

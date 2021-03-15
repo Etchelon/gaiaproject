@@ -1,6 +1,6 @@
 ﻿using MongoDbGenericRepository.Models;
 
-namespace ScoreSheets.Common.Database.Abstractions
+namespace GaiaProject.Common.Database.Abstractions
 {
 	public interface IMongoEntity : IDocument<string>
 	{

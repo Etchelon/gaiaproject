@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
-using ScoreSheets.Common.Exceptions;
+using GaiaProject.Common.Exceptions;
 
-namespace ScoreSheets.Common.Reflection
+namespace GaiaProject.Common.Reflection
 {
 	public class AssemblyManager
 	{

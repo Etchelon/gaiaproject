@@ -3,7 +3,7 @@ using System.Reflection;
 using MongoDB.Driver;
 using MongoDbGenericRepository.Attributes;
 
-namespace ScoreSheets.Common.Database.Extensions
+namespace GaiaProject.Common.Database.Extensions
 {
 	public static class MongoDatabaseExtensions
 	{

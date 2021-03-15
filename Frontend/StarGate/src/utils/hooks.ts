@@ -1,6 +1,7 @@
-import { RefObject, useEffect, useLayoutEffect, useState } from "react";
+import _ from "lodash";
+import { createRef, RefObject, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { UserInfoDto } from "../dto/interfaces";
-import { Nullable } from "./miscellanea";
+import { Nullable, UniversalFn } from "./miscellanea";
 import userInfoService from "./user-info.service";
 
 export interface ElementSize {
@@ -90,4 +91,87 @@ export function useCurrentUser(): Nullable<UserInfoDto> {
 		};
 	}, []);
 	return currentUser;
+}
+
+export interface ScrollableNode {
+	clientHeight: number;
+	addEventListener(eventName: string, handlerFn: (...args: any[]) => any): void;
+	removeEventListener(eventName: string, handlerFn: (...args: any[]) => any): void;
+}
+
+/**
+ * Check if an element is in viewport
+ * @param offset - Number of pixels up to the observable element from the top
+ * @param throttleMilliseconds - Throttle observable listener, in ms
+ */
+export function useVisibility<Element extends HTMLElement>(
+	parentScrollable: Nullable<ScrollableNode | (Window & typeof globalThis)>,
+	offset = 0,
+	throttleMilliseconds = 100
+): [boolean, RefObject<Element>] {
+	const [isVisible, setIsVisible] = useState(false);
+	const currentElement = createRef<Element>();
+
+	const onScroll = _.throttle(() => {
+		if (!currentElement.current) {
+			setIsVisible(false);
+			return;
+		}
+		const scrollableHeight = parentScrollable === window ? window.innerHeight : (parentScrollable as ScrollableNode)?.clientHeight;
+		const top = currentElement.current.getBoundingClientRect().top;
+		const inViewport = top + offset >= 0 && top - offset <= scrollableHeight;
+		setIsVisible(inViewport);
+	}, throttleMilliseconds);
+
+	useEffect(() => {
+		if (parentScrollable === null) {
+			return;
+		}
+		parentScrollable.addEventListener("scroll", onScroll);
+		return () => parentScrollable.removeEventListener("scroll", onScroll);
+	});
+
+	useEffect(() => {
+		if (parentScrollable === null) {
+			return;
+		}
+		onScroll();
+	}, [parentScrollable]);
+
+	return [isVisible, currentElement];
+}
+
+export function usePageActivation(onActive: UniversalFn, onInactive: UniversalFn, deps: any[] = []) {
+	const handleTabActivationChange = useCallback((isActive: boolean) => {
+		if (isActive) {
+			onActive();
+		} else {
+			onInactive();
+		}
+	}, []);
+
+	useEffect(() => {
+		// Hp: the call to this hook is initially done when the page is active
+		handleTabActivationChange(true);
+
+		const onVisibilityChange = () => {
+			const isVisible = document.visibilityState === "visible";
+			handleTabActivationChange(isVisible);
+		};
+		document.addEventListener("visibilitychange", onVisibilityChange);
+		const onPageShow = () => {
+			handleTabActivationChange(true);
+		};
+		window.addEventListener("pageshow", onPageShow);
+		const onPageHide = () => {
+			handleTabActivationChange(false);
+		};
+		window.addEventListener("pagehide", onPageHide);
+
+		return () => {
+			document.removeEventListener("visibilitychange", onVisibilityChange);
+			window.removeEventListener("pageshow", onPageShow);
+			window.removeEventListener("pagehide", onPageHide);
+		};
+	}, deps);
 }

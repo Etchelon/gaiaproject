@@ -13,11 +13,11 @@ using GaiaProject.Engine.Model.Rounds;
 
 namespace Engine.Test.Logic.ActionHandlers
 {
-	public class TestDataProvider : IProvideData
+	public class TestGameDataProvider : IProvideGameData
 	{
 		private readonly List<GaiaProjectGame> _games = new List<GaiaProjectGame>();
 
-		public TestDataProvider()
+		public TestGameDataProvider()
 		{
 			InitializeData();
 		}
@@ -105,52 +105,12 @@ namespace Engine.Test.Logic.ActionHandlers
 			throw new NotImplementedException();
 		}
 
-		public Task<User> GetUser(string id)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<User> GetUserByUsername(string username)
-		{
-			throw new NotImplementedException();
-		}
-
 		public Task<GaiaProjectGame[]> GetUserGames(string userId, bool onlyActive = true)
 		{
 			throw new NotImplementedException();
 		}
 
 		public Task SaveGame(GaiaProjectGame game)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<User> GetUserByIdentifier(string identifier)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<string> GetUsername(string userId)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<User[]> GetUsers(Expression<Func<User, bool>> predicate)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<User[]> GetAllUsers()
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<string> CreateUser(User user)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task UpdateUser(User user)
 		{
 			throw new NotImplementedException();
 		}

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ScoreSheets.Common.Attributes
+namespace GaiaProject.Common.Attributes
 {
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum)]
 	public class TsCompilableAttribute : Attribute

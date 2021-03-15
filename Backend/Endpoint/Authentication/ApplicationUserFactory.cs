@@ -1,8 +1,8 @@
-﻿using GaiaProject.Engine.Logic;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GaiaProject.Core.Logic;
 
 namespace GaiaProject.Endpoint.Authentication
 {

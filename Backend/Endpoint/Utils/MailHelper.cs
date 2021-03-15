@@ -1,6 +1,6 @@
 using System.Linq;
+using GaiaProject.Core.Model;
 using GaiaProject.Engine.Logic.Utils;
-using GaiaProject.Engine.Model.Players;
 using GaiaProject.ViewModels;
 using SendGrid;
 using SendGrid.Helpers.Mail;

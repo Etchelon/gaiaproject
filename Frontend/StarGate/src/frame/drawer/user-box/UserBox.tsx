@@ -14,7 +14,7 @@ import { UserInfoDto } from "../../../dto/interfaces";
 import ListItemLink from "../../../utils/ListItemLink";
 import { Nullable } from "../../../utils/miscellanea";
 import AuthButton from "../../AuthButton";
-import { selectIsDrawerOpen, setDrawerState } from "../../store/user-preferences.slice";
+import { selectIsDrawerOpen, setDrawerState } from "../../store/active-user.slice";
 
 const useStyles = makeStyles(() => {
 	return createStyles({

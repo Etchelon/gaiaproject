@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using GaiaProject.Common;
+using GaiaProject.Common.Extensions;
+using GaiaProject.Common.Reflection;
+using GaiaProject.Core.Logic;
 using GaiaProject.Engine.Commands;
 using GaiaProject.Engine.DataAccess.Abstractions;
 using GaiaProject.Engine.Enums;
@@ -18,46 +22,47 @@ using GaiaProject.Engine.Model.Actions;
 using GaiaProject.Engine.Model.Board;
 using GaiaProject.Engine.Model.Decisions;
 using GaiaProject.Engine.Model.Players;
-using ScoreSheets.Common.Reflection;
 
 namespace GaiaProject.Engine.Logic
 {
 	public class GameManager
 	{
-		private readonly IProvideData _dataProvider;
+		private readonly IProvideGameData _gameDataProvider;
+		private readonly UserManager _userManager;
 
-		public GameManager(IProvideData dataProvider)
+		public GameManager(IProvideGameData gameDataProvider, UserManager userManager)
 		{
-			_dataProvider = dataProvider;
+			_gameDataProvider = gameDataProvider;
+			_userManager = userManager;
 		}
 
 		public async Task<GaiaProjectGame[]> GetUserGames(string userId)
 		{
-			var games = await _dataProvider.GetUserGames(userId, true);
+			var games = await _gameDataProvider.GetUserGames(userId, true);
 			return games;
 		}
 
 		public async Task<GaiaProjectGame[]> GetUserFinishedGames(string userId)
 		{
-			var games = await _dataProvider.GetUserGames(userId, false);
+			var games = await _gameDataProvider.GetUserGames(userId, false);
 			return games.Where(g => g.Ended.HasValue).ToArray();
 		}
 
 		public async Task<GaiaProjectGame> GetGame(string id)
 		{
-			var game = await _dataProvider.GetGame(id);
+			var game = await _gameDataProvider.GetGame(id);
 			return game;
 		}
 
 		public async Task<GaiaProjectGame> GetGameAtAction(string id, int actionId, bool persist = false)
 		{
-			var currentState = await _dataProvider.GetGame(id);
+			var currentState = await _gameDataProvider.GetGame(id);
 			if (currentState.Ended.HasValue)
 			{
 				throw new Exception("You can only backtrack active games");
 			}
 
-			var initialState = await _dataProvider.GetInitialGameState(id);
+			var initialState = await _gameDataProvider.GetInitialGameState(id);
 			var ret = new GaiaProjectGame
 			{
 				Id = currentState.Id,
@@ -92,7 +97,7 @@ namespace GaiaProject.Engine.Logic
 
 			if (persist)
 			{
-				await _dataProvider.SaveGame(ret);
+				await _gameDataProvider.SaveGame(ret);
 			}
 			return ret;
 		}
@@ -133,15 +138,15 @@ namespace GaiaProject.Engine.Logic
 				throw new Exception($"Could not create a new game. Error: {errorMessage}");
 			}
 
-			int index = 0;
-			var creator = await _dataProvider.GetUser(createdBy);
+			var index = 0;
+			var creatorUsername = await _userManager.GetUsername(createdBy);
 			var players = new List<PlayerInGame>
 			{
 				new PlayerInGame
 				{
 					Id = createdBy,
 					IsWinner = false,
-					Username = creator.Username,
+					Username = creatorUsername,
 					InitialOrder = ++index,
 					Actions = new ActionState(),
 					State = null
@@ -149,12 +154,12 @@ namespace GaiaProject.Engine.Logic
 			};
 			foreach (var id in command.PlayerIds)
 			{
-				var p = await _dataProvider.GetUser(id);
+				var username = await _userManager.GetUsername(id);
 				var playerInGame = new PlayerInGame
 				{
 					Id = id,
 					IsWinner = false,
-					Username = p.Username,
+					Username = username,
 					InitialOrder = ++index,
 					Actions = new ActionState(),
 					State = null
@@ -197,7 +202,7 @@ namespace GaiaProject.Engine.Logic
 				}
 				player.State = Factory.InitialPlayerState(player.RaceId.Value, ++i);
 			}
-			await _dataProvider.CreateGame(newGame);
+			await _gameDataProvider.CreateGame(newGame);
 			return newGame;
 		}
 
@@ -225,7 +230,7 @@ namespace GaiaProject.Engine.Logic
 			try
 			{
 				var newState = HandleAction(game, action);
-				await _dataProvider.SaveGame(newState);
+				await _gameDataProvider.SaveGame(newState);
 				return HandleActionResult.Ok(newState);
 			}
 			catch (InvalidActionException ex)

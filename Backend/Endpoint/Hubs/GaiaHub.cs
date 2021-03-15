@@ -21,14 +21,14 @@ namespace GaiaProject.Endpoint.Hubs
 		private readonly IMapper _mapper;
 		private readonly ActiveGamesRegistry _activeGamesRegistry;
 		private readonly ActiveUsersRegistry _activeUsersRegistry;
-		private readonly CachedMongoDataProvider _cachedMongoDataProvider;
+		private readonly CachedMongoGameDataProvider _cachedMongoGameDataProvider;
 
-		public GaiaHub(IMapper mapper, ActiveGamesRegistry activeGamesRegistry, ActiveUsersRegistry activeUsersRegistry, CachedMongoDataProvider cachedMongoDataProvider)
+		public GaiaHub(IMapper mapper, ActiveGamesRegistry activeGamesRegistry, ActiveUsersRegistry activeUsersRegistry, CachedMongoGameDataProvider cachedMongoGameDataProvider)
 		{
 			_mapper = mapper;
 			_activeGamesRegistry = activeGamesRegistry;
 			_activeUsersRegistry = activeUsersRegistry;
-			_cachedMongoDataProvider = cachedMongoDataProvider;
+			_cachedMongoGameDataProvider = cachedMongoGameDataProvider;
 		}
 
 		public override Task OnConnectedAsync()
@@ -89,7 +89,7 @@ namespace GaiaProject.Endpoint.Hubs
 			{
 				return;
 			}
-			_cachedMongoDataProvider.FlushGame(gameId);
+			_cachedMongoGameDataProvider.FlushGame(gameId);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GaiaProject.Core.Logic;
 using GaiaProject.ViewModels.Users;
 using GaiaProject.Engine.DataAccess.Abstractions;
 
@@ -6,16 +7,16 @@ namespace GaiaProject.Endpoint.Mapping.Resolvers
 {
 	public class UserResolver : IMemberValueResolver<object, object, string, UserViewModel>
 	{
-		private readonly IProvideData _dataProvider;
+		private readonly UserManager _userManager;
 
-		public UserResolver(IProvideData dataProvider)
+		public UserResolver(UserManager userManager)
 		{
-			_dataProvider = dataProvider;
+			_userManager = userManager;
 		}
 
 		public UserViewModel Resolve(object source, object destination, string userId, UserViewModel destMember, ResolutionContext context)
 		{
-			var user = _dataProvider.GetUser(userId).Result;
+			var user = _userManager.GetUser(userId).Result;
 			return context.Mapper.Map<UserViewModel>(user);
 		}
 	}

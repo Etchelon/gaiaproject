@@ -11,23 +11,23 @@ using Xunit.Abstractions;
 
 namespace Engine.Test.Logic.ActionHandlers.Rounds
 {
-	public class BuildMineActionHandlerTests : IClassFixture<TestDataProvider>
+	public class BuildMineActionHandlerTests : IClassFixture<TestGameDataProvider>
 	{
 		private readonly ITestOutputHelper testOutputHelper;
-		private readonly IProvideData dataProvider;
+		private readonly IProvideGameData _gameDataProvider;
 		private readonly ColonizePlanetActionHandler handler = new ColonizePlanetActionHandler();
 		private readonly ActionEffectsApplier effectsApplier = new ActionEffectsApplier();
 
-		public BuildMineActionHandlerTests(ITestOutputHelper testOutputHelper, TestDataProvider dataProvider)
+		public BuildMineActionHandlerTests(ITestOutputHelper testOutputHelper, TestGameDataProvider gameDataProvider)
 		{
 			this.testOutputHelper = testOutputHelper;
-			this.dataProvider = dataProvider;
+			this._gameDataProvider = gameDataProvider;
 		}
 
 		// [Fact]
 		public async Task ShouldBuildMineAndNotGivePower()
 		{
-			var game = await dataProvider.GetGame("ROUNDS_GAME");
+			var game = await _gameDataProvider.GetGame("ROUNDS_GAME");
 			// Test that Ambas build on an adjacent desert planet
 			var targetHex = game.BoardState.Map.Hexes.First(h => h.SectorId == "1" && h.PlanetType == PlanetType.Desert);
 			var player = game.Players.First(p => p.RaceId == Race.Ambas);
@@ -68,7 +68,7 @@ namespace Engine.Test.Logic.ActionHandlers.Rounds
 		[Fact]
 		public async Task ShouldBeOutOfRange()
 		{
-			var game = await dataProvider.GetGame("ROUNDS_GAME");
+			var game = await _gameDataProvider.GetGame("ROUNDS_GAME");
 			// Test that Ambas build on an adjacent desert planet
 			var targetHex = game.BoardState.Map.Hexes.First(h => h.SectorId == "1" && h.PlanetType == PlanetType.Oxide);
 			var player = game.Players.First(p => p.RaceId == Race.Ambas);

@@ -13,7 +13,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { Subscription } from "rxjs";
 import { GamePhase } from "../dto/enums";
 import { PlayerInGameDto } from "../dto/interfaces";
-import { ElementSize, useAssetUrl, useCurrentUser } from "../utils/hooks";
+import { ElementSize, useAssetUrl, useCurrentUser, usePageActivation } from "../utils/hooks";
 import { localizeEnum } from "../utils/localization";
 import { isMobileOrTablet, Nullable } from "../utils/miscellanea";
 import AuctionDialog from "./dialogs/auction/AuctionDialog";
@@ -169,37 +169,9 @@ const GamePage = () => {
 		if (status !== "success") {
 			return;
 		}
-
-		connectToHub();
-
-		// Setup hub management
-		const handleTabActivationChange = (isActive: boolean) => {
-			if (isActive) {
-				connectToHub();
-			} else {
-				isMobileOrTablet() && disconnectFromHub();
-			}
-		};
-		const onVisibilityChange = () => {
-			const isVisible = document.visibilityState === "visible";
-			handleTabActivationChange(isVisible);
-		};
-		document.addEventListener("visibilitychange", onVisibilityChange);
-		const onPageShow = () => {
-			handleTabActivationChange(true);
-		};
-		window.addEventListener("pageshow", onPageShow);
-		const onPageHide = () => {
-			handleTabActivationChange(false);
-		};
-		window.addEventListener("pagehide", onPageHide);
-
-		return () => {
-			document.removeEventListener("visibilitychange", onVisibilityChange);
-			window.removeEventListener("pageshow", onPageShow);
-			window.removeEventListener("pagehide", onPageHide);
-		};
 	}, [id, status]);
+
+	usePageActivation(connectToHub, () => isMobileOrTablet() && disconnectFromHub(), [id, status]);
 
 	//#endregion
 

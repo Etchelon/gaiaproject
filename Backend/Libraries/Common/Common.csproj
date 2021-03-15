@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
-		<RootNamespace>ScoreSheets.Common</RootNamespace>
-		<AssemblyName>ScoreSheets.Common</AssemblyName>
+		<RootNamespace>GaiaProject.Common</RootNamespace>
+		<AssemblyName>GaiaProject.Common</AssemblyName>
+		<LangVersion>9</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
