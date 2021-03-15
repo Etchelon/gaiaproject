@@ -3,6 +3,7 @@ WORKDIR /app
 
 COPY Backend/Endpoint/Endpoint.csproj Backend/Endpoint/
 COPY Backend/Libraries/Common/Common.csproj Backend/Libraries/Common/
+COPY Backend/Libraries/Core/Core.csproj Backend/Libraries/Core/
 COPY Backend/Libraries/Engine/Engine.csproj Backend/Libraries/Engine/
 COPY Backend/Libraries/MongoDbGenericRepository/MongoDbGenericRepository.csproj Backend/Libraries/MongoDbGenericRepository/
 COPY Backend/Libraries/ViewModels/ViewModels.csproj Backend/Libraries/ViewModels/
