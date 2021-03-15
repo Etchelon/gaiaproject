@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { createRef, RefObject, useEffect, useLayoutEffect, useState } from "react";
+import { createRef, RefObject, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { UserInfoDto } from "../dto/interfaces";
-import { Nullable } from "./miscellanea";
+import { Nullable, UniversalFn } from "./miscellanea";
 import userInfoService from "./user-info.service";
 
 export interface ElementSize {
@@ -104,7 +104,7 @@ export interface ScrollableNode {
  * @param offset - Number of pixels up to the observable element from the top
  * @param throttleMilliseconds - Throttle observable listener, in ms
  */
-export default function useVisibility<Element extends HTMLElement>(
+export function useVisibility<Element extends HTMLElement>(
 	parentScrollable: Nullable<ScrollableNode | (Window & typeof globalThis)>,
 	offset = 0,
 	throttleMilliseconds = 100
@@ -139,4 +139,39 @@ export default function useVisibility<Element extends HTMLElement>(
 	}, [parentScrollable]);
 
 	return [isVisible, currentElement];
+}
+
+export function usePageActivation(onActive: UniversalFn, onInactive: UniversalFn, deps: any[] = []) {
+	const handleTabActivationChange = useCallback((isActive: boolean) => {
+		if (isActive) {
+			onActive();
+		} else {
+			onInactive();
+		}
+	}, []);
+
+	useEffect(() => {
+		// Hp: the call to this hook is initially done when the page is active
+		handleTabActivationChange(true);
+
+		const onVisibilityChange = () => {
+			const isVisible = document.visibilityState === "visible";
+			handleTabActivationChange(isVisible);
+		};
+		document.addEventListener("visibilitychange", onVisibilityChange);
+		const onPageShow = () => {
+			handleTabActivationChange(true);
+		};
+		window.addEventListener("pageshow", onPageShow);
+		const onPageHide = () => {
+			handleTabActivationChange(false);
+		};
+		window.addEventListener("pagehide", onPageHide);
+
+		return () => {
+			document.removeEventListener("visibilitychange", onVisibilityChange);
+			window.removeEventListener("pageshow", onPageShow);
+			window.removeEventListener("pagehide", onPageHide);
+		};
+	}, deps);
 }

@@ -1,15 +1,17 @@
+import DoneAllIcon from "@material-ui/icons/DoneAll";
 import GamesIcon from "@material-ui/icons/Games";
 import _ from "lodash";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { GameNotificationDto } from "../../dto/interfaces";
-import useVisibility from "../../utils/hooks";
+import { useVisibility } from "../../utils/hooks";
 import ListItemLink from "../../utils/ListItemLink";
 import { prettyTimestamp } from "../../utils/miscellanea";
 import { setNotificationRead } from "../store/active-user.slice";
-import { NotificationProps } from "./GenericNotification";
+import { NotificationProps, useStyles } from "./GenericNotification";
 
-const GameNotification = ({ notification, parentScrollable, notificationClicked }: NotificationProps<GameNotificationDto>) => {
+const GameNotification = ({ notification, parentScrollable, bordered, notificationClicked }: NotificationProps<GameNotificationDto>) => {
+	const classes = useStyles();
 	const dispatch = useDispatch();
 	const [isVisible, currentRef] = useVisibility<HTMLDivElement>(parentScrollable, 0);
 	const isRead = notification.isRead;
@@ -20,18 +22,17 @@ const GameNotification = ({ notification, parentScrollable, notificationClicked 
 		if (isRead) {
 			return;
 		}
-		dispatch(setNotificationRead({ id: notification.id }));
+		_.delay(() => dispatch(setNotificationRead({ id: notification.id })), 3000);
 	}, [isRead, isVisible]);
 
 	return (
-		<div ref={currentRef} onClick={notificationClicked}>
-			<ListItemLink
-				key={notification.id}
-				to={`/game/${notification.gameId}`}
-				icon={<GamesIcon />}
-				primary={notification.text}
-				secondary={prettyTimestamp(notification.timestamp)}
-			/>
+		<div ref={currentRef} className={classes.root + (bordered ? " bordered" : "")} onClick={notificationClicked}>
+			<ListItemLink to={`/game/${notification.gameId}`} icon={<GamesIcon />} primary={notification.text} secondary={prettyTimestamp(notification.timestamp)} />
+			{notification.isRead && (
+				<div className={classes.readMarker}>
+					<DoneAllIcon color="secondary" />
+				</div>
+			)}
 		</div>
 	);
 };

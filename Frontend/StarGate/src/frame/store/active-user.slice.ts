@@ -14,14 +14,20 @@ const initialState: ActiveUserState = {
 
 interface FetchNotificationsParams {
 	earlierThan: Date;
+	enqueue: boolean;
+}
+
+interface FetchNotificationsResult {
+	notifications: NotificationDto[];
+	enqueue: boolean;
 }
 
 export const countUnreadNotifications = createAsyncThunk("user/unread-notifications-count", async () => await httpClient.get<number>("api/Users/CountUnreadNotifications"));
 
-export const fetchNotifications = createAsyncThunk("user/notifications", async ({ earlierThan }: FetchNotificationsParams) => {
+export const fetchNotifications = createAsyncThunk("user/notifications", async ({ earlierThan, enqueue }: FetchNotificationsParams) => {
 	const isoEarlierThan = earlierThan.toISOString();
 	const notifications = (await httpClient.get<NotificationDto[]>(`api/Users/GetUserNotifications?earlierThan=${isoEarlierThan}`)) ?? [];
-	return notifications;
+	return { notifications, enqueue };
 });
 
 interface SetNotificationReadParams {
@@ -51,9 +57,10 @@ const activeUserSlice = createSlice({
 		[fetchNotifications.pending.type]: state => {
 			state.notificationsState = "loading";
 		},
-		[fetchNotifications.fulfilled.type]: (state, action: PayloadAction<NotificationDto[]>) => {
+		[fetchNotifications.fulfilled.type]: (state, action: PayloadAction<FetchNotificationsResult>) => {
+			const { notifications, enqueue } = action.payload;
 			state.notificationsState = "success";
-			state.notifications = action.payload;
+			state.notifications = enqueue ? [...state.notifications, ...notifications] : notifications;
 		},
 		[fetchNotifications.rejected.type]: state => {
 			state.notificationsState = "failure";

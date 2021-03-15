@@ -142,3 +142,5 @@ export function prettyTimestamp(isoDate: string): string {
 	const now = Date.now();
 	return formatDistance(date, now, { addSuffix: true });
 }
+
+export type UniversalFn = (...args: any[]) => any;
