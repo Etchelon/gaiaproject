@@ -12,6 +12,9 @@ const useStyles = makeStyles((theme: Theme) =>
 			marginBottom: theme.spacing(1),
 			cursor: "pointer",
 		},
+		noUnreadNotifications: {
+			padding: theme.spacing(2),
+		},
 	})
 );
 

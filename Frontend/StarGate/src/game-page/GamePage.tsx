@@ -4,6 +4,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import FormatAlignCenterIcon from "@material-ui/icons/FormatAlignCenter";
 import MapIcon from "@material-ui/icons/Map";
+import SettingsIcon from "@material-ui/icons/Settings";
 import StarIcon from "@material-ui/icons/Star";
 import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 import _ from "lodash";
@@ -16,6 +17,7 @@ import { PlayerInGameDto } from "../dto/interfaces";
 import { ElementSize, useAssetUrl, useCurrentUser, usePageActivation } from "../utils/hooks";
 import { localizeEnum } from "../utils/localization";
 import { isMobileOrTablet, Nullable } from "../utils/miscellanea";
+import PlayerConfig from "./config/PlayerConfig";
 import AuctionDialog from "./dialogs/auction/AuctionDialog";
 import ConversionsDialog from "./dialogs/conversions/ConversionsDialog";
 import SelectRaceDialog from "./dialogs/select-race/SelectRaceDialog";
@@ -34,7 +36,6 @@ import StatusBar from "./status-bar/StatusBar";
 import {
 	clearStatus,
 	fetchActiveGame,
-	rollbackGameAtAction,
 	selectActiveGame,
 	selectActiveGameStatus,
 	selectActiveView,
@@ -48,6 +49,7 @@ import {
 	setWaitingForAction,
 	unloadActiveGame,
 } from "./store/active-game.slice";
+import { rollbackGameAtAction } from "./store/actions-thunks";
 import { WorkflowContext } from "./WorkflowContext";
 import { ActionWorkflow } from "./workflows/action-workflow.base";
 import { ActiveView } from "./workflows/types";
@@ -323,6 +325,7 @@ const GamePage = () => {
 								/>
 							)}
 							{activeView === ActiveView.PlayerAreas && <PlayerAreas players={players} />}
+							{activeView === ActiveView.NotesAndSettings && <PlayerConfig gameId={game.id} />}
 							{!useMobileLayout && !_.isNil(hoveredPlayer) && (
 								<div
 									className={classes.hoveredPlayerArea}
@@ -360,6 +363,7 @@ const GamePage = () => {
 								icon={useMobileLayout ? <SupervisedUserCircleIcon /> : ""}
 								value={ActiveView.PlayerAreas}
 							/>
+							<Tab className="gaia-font" label={useMobileLayout ? "" : "Notes"} icon={useMobileLayout ? <SettingsIcon /> : ""} value={ActiveView.NotesAndSettings} />
 							{useMobileLayout && <Tab className="gaia-font" label="" icon={<AccountBoxIcon />} value={ActiveView.MobilePlayerBoxes} />}
 						</Tabs>
 					</Grid>

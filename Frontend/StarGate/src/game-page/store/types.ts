@@ -20,4 +20,12 @@ export interface ActiveGameSliceState {
 		connectedToGameId: Nullable<string>;
 		onlineUsers: string[];
 	};
+
+	//#region Player Notes
+	playerNotes: Nullable<string>;
+	saveNotesProgress: LoadingStatus;
+	//#endregion
+
+	// TODO: game settings (like board and buildings style, autocharging, maybe premoves one day...)
+	playerSettings?: any;
 }

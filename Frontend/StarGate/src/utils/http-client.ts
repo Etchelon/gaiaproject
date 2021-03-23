@@ -42,7 +42,8 @@ class HttpClient {
 		const response = await fetch(`${this.baseUrl}/${url}`, options);
 		switch (response.status) {
 			case OK:
-				return readAsString ? await response.text() : await response.json();
+				var ret = readAsString ? await response.text() : await response.json();
+				return ret;
 			case NO_CONTENT:
 				return null;
 			case UNAUTHENTICATED:
