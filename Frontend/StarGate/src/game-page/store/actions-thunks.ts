@@ -33,7 +33,6 @@ export const rollbackGameAtAction = createAsyncThunk("activeGame/rollbackGameAtA
 //#region Selectors
 
 export const selectIsExecutingAction = (state: AppStore) => state.activeGame.actionProgress === "loading";
-export const selectHasExecutedAction = (state: AppStore) => state.activeGame.actionProgress === "success";
 export const selectRollbackProgress = (state: AppStore) => state.activeGame.rollbackProgress;
 
 //#endregion

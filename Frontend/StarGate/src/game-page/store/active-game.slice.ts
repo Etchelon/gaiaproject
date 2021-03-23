@@ -144,9 +144,9 @@ const activeGameSlice = createSlice({
 		[executePlayerAction.pending.type]: state => {
 			state.actionProgress = "loading";
 		},
-		[executePlayerAction.fulfilled.type]: state => {
-			state.actionProgress = "success";
-		},
+		// [executePlayerAction.fulfilled.type]: state => {
+		// 	state.actionProgress = "success";
+		// },
 		[executePlayerAction.rejected.type]: (state, action: PayloadAction<string>) => {
 			state.actionProgress = "idle";
 			state.statusMessage = action.payload;
