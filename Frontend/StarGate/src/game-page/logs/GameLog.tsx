@@ -19,7 +19,7 @@ import { GameLogDto, GameSubLogDto } from "../../dto/interfaces";
 import ButtonWithProgress from "../../utils/ButtonWithProgress";
 import { useAssetUrl } from "../../utils/hooks";
 import { getRaceColor, getRaceImage } from "../../utils/race-utils";
-import { selectRollbackProgress } from "../store/active-game.slice";
+import { selectRollbackProgress } from "../store/actions-thunks";
 import styles from "./GameLog.module.scss";
 
 interface SystemLogProps {

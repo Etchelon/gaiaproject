@@ -9,7 +9,7 @@ import { BrainstoneLocation, Conversion, Race } from "../../../dto/enums";
 import { PlayerInGameDto, PlayerStateDto } from "../../../dto/interfaces";
 import styles from "../../game-board/player-box/PlayerBox.module.scss";
 import ResourceToken from "../../game-board/ResourceToken";
-import { executePlayerAction } from "../../store/active-game.slice";
+import { executePlayerAction } from "../../store/actions-thunks";
 import { useWorkflow } from "../../WorkflowContext";
 import { CommonWorkflowStates } from "../../workflows/types";
 import ClickableRectangle from "../ClickableRectangle";

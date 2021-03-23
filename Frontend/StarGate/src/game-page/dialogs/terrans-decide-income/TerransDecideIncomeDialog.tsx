@@ -9,7 +9,7 @@ import { Conversion } from "../../../dto/enums";
 import { PlayerInGameDto, ResourcesDto } from "../../../dto/interfaces";
 import styles from "../../game-board/player-box/PlayerBox.module.scss";
 import ResourceToken from "../../game-board/ResourceToken";
-import { executePlayerAction } from "../../store/active-game.slice";
+import { executePlayerAction } from "../../store/actions-thunks";
 import { useWorkflow } from "../../WorkflowContext";
 import { TerransDecideIncomeWorkflow } from "../../workflows/rounds-phase/terrans-decide-income.workflow";
 import { CommonWorkflowStates } from "../../workflows/types";

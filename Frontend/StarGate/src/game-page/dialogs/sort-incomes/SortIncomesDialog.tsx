@@ -9,7 +9,7 @@ import { PlayerInGameDto, PlayerStateDto, SortableIncomeDto } from "../../../dto
 import { Nullable } from "../../../utils/miscellanea";
 import styles from "../../game-board/player-box/PlayerBox.module.scss";
 import ResourceToken from "../../game-board/ResourceToken";
-import { executePlayerAction } from "../../store/active-game.slice";
+import { executePlayerAction } from "../../store/actions-thunks";
 import { useWorkflow } from "../../WorkflowContext";
 import { SortIncomesWorkflow } from "../../workflows/rounds-phase/sort-incomes.workflow";
 import { CommonWorkflowStates } from "../../workflows/types";

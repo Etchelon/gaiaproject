@@ -116,6 +116,11 @@ const Notifications = () => {
 								);
 						}
 					})}
+					{_.isEmpty(userNotifications) && (
+						<Typography variant="h6" className={classes.noUnreadNotifications}>
+							Nothing to read!
+						</Typography>
+					)}
 					{!isLoadingNotifications && !_.isEmpty(userNotifications) && (
 						<div className={classes.loadMoreNotifications} onClick={loadMoreNotifications}>
 							<Typography variant="caption" className="gaia-font">

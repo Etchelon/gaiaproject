@@ -8,7 +8,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AvailableActionDto, GameStateDto } from "../../dto/interfaces";
 import { centeredFlexRow, fillParent } from "../../utils/miscellanea";
-import { executePlayerAction, selectAvailableActions, selectAvailableCommands, selectIsExecutingAction, selectStatusMessage } from "../store/active-game.slice";
+import { selectAvailableActions, selectAvailableCommands, selectStatusMessage } from "../store/active-game.slice";
+import { executePlayerAction, selectIsExecutingAction } from "../store/actions-thunks";
 import { useWorkflow } from "../WorkflowContext";
 import { Command } from "../workflows/types";
 import { fromAction } from "../workflows/utils";
@@ -86,6 +87,8 @@ const StatusBar = ({ game, playerId }: StatusBarProps) => {
 	const commands = useSelector(selectAvailableCommands);
 	const availableActions = useSelector(selectAvailableActions);
 	const isExecutingAction = useSelector(selectIsExecutingAction);
+	const isIdle = !isExecutingAction;
+	const statusBarMessage = isExecutingAction ? "Executing..." : statusMessage;
 	const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 	const { activeWorkflow, startWorkflow } = useWorkflow();
 	const isActivePlayer = game.activePlayer?.id === playerId;
@@ -111,9 +114,9 @@ const StatusBar = ({ game, playerId }: StatusBarProps) => {
 	return (
 		<div className={classes.root}>
 			<Typography variant="body1" component="div">
-				<div className={classes.message + " gaia-font"}>{isExecutingAction ? "Executing..." : statusMessage}</div>
+				<div className={classes.message + " gaia-font"}>{statusBarMessage}</div>
 			</Typography>
-			{!isExecutingAction && (
+			{isIdle && (
 				<div className={classes.commands}>
 					{_.map(commands, cmd => (
 						<Button

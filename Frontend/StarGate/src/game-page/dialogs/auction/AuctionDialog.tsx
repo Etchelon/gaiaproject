@@ -7,7 +7,7 @@ import { Race } from "../../../dto/enums";
 import { PlayerInGameDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";
 import { getRaceBoard, getRaceName } from "../../../utils/race-utils";
-import { executePlayerAction } from "../../store/active-game.slice";
+import { executePlayerAction } from "../../store/actions-thunks";
 import { useWorkflow } from "../../WorkflowContext";
 import { BidForRaceWorkflow, CurrentAuction } from "../../workflows/setup-phase/bid-for-race.workflow";
 import { CommonWorkflowStates } from "../../workflows/types";

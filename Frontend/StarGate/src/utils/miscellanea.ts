@@ -35,9 +35,13 @@ export interface Point {
 	y: number;
 }
 
-export const centeredFlexRow = {
+export const flexRow = {
 	display: "flex",
 	alignItems: "center",
+};
+
+export const centeredFlexRow = {
+	...flexRow,
 	justifyContent: "center",
 };
 

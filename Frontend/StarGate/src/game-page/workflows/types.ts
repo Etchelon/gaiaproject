@@ -6,6 +6,7 @@ export enum ActiveView {
 	ResearchBoard,
 	ScoringBoard,
 	PlayerAreas,
+	NotesAndSettings,
 	MobilePlayerBoxes,
 	RaceSelectionDialog,
 	AuctionDialog,

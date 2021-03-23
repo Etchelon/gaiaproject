@@ -10,7 +10,7 @@ import { PlayerInGameDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";
 import { Nullable } from "../../../utils/miscellanea";
 import { getRaceBoard, getRaceColor, getRaceImage } from "../../../utils/race-utils";
-import { executePlayerAction } from "../../store/active-game.slice";
+import { executePlayerAction } from "../../store/actions-thunks";
 import { useWorkflow } from "../../WorkflowContext";
 import { SelectRaceWorkflow } from "../../workflows/setup-phase/select-race.workflow";
 import { CommonWorkflowStates } from "../../workflows/types";

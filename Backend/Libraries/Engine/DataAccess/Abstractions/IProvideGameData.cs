@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GaiaProject.Engine.Model;
-using GaiaProject.Engine.Model.Players;
 
 namespace GaiaProject.Engine.DataAccess.Abstractions
 {
-	public interface IProvideGameData
-	{
-		Task<GaiaProjectGame> GetGame(string id);
-		Task<InitialGaiaProjectGameState> GetInitialGameState(string gameId);
-		Task<GaiaProjectGame[]> GetUserGames(string userId, bool onlyActive = true);
-		Task<string> CreateGame(GaiaProjectGame game);
-		Task SaveGame(GaiaProjectGame game);
-	}
+    public interface IProvideGameData
+    {
+        Task<GaiaProjectGame> GetGame(string id);
+        Task<InitialGaiaProjectGameState> GetInitialGameState(string gameId);
+        Task<GaiaProjectGame[]> GetUserGames(string userId, bool onlyActive = true);
+        Task<string> CreateGame(GaiaProjectGame game);
+        Task SaveGame(GaiaProjectGame game);
+        Task<string> GetPlayerNotes(string playerId, string gameId);
+        Task SavePlayerNotes(string playerId, string gameId, string notes);
+    }
 }

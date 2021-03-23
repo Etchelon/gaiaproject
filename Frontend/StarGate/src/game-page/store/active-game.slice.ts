@@ -2,12 +2,14 @@ import { HubConnectionState } from "@microsoft/signalr";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { AdvancedTechnologyTileType, FederationTokenType, ResearchTrackType, RoundBoosterType, StandardTechnologyTileType } from "../../dto/enums";
-import { ActionDto, AvailableActionDto, GameStateDto } from "../../dto/interfaces";
+import { AvailableActionDto, GameStateDto } from "../../dto/interfaces";
 import { AppStore } from "../../store/types";
 import httpClient from "../../utils/http-client";
-import { Identifier, isLastRound, Nullable } from "../../utils/miscellanea";
+import { Identifier, isLastRound } from "../../utils/miscellanea";
 import { InteractiveElementState, InteractiveElementType } from "../workflows/enums";
 import { ActiveView, WorkflowState } from "../workflows/types";
+import { executePlayerAction, rollbackGameAtAction } from "./actions-thunks";
+import { fetchNotes, saveNotes } from "./notes-thunks";
 import { ActiveGameSliceState } from "./types";
 
 const initialState: ActiveGameSliceState = {
@@ -26,6 +28,8 @@ const initialState: ActiveGameSliceState = {
 		connectedToGameId: null,
 		onlineUsers: [],
 	},
+	playerNotes: null,
+	saveNotesProgress: "idle",
 };
 
 export const fetchActiveGame = createAsyncThunk("activeGame/fetch", async (id: string, { rejectWithValue }) => {
@@ -34,32 +38,6 @@ export const fetchActiveGame = createAsyncThunk("activeGame/fetch", async (id: s
 		return rejectWithValue("Not found!!");
 	}
 	return gameState;
-});
-
-interface ExecuteActionPayload {
-	gameId: string;
-	action: ActionDto;
-}
-
-interface ExecuteActionResult {
-	handled: boolean;
-	errorMessage: Nullable<string>;
-}
-
-export const executePlayerAction = createAsyncThunk("activeGame/executePlayerAction", async ({ gameId, action }: ExecuteActionPayload, { rejectWithValue }) => {
-	const result = await httpClient.post<ExecuteActionResult>(`api/GaiaProject/Action/${gameId}`, action);
-	if (!result?.handled) {
-		return rejectWithValue(result?.errorMessage);
-	}
-});
-
-interface RollbackGameAtActionPayload {
-	gameId: string;
-	actionId: number;
-}
-
-export const rollbackGameAtAction = createAsyncThunk("activeGame/rollbackGameAtAction", async ({ gameId, actionId }: RollbackGameAtActionPayload) => {
-	await httpClient.get(`api/GaiaProject/RollbackGameAtAction/${gameId}?actionId=${actionId}`);
 });
 
 const activeGameSlice = createSlice({
@@ -147,6 +125,9 @@ const activeGameSlice = createSlice({
 			const userIds = action.payload;
 			state.hubState.onlineUsers = userIds;
 		},
+		saveNotesFeedbackDisplayed: state => {
+			state.saveNotesProgress = "idle";
+		},
 	},
 	extraReducers: {
 		[fetchActiveGame.pending.type]: state => {
@@ -163,12 +144,10 @@ const activeGameSlice = createSlice({
 		[executePlayerAction.pending.type]: state => {
 			state.actionProgress = "loading";
 		},
-		// Omit to set the actionProgress to idle upon success: the async state change from SignalR might take a while
-		// and the StatusBar would be in an inconsistent state until then. Better leave it "loading"
-		/* [executePlayerAction.fulfilled.type]: state => {
-			state.actionProgress = "idle";
-		},*/
-		[executePlayerAction.rejected.type]: (state, action: any) => {
+		// [executePlayerAction.fulfilled.type]: state => {
+		// 	state.actionProgress = "success";
+		// },
+		[executePlayerAction.rejected.type]: (state, action: PayloadAction<string>) => {
 			state.actionProgress = "idle";
 			state.statusMessage = action.payload;
 		},
@@ -181,6 +160,19 @@ const activeGameSlice = createSlice({
 		[rollbackGameAtAction.rejected.type]: state => {
 			state.rollbackProgress = "failure";
 			state.statusMessage = "Rollback failed";
+		},
+		[fetchNotes.fulfilled.type]: (state, action: PayloadAction<string>) => {
+			state.playerNotes = action.payload ?? "";
+		},
+		[saveNotes.pending.type]: state => {
+			state.saveNotesProgress = "loading";
+		},
+		[saveNotes.fulfilled.type]: (state, action: PayloadAction<string>) => {
+			state.saveNotesProgress = "success";
+			state.playerNotes = action.payload;
+		},
+		[saveNotes.rejected.type]: state => {
+			state.saveNotesProgress = "failure";
 		},
 	},
 });
@@ -203,11 +195,13 @@ export const {
 	userJoined,
 	userLeft,
 	setOnlineUsers,
+	saveNotesFeedbackDisplayed,
 } = activeGameSlice.actions;
+
+//#region Selectors
 
 export const selectActiveGame = (state: AppStore) => state.activeGame.gameState;
 export const selectActiveGameStatus = (state: AppStore) => state.activeGame.status;
-export const selectRollbackProgress = (state: AppStore) => state.activeGame.rollbackProgress;
 export const selectActiveView = (state: AppStore) => state.activeGame.activeView;
 export const selectCurrentPlayer = (state: AppStore) => _.find(state.activeGame.gameState?.players, p => p.id === state.activeGame.currentUserId) ?? null;
 export const selectActivePlayer = (state: AppStore) => state.activeGame.gameState?.activePlayer;
@@ -287,7 +281,6 @@ export const selectAllRoundBoosters = (state: AppStore) => {
 	return [...playersBoosters, ...available];
 };
 export const selectStatusMessage = (state: AppStore) => state.activeGame.statusMessage;
-export const selectIsExecutingAction = (state: AppStore) => state.activeGame.actionProgress === "loading";
 export const selectAvailableCommands = (state: AppStore) => state.activeGame.availableCommands;
 export const selectAvailableActions = (state: AppStore) => state.activeGame.availableActions;
 
@@ -315,3 +308,5 @@ export const selectIsOnline = (playerId: string) => (state: AppStore) => {
 	const isCurrentPlayer = playerId === state.activeGame.currentUserId;
 	return isCurrentPlayer ? state.activeGame.hubState.connectionState === HubConnectionState.Connected : _.includes(state.activeGame.hubState.onlineUsers, playerId);
 };
+
+//#endregion
