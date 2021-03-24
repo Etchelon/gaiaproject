@@ -23,6 +23,9 @@ const useStyles = makeStyles(theme =>
 			"&:hover": {
 				zIndex: 2,
 			},
+			"&.zoomable:hover": {
+				zoom: 2,
+			},
 			"& > .click-trap": {
 				...fillParentAbs,
 				pointerEvents: "all",

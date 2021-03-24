@@ -86,26 +86,26 @@ const GamePage = () => {
 	const [activeViewDimensions, setActiveViewDimensions] = useState<Nullable<ElementSize>>(null);
 	const [activeWorkflow, setActiveWorkflow] = useState<Nullable<ActionWorkflow>>(null);
 	const [activeWorkflowSub, setActiveWorkflowSub] = useState<Nullable<Subscription>>(null);
-	const [hoveredPlayer, setHoveredPlayer] = useState<Nullable<PlayerInGameDto>>(null);
-	window.clearTimeout(closeHoverTimeout.value);
+	// const [hoveredPlayer, setHoveredPlayer] = useState<Nullable<PlayerInGameDto>>(null);
+	// window.clearTimeout(closeHoverTimeout.value);
 
-	const showPlayerArea = (player: PlayerInGameDto) => {
-		if (!_.isNil(hoveredPlayer)) {
-			return;
-		}
-		setHoveredPlayer(player);
-	};
+	// const showPlayerArea = (player: PlayerInGameDto) => {
+	// 	if (!_.isNil(hoveredPlayer)) {
+	// 		return;
+	// 	}
+	// 	setHoveredPlayer(player);
+	// };
 
-	const hidePlayerArea = () => {
-		setHoveredPlayer(null);
-	};
+	// const hidePlayerArea = () => {
+	// 	setHoveredPlayer(null);
+	// };
 
-	useEffect(() => {
-		document.addEventListener("keydown", hidePlayerArea, false);
-		return () => {
-			document.removeEventListener("keydown", hidePlayerArea);
-		};
-	}, []);
+	// useEffect(() => {
+	// 	document.addEventListener("keydown", hidePlayerArea, false);
+	// 	return () => {
+	// 		document.removeEventListener("keydown", hidePlayerArea);
+	// 	};
+	// }, []);
 
 	const showDialog = isDialogView(activeView);
 
@@ -285,7 +285,7 @@ const GamePage = () => {
 			{_.map(players, (p, index) => (
 				<div key={p.id} className={classes.playerBox}>
 					<PlayerBox player={p} index={index + 1} />
-					<div className="hoverTrap" onMouseEnter={() => showPlayerArea(p)} onMouseLeave={() => (closeHoverTimeout.value = window.setTimeout(hidePlayerArea, 250))}></div>
+					{/* <div className="hoverTrap" onMouseEnter={() => showPlayerArea(p)} onMouseLeave={() => (closeHoverTimeout.value = window.setTimeout(hidePlayerArea, 250))}></div> */}
 				</div>
 			))}
 			{_.map([...game.gameLogs].reverse(), (log, index) => (
@@ -326,7 +326,7 @@ const GamePage = () => {
 							)}
 							{activeView === ActiveView.PlayerAreas && <PlayerAreas players={players} />}
 							{activeView === ActiveView.NotesAndSettings && <PlayerConfig gameId={game.id} />}
-							{!useMobileLayout && !_.isNil(hoveredPlayer) && (
+							{/* {!useMobileLayout && !_.isNil(hoveredPlayer) && (
 								<div
 									className={classes.hoveredPlayerArea}
 									style={{
@@ -338,7 +338,7 @@ const GamePage = () => {
 								>
 									<PlayerArea player={hoveredPlayer} framed={true} />
 								</div>
-							)}
+							)} */}
 							{useMobileLayout && activeView === ActiveView.MobilePlayerBoxes && PlayerBoxesAndLogs}
 						</div>
 						<Tabs
