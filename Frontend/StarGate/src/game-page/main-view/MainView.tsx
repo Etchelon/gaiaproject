@@ -32,7 +32,7 @@ const MainView = ({ game, width, height, showMinimaps, minimapClicked }: MainVie
 						<ScoringTrack board={game.boardState.scoringBoard} />
 						<div className="click-trap" onClick={() => minimapClicked(ActiveView.ScoringBoard)}></div>
 					</div>
-					<div className={`${classes.miniMap} ${classes.researchBoard}`}>
+					<div className={`${classes.miniMap} zoomable ${classes.researchBoard}`}>
 						<ResearchBoard board={game.boardState.researchBoard} width={width * 0.3} height={height * 0.3} />
 						<div className="click-trap" onClick={() => minimapClicked(ActiveView.ResearchBoard)}></div>
 					</div>

@@ -82,7 +82,7 @@ namespace GaiaProject.Engine.Logic
                 .ToList();
             foreach (var action in actions)
             {
-                ret = HandleAction(ret, action);
+                ret = HandleAction(ret, action, false);
             }
 
             var nextAction = currentState.Actions.FirstOrDefault(a => a.Id == actionId + 1);
@@ -91,7 +91,7 @@ namespace GaiaProject.Engine.Logic
                 // Or if the next action is a conversion before passing the turn
                 (nextAction?.Type == ActionType.Conversions && currentState.Actions.FirstOrDefault(a => a.Id == actionId + 2)?.PlayerId != nextAction!.PlayerId))
             {
-                ret = HandleAction(ret, nextAction);
+                ret = HandleAction(ret, nextAction, false);
             }
 
             if (persist)
@@ -238,7 +238,7 @@ namespace GaiaProject.Engine.Logic
             }
         }
 
-        private GaiaProjectGame HandleAction(GaiaProjectGame game, PlayerAction action)
+        private GaiaProjectGame HandleAction(GaiaProjectGame game, PlayerAction action, bool doValidation = true)
         {
             // Generic validation
             if (game.ActivePlayerId != action.PlayerId)
@@ -257,7 +257,7 @@ namespace GaiaProject.Engine.Logic
 
             HydrateActionId(action, game);
             var handler = GetActionHandler(action);
-            var effectsApplier = new ActionEffectsApplier();
+            handler.ToggleActionValidation(doValidation);
             var effects = handler.Handle(game, action);
             // Itars pick tiles in GaiaDecisions subphase, and they must not decide whether to pass or convert
             if (game.CurrentPhaseId == GamePhase.Rounds && game.Rounds.SubPhase != RoundSubPhase.Actions)
@@ -265,6 +265,7 @@ namespace GaiaProject.Engine.Logic
                 effects.RemoveAll(eff =>
                     (eff as PendingDecisionEffect)?.Decision?.Type == PendingDecisionType.PerformConversionOrPassTurn);
             }
+            var effectsApplier = new ActionEffectsApplier();
             var newState = effectsApplier.ApplyActionEffects(action, game, effects);
             PerformUpkeep(newState);
             newState.Actions.Add(action);

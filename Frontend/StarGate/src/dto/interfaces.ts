@@ -393,6 +393,7 @@ export interface BuildingDto {
 	powerValue: number;
 	powerValueInFederation: number;
 	federationId: string;
+	showFederationMarker: boolean;
 }
 
 export interface HexDto {

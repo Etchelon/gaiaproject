@@ -1,6 +1,7 @@
 import Tooltip from "@material-ui/core/Tooltip";
 import _ from "lodash";
 import { useSelector } from "react-redux";
+import FederationMarker from "../../../assets/Resources/Markers/RecordToken.png";
 import GaiaMarker from "../../../assets/Resources/GaiaMarker.png";
 import IvitsSpaceStation from "../../../assets/Resources/Markers/SpaceStation.png";
 import { BuildingType, PlanetType, Race } from "../../../dto/enums";
@@ -57,6 +58,7 @@ const Hex = ({ hex, width }: HexProps) => {
 	const hasIvitsSpaceStation = !!hex.ivitsSpaceStation;
 	const building = hex.building;
 	const hasBuilding = !_.isNil(building);
+	const hasFederationMarker = hasBuilding && building.showFederationMarker;
 	const lantidsMine = hex.lantidsParasiteBuilding;
 	const hasLantidsMine = !_.isNil(lantidsMine);
 	const hasSatellites = !_.isEmpty(hex.satellites);
@@ -73,6 +75,7 @@ const Hex = ({ hex, width }: HexProps) => {
 			{hasBuilding && building.type !== BuildingType.LostPlanet && (
 				<div className={classes.building} style={{ width, height }}>
 					<Building raceId={building.raceId} type={building.type} onMap={true} />
+					{hasFederationMarker && <img className={classes.federationMarker} src={FederationMarker} alt="" />}
 				</div>
 			)}
 			{hasLantidsMine && (

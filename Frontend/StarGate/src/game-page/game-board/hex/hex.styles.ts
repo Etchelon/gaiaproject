@@ -70,6 +70,13 @@ const useStyles = makeStyles(() =>
 			position: "absolute",
 			zIndex: 1,
 		},
+		federationMarker: {
+			position: "absolute",
+			width: ({ width }: HexSizingProps) => width * 0.35,
+			height: ({ width }: HexSizingProps) => width * 0.35,
+			bottom: ({ height }: HexSizingProps) => (height * 0.3) / 2,
+			left: ({ width }: HexSizingProps) => (width * 0.3) / 2,
+		},
 		lantidsMine: {
 			position: "absolute",
 			top: ({ height }: HexSizingProps) => (height * 0.25) / 2,

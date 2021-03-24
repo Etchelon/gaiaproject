@@ -33,13 +33,13 @@ function getBuildingScale(type: BuildingType, onMap = false): number {
 		default:
 			return 0;
 		case BuildingType.PlanetaryInstitute:
-			return 1;
+			return onMap ? 0.9 : 1;
 		case BuildingType.AcademyLeft:
 		case BuildingType.AcademyRight:
-			return 0.9;
+			return onMap ? 0.75 : 0.9;
 		case BuildingType.ResearchLab:
 		case BuildingType.TradingStation:
-			return onMap ? 1.25 : 1.5;
+			return onMap ? 1.15 : 1.5;
 		case BuildingType.Gaiaformer:
 		case BuildingType.Mine:
 			return onMap ? 1.5 : 2;
