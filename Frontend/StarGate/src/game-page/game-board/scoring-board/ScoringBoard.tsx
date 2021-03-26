@@ -11,21 +11,22 @@ interface ScoringBoardProps {
 	board: ScoringTrackDto;
 	roundBoosters: RoundBoosterTileDto[];
 	federationTokens: FederationTokenStackDto[];
+	isMobile: boolean;
 }
 
-const ScoringBoard = (props: ScoringBoardProps) => {
-	const classes = useStyles();
+const ScoringBoard = ({ board, roundBoosters, federationTokens, isMobile }: ScoringBoardProps) => {
+	const classes = useStyles({ isMobile });
 
 	return (
 		<div className={classes.root}>
-			<Container maxWidth="lg">
-				<Grid container spacing={2}>
+			<Container maxWidth="lg" disableGutters={isMobile}>
+				<Grid container spacing={isMobile ? 0 : 2}>
 					<Grid item xs={12} md={6}>
-						<ScoringTrack board={props.board} />
+						<ScoringTrack board={board} />
 					</Grid>
 					<Grid item xs={12} md={6}>
 						<div className={classes.roundBoosters}>
-							{_.map(props.roundBoosters, booster => (
+							{_.map(roundBoosters, booster => (
 								<div key={booster.id} className="booster">
 									<RoundBooster booster={booster} withPlayerInfo={false} />
 								</div>
@@ -34,7 +35,7 @@ const ScoringBoard = (props: ScoringBoardProps) => {
 					</Grid>
 					<Grid item xs={12}>
 						<div className={classes.federationTokens}>
-							{_.map(props.federationTokens, stack => (
+							{_.map(federationTokens, stack => (
 								<div key={stack.type} className="stack">
 									<FederationTokenStack stack={stack} />
 								</div>

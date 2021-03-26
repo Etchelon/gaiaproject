@@ -7,14 +7,18 @@ import ResearchTrack from "../research-track/ResearchTrack";
 import TechnologyTileStack from "../TechnologyTileStack";
 import useStyles, { HEIGHT_TO_WIDTH_RATIO } from "./research-board.styles";
 
-interface ResearchBoardProps extends ElementSize {
+interface ResearchBoardProps {
 	board: ResearchBoardDto;
+	width: number;
+	height?: number;
 }
 
-function calculateDimensions(parentWidth: number, parentHeight: number): ElementSize {
-	const widthFromHeight = parentHeight / HEIGHT_TO_WIDTH_RATIO;
-	if (widthFromHeight <= parentWidth) {
-		return { width: widthFromHeight, height: parentHeight };
+function calculateDimensions(parentWidth: number, parentHeight?: number): ElementSize {
+	if (!_.isNil(parentHeight)) {
+		const widthFromHeight = parentHeight / HEIGHT_TO_WIDTH_RATIO;
+		if (widthFromHeight <= parentWidth) {
+			return { width: widthFromHeight, height: parentHeight };
+		}
 	}
 
 	const heightFromWidth = parentWidth * HEIGHT_TO_WIDTH_RATIO;
