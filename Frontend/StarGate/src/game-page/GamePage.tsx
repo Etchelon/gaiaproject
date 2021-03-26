@@ -357,14 +357,14 @@ const GamePage = () => {
 								value={ActiveView.ResearchBoard}
 							/>
 							<Tab className="gaia-font" label={useMobileLayout ? "" : "Scoring"} icon={useMobileLayout ? <StarIcon /> : ""} value={ActiveView.ScoringBoard} />
+							<Tab className="gaia-font" label={useMobileLayout ? "" : "Notes"} icon={useMobileLayout ? <SettingsIcon /> : ""} value={ActiveView.NotesAndSettings} />
+							{useMobileLayout && <Tab className="gaia-font" label="" icon={<AccountBoxIcon />} value={ActiveView.MobilePlayerBoxes} />}
 							<Tab
 								className="gaia-font"
 								label={useMobileLayout ? "" : "Players"}
 								icon={useMobileLayout ? <SupervisedUserCircleIcon /> : ""}
 								value={ActiveView.PlayerAreas}
 							/>
-							<Tab className="gaia-font" label={useMobileLayout ? "" : "Notes"} icon={useMobileLayout ? <SettingsIcon /> : ""} value={ActiveView.NotesAndSettings} />
-							{useMobileLayout && <Tab className="gaia-font" label="" icon={<AccountBoxIcon />} value={ActiveView.MobilePlayerBoxes} />}
 						</Tabs>
 					</Grid>
 					{!useMobileLayout && (
