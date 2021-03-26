@@ -7,16 +7,25 @@ const useStyles = makeStyles((theme: Theme) =>
 			...fillParent,
 			alignSelf: "flex-start",
 			overflow: "hidden auto",
+			[theme.breakpoints.down("sm")]: {
+				overflow: "visible",
+			},
 		},
 		roundBoosters: {
 			display: "flex",
 			flexWrap: "wrap",
 			alignItems: "flex-start",
 			...fillParent,
+			[theme.breakpoints.down("sm")]: {
+				marginTop: theme.spacing(1),
+			},
 			"& > .booster": {
 				width: `calc((100% - 4 * ${theme.spacing(2)}px) / 5)`,
 				maxWidth: "100px",
 				margin: theme.spacing(0, 2, 2, 0),
+				[theme.breakpoints.down("sm")]: {
+					margin: theme.spacing(0, 1, 1, 0),
+				},
 			},
 		},
 		federationTokens: {
@@ -30,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
 				maxWidth: 150,
 				margin: theme.spacing(0, 3, 3, 0),
 				[theme.breakpoints.down("sm")]: {
-					margin: theme.spacing(0, 2, 2, 0),
+					margin: theme.spacing(0, 1, 1, 0),
 				},
 			},
 		},

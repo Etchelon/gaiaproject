@@ -143,17 +143,14 @@ const calculateDimensionsFromWidth = smartMemoize((parentWidth: number, shape: M
 interface MapProps {
 	map: MapDto;
 	width: number;
-	height: number;
+	height?: number;
 }
 
-const Map = ({ map, height }: MapProps) => {
+const Map = ({ map, width, height }: MapProps) => {
 	const shape = map.shape;
 	// width = Math.max(width, 600);
-	// height = Math.max(height, 450);
-	const dimensions = calculateDimensionsFromHeight(height - 4, shape);
-	// if (dimensions.mapWidth > width) {
-	// 	dimensions = calculateDimensionsFromWidth(width, shape);
-	// }
+	height = _.isNil(height) ? 450 : Math.max(height, 450);
+	const dimensions = _.isNil(height) ? calculateDimensionsFromWidth(width, shape) : calculateDimensionsFromHeight(height - 4, shape);
 	const actualWidth = dimensions.mapWidth;
 	const actualHeight = dimensions.mapHeight;
 	const classes = useStyles({ mapWidth: actualWidth, mapHeight: actualHeight });

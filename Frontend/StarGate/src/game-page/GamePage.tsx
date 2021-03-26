@@ -1,37 +1,21 @@
-import { CircularProgress, Grid, Tab, Tabs, useMediaQuery } from "@material-ui/core";
+import { CircularProgress, useMediaQuery } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import FormatAlignCenterIcon from "@material-ui/icons/FormatAlignCenter";
-import MapIcon from "@material-ui/icons/Map";
-import SettingsIcon from "@material-ui/icons/Settings";
-import StarIcon from "@material-ui/icons/Star";
-import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 import _ from "lodash";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { Subscription } from "rxjs";
-import { GamePhase } from "../dto/enums";
-import { PlayerInGameDto } from "../dto/interfaces";
-import { ElementSize, useAssetUrl, useCurrentUser, usePageActivation } from "../utils/hooks";
+import { useAssetUrl, useCurrentUser, usePageActivation } from "../utils/hooks";
 import { localizeEnum } from "../utils/localization";
 import { isMobileOrTablet, Nullable } from "../utils/miscellanea";
-import PlayerConfig from "./config/PlayerConfig";
 import AuctionDialog from "./dialogs/auction/AuctionDialog";
 import ConversionsDialog from "./dialogs/conversions/ConversionsDialog";
 import SelectRaceDialog from "./dialogs/select-race/SelectRaceDialog";
 import SortIncomesDialog from "./dialogs/sort-incomes/SortIncomesDialog";
 import TerransDecideIncomeDialog from "./dialogs/terrans-decide-income/TerransDecideIncomeDialog";
-import PlayerArea from "./game-board/player-area/PlayerArea";
-import PlayerAreas from "./game-board/player-area/PlayerAreas";
-import PlayerBox from "./game-board/player-box/PlayerBox";
-import ResearchBoard from "./game-board/research-board/ResearchBoard";
-import ScoringBoard from "./game-board/scoring-board/ScoringBoard";
 import { useGamePageSignalRConnection } from "./game-page-signalr-hook";
 import useStyles from "./game-page.styles";
-import GameLog from "./logs/GameLog";
-import MainView from "./main-view/MainView";
 import StatusBar from "./status-bar/StatusBar";
 import {
 	clearStatus,
@@ -42,23 +26,29 @@ import {
 	selectAvailableActions,
 	selectCurrentPlayer,
 	selectPlayers,
-	setActiveView,
 	setCurrentUser,
 	setStatusFromWorkflow,
 	setStatusMessage,
 	setWaitingForAction,
 	unloadActiveGame,
 } from "./store/active-game.slice";
-import { rollbackGameAtAction } from "./store/actions-thunks";
 import { WorkflowContext } from "./WorkflowContext";
 import { ActionWorkflow } from "./workflows/action-workflow.base";
 import { ActiveView } from "./workflows/types";
 import { fromAction, fromDecision } from "./workflows/utils";
+import DesktopView from "./desktop-view/DesktopView";
+import MobileView from "./mobile-view/MobileView";
+import { GameStateDto, PlayerInGameDto } from "../dto/interfaces";
 
 const DIALOG_VIEWS = [ActiveView.RaceSelectionDialog, ActiveView.AuctionDialog, ActiveView.ConversionDialog, ActiveView.SortIncomesDialog, ActiveView.TerransConversionsDialog];
 const isDialogView = (view: ActiveView) => _.includes(DIALOG_VIEWS, view);
-const closeHoverTimeout: any = { value: undefined };
-const PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO = 1.439;
+
+export interface GameViewProps {
+	game: GameStateDto;
+	currentPlayerId: string;
+	players: PlayerInGameDto[];
+	activeView: ActiveView;
+}
 
 interface GamePageRouteParams {
 	id: string;
@@ -66,7 +56,7 @@ interface GamePageRouteParams {
 
 const GamePage = () => {
 	const classes = useStyles();
-	const useMobileLayout = useMediaQuery("(max-width: 600px)");
+	const isMobile = useMediaQuery("(max-width: 600px)");
 	const { id } = useParams<GamePageRouteParams>();
 	const { push } = useHistory();
 	const dispatch = useDispatch();
@@ -82,30 +72,8 @@ const GamePage = () => {
 	const isLoading = status === "loading";
 	const activeView = useSelector(selectActiveView);
 
-	const activeViewContainerRef = useRef<HTMLDivElement>(null);
-	const [activeViewDimensions, setActiveViewDimensions] = useState<Nullable<ElementSize>>(null);
 	const [activeWorkflow, setActiveWorkflow] = useState<Nullable<ActionWorkflow>>(null);
 	const [activeWorkflowSub, setActiveWorkflowSub] = useState<Nullable<Subscription>>(null);
-	// const [hoveredPlayer, setHoveredPlayer] = useState<Nullable<PlayerInGameDto>>(null);
-	// window.clearTimeout(closeHoverTimeout.value);
-
-	// const showPlayerArea = (player: PlayerInGameDto) => {
-	// 	if (!_.isNil(hoveredPlayer)) {
-	// 		return;
-	// 	}
-	// 	setHoveredPlayer(player);
-	// };
-
-	// const hidePlayerArea = () => {
-	// 	setHoveredPlayer(null);
-	// };
-
-	// useEffect(() => {
-	// 	document.addEventListener("keydown", hidePlayerArea, false);
-	// 	return () => {
-	// 		document.removeEventListener("keydown", hidePlayerArea);
-	// 	};
-	// }, []);
 
 	const showDialog = isDialogView(activeView);
 
@@ -208,7 +176,7 @@ const GamePage = () => {
 			return;
 		}
 
-		if (!useMobileLayout && isActivePlayer) {
+		if (!isMobile && isActivePlayer) {
 			const audio = new Audio(playersTurnAudioUrl);
 			audio.volume = 0.5;
 			audio.play();
@@ -234,21 +202,6 @@ const GamePage = () => {
 
 	//#endregion
 
-	//#region Render synchronously with the correct dimensions
-
-	useLayoutEffect(() => {
-		if (_.isNil(activeViewContainerRef.current)) {
-			return;
-		}
-
-		setActiveViewDimensions({
-			width: activeViewContainerRef.current.offsetWidth,
-			height: activeViewContainerRef.current.offsetHeight,
-		});
-	}, [activeViewContainerRef, game, currentPlayer, user]);
-
-	//#endregion
-
 	if (isLoading || _.isNull(game) || _.isNull(currentPlayer)) {
 		return (
 			<div className={classes.loader}>
@@ -258,127 +211,22 @@ const GamePage = () => {
 	}
 
 	const activeViewName = localizeEnum(activeView, "ActiveView");
-	const isGameCreator = game.createdBy.id === currentPlayer.id;
-	const canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
-
-	const hoveredPlayerAreaDimensions = {
-		width: 0,
-		height: 0,
-		top: 0,
-		left: 0,
-	};
-	if (!_.isNil(activeViewDimensions)) {
-		let hpaHeight = activeViewDimensions.height * 0.9;
-		let hpaWidth = hpaHeight * PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO;
-		if (hpaWidth > activeViewDimensions.width) {
-			hpaWidth = activeViewDimensions.width * 0.9;
-			hpaHeight = hpaWidth / PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO;
-		}
-		hoveredPlayerAreaDimensions.width = hpaWidth;
-		hoveredPlayerAreaDimensions.height = hpaHeight;
-		hoveredPlayerAreaDimensions.top = (activeViewDimensions.height - hpaHeight) / 2;
-		hoveredPlayerAreaDimensions.left = (activeViewDimensions.width - hpaWidth) / 2;
-	}
-
-	const PlayerBoxesAndLogs = (
-		<div className={classes.playerBoxesAndLogs}>
-			{_.map(players, (p, index) => (
-				<div key={p.id} className={classes.playerBox}>
-					<PlayerBox player={p} index={index + 1} />
-					{/* <div className="hoverTrap" onMouseEnter={() => showPlayerArea(p)} onMouseLeave={() => (closeHoverTimeout.value = window.setTimeout(hidePlayerArea, 250))}></div> */}
-				</div>
-			))}
-			{_.map([...game.gameLogs].reverse(), (log, index) => (
-				<div key={index} className={classes.gameLog}>
-					<GameLog log={log} canRollback={canRollback} doRollback={actionId => dispatch(rollbackGameAtAction({ gameId: game.id, actionId }))} />
-				</div>
-			))}
-		</div>
-	);
 
 	return (
 		<WorkflowContext.Provider key={id} value={{ activeWorkflow, startWorkflow, closeWorkflow }}>
-			<div key={game.id} className={classes.root + " game-page"}>
-				<div className={classes.statusBar}>
+			<div className={classes.root}>
+				<div className={classes.statusBar + (isMobile ? " mobile" : " desktop")}>
 					<StatusBar game={game} playerId={currentPlayer.id} />
 				</div>
-				<Grid container className={classes.wrapper}>
-					<Grid item className={classes.boardArea} xs={12} md={9}>
-						<div ref={activeViewContainerRef} className={classes.activeViewContainer}>
-							{activeView === ActiveView.Map && activeViewDimensions && (
-								<MainView
-									game={game}
-									width={activeViewDimensions.width}
-									height={activeViewDimensions.height}
-									showMinimaps={!useMobileLayout}
-									minimapClicked={view => dispatch(setActiveView(view))}
-								/>
-							)}
-							{activeView === ActiveView.ResearchBoard && activeViewDimensions && (
-								<ResearchBoard board={game.boardState.researchBoard} width={activeViewDimensions.width} height={activeViewDimensions.height} />
-							)}
-							{activeView === ActiveView.ScoringBoard && (
-								<ScoringBoard
-									board={game.boardState.scoringBoard}
-									roundBoosters={game.boardState.availableRoundBoosters}
-									federationTokens={game.boardState.availableFederations}
-								/>
-							)}
-							{activeView === ActiveView.PlayerAreas && <PlayerAreas players={players} />}
-							{activeView === ActiveView.NotesAndSettings && <PlayerConfig gameId={game.id} />}
-							{/* {!useMobileLayout && !_.isNil(hoveredPlayer) && (
-								<div
-									className={classes.hoveredPlayerArea}
-									style={{
-										width: hoveredPlayerAreaDimensions.width,
-										height: hoveredPlayerAreaDimensions.height,
-										left: hoveredPlayerAreaDimensions.left,
-										top: hoveredPlayerAreaDimensions.top,
-									}}
-								>
-									<PlayerArea player={hoveredPlayer} framed={true} />
-								</div>
-							)} */}
-							{useMobileLayout && activeView === ActiveView.MobilePlayerBoxes && PlayerBoxesAndLogs}
-						</div>
-						<Tabs
-							className={classes.tabs}
-							value={showDialog ? ActiveView.Map : activeView}
-							onChange={(__, val: ActiveView) => dispatch(setActiveView(val))}
-							indicatorColor="primary"
-							variant={useMobileLayout ? "fullWidth" : "standard"}
-							centered={!useMobileLayout}
-						>
-							<Tab className="gaia-font" label={useMobileLayout ? "" : "Map"} icon={useMobileLayout ? <MapIcon /> : ""} value={ActiveView.Map} />
-							<Tab
-								className="gaia-font"
-								label={useMobileLayout ? "" : "Research"}
-								icon={useMobileLayout ? <FormatAlignCenterIcon /> : ""}
-								value={ActiveView.ResearchBoard}
-							/>
-							<Tab className="gaia-font" label={useMobileLayout ? "" : "Scoring"} icon={useMobileLayout ? <StarIcon /> : ""} value={ActiveView.ScoringBoard} />
-							<Tab className="gaia-font" label={useMobileLayout ? "" : "Notes"} icon={useMobileLayout ? <SettingsIcon /> : ""} value={ActiveView.NotesAndSettings} />
-							{useMobileLayout && <Tab className="gaia-font" label="" icon={<AccountBoxIcon />} value={ActiveView.MobilePlayerBoxes} />}
-							<Tab
-								className="gaia-font"
-								label={useMobileLayout ? "" : "Players"}
-								icon={useMobileLayout ? <SupervisedUserCircleIcon /> : ""}
-								value={ActiveView.PlayerAreas}
-							/>
-						</Tabs>
-					</Grid>
-					{!useMobileLayout && (
-						<Grid item className={classes.controlArea} xs={12} md={3}>
-							{PlayerBoxesAndLogs}
-						</Grid>
-					)}
-				</Grid>
+				<div className={classes.gameView + (isMobile ? " mobile" : " desktop")}>
+					{!isMobile && <DesktopView game={game} currentPlayerId={currentPlayer.id} players={players} activeView={activeView} />}
+					{isMobile && <MobileView game={game} currentPlayerId={currentPlayer.id} players={players} activeView={activeView} />}
+				</div>
 			</div>
-
 			<Dialog
 				aria-labelledby="dialog-title"
-				fullScreen={useMobileLayout}
-				style={useMobileLayout ? undefined : { maxHeight: "90vh", top: "5vh" }}
+				fullScreen={isMobile}
+				style={isMobile ? undefined : { maxHeight: "90vh", top: "5vh" }}
 				open={showDialog}
 				maxWidth={"lg"}
 				fullWidth={false}
