@@ -11,6 +11,7 @@ import ResearchBoard from "../game-board/research-board/ResearchBoard";
 import ScoringBoard from "../game-board/scoring-board/ScoringBoard";
 import { GameViewProps, GAMEVIEW_WRAPPER_ID, STATUSBAR_ID } from "../GamePage";
 import GameLog from "../logs/GameLog";
+import TurnOrderMinimap from "../main-view/turn-order/TurnOrderMinimap";
 import { rollbackGameAtAction } from "../store/actions-thunks";
 import { ActiveView } from "../workflows/types";
 import useStyles from "./mobile-view.styles";
@@ -90,6 +91,10 @@ const MobileView = ({ game, currentPlayerId, players, activeView }: GameViewProp
 							federationTokens={game.boardState.availableFederations}
 							isMobile={true}
 						/>
+					</div>
+					<div className={classes.spacer}></div>
+					<div id="turnOrder">
+						<TurnOrderMinimap game={game} />
 					</div>
 					<div className={classes.spacer}></div>
 					{PlayerBoxesAndLogs}
