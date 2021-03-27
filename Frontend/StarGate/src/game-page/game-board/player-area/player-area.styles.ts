@@ -9,11 +9,15 @@ const useStyles = makeStyles((theme: Theme) =>
 				padding: theme.spacing(2),
 				[theme.breakpoints.down("sm")]: {
 					padding: theme.spacing(1),
+					borderWidth: 2,
 				},
 				[theme.breakpoints.down("xs")]: {
 					padding: theme.spacing(0.5),
+					borderWidth: 1,
 				},
-				border: "3px solid lightgray",
+				borderWidth: 3,
+				borderStyle: "solid",
+				borderColor: "lightgray",
 				borderRadius: 5,
 			},
 		},

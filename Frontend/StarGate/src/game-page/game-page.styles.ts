@@ -1,5 +1,4 @@
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { TOOLBAR_HEIGHT } from "../frame/appFrame.styles";
 
 const STATUSBAR_HEIGHT = 56;
 const useStyles = makeStyles((theme: Theme) =>
@@ -25,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 				top: 0,
 				paddingLeft: 0,
 				paddingRight: 0,
-				zIndex: 2,
+				zIndex: 11,
 				backgroundColor: "black",
 			},
 			padding: 3,

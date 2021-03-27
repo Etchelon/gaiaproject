@@ -7,13 +7,20 @@ import NotificationsActiveIcon from "@material-ui/icons/NotificationsActive";
 import NotificationsNoneIcon from "@material-ui/icons/NotificationsNone";
 import { parseISO } from "date-fns";
 import _ from "lodash";
-import React, { useRef, useState } from "react";
+import { MouseEvent, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NotificationType } from "../../dto/enums";
 import { GameNotificationDto } from "../../dto/interfaces";
 import { usePageActivation } from "../../utils/hooks";
 import { Nullable } from "../../utils/miscellanea";
-import { countUnreadNotifications, fetchNotifications, selectUnreadNotificationsCount, selectUserNotifications, selectUserNotificationsState } from "../store/active-user.slice";
+import {
+	countUnreadNotifications,
+	fetchNotifications,
+	selectUnreadNotificationsCount,
+	selectUserNotifications,
+	selectUserNotificationsState,
+	setNotificationRead,
+} from "../store/active-user.slice";
 import GameNotification from "./GameNotification";
 import GenericNotification from "./GenericNotification";
 import useStyles from "./notifications.styles";
@@ -54,12 +61,17 @@ const Notifications = () => {
 	const closePopover = () => {
 		setAnchorEl(null);
 	};
-	const togglePopover = (evt: React.MouseEvent<HTMLElement>) => {
+	const togglePopover = (evt: MouseEvent<HTMLElement>) => {
 		if (isPopoverOpen) {
 			closePopover();
 		} else {
 			openPopover(evt.currentTarget);
 		}
+	};
+
+	const onNotificationClicked = (id: string) => () => {
+		closePopover();
+		dispatch(setNotificationRead({ id }));
 	};
 
 	usePageActivation(
@@ -102,7 +114,15 @@ const Notifications = () => {
 						switch (n.type) {
 							default:
 							case NotificationType.Generic:
-								return <GenericNotification key={n.id} notification={n} parentScrollable={listRef.current} notificationClicked={closePopover} bordered={!isLast} />;
+								return (
+									<GenericNotification
+										key={n.id}
+										notification={n}
+										parentScrollable={listRef.current}
+										notificationClicked={onNotificationClicked(n.id)}
+										bordered={!isLast}
+									/>
+								);
 							case NotificationType.Game:
 								const gameNotification = n as GameNotificationDto;
 								return (

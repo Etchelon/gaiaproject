@@ -1,20 +1,27 @@
 import _ from "lodash";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { GamePhase } from "../../dto/enums";
+import { TOOLBAR_HEIGHT } from "../../frame/appFrame.styles";
 import { ElementSize } from "../../utils/hooks";
 import { Nullable } from "../../utils/miscellanea";
 import PlayerConfig from "../config/PlayerConfig";
-import PlayerAreas from "../game-board/player-area/PlayerAreas";
-import PlayerBox from "../game-board/player-box/PlayerBox";
-import Map from "../game-board/map/Map";
+import GameMap from "../game-board/map/Map";
 import ResearchBoard from "../game-board/research-board/ResearchBoard";
 import ScoringBoard from "../game-board/scoring-board/ScoringBoard";
-import { GameViewProps } from "../GamePage";
+import { GameViewProps, GAMEVIEW_WRAPPER_ID, STATUSBAR_ID } from "../GamePage";
 import GameLog from "../logs/GameLog";
 import { rollbackGameAtAction } from "../store/actions-thunks";
 import { ActiveView } from "../workflows/types";
 import useStyles from "./mobile-view.styles";
+import PlayerBoxOrArea from "./PlayerBoxOrArea";
+
+const viewsAnchors = new Map<ActiveView, string>([
+	[ActiveView.Map, "map"],
+	[ActiveView.ResearchBoard, "researchBoard"],
+	[ActiveView.ScoringBoard, "scoringBoard"],
+	[ActiveView.MobilePlayerBoxes, "boxesAndLogs"],
+]);
 
 const MobileView = ({ game, currentPlayerId, players, activeView }: GameViewProps) => {
 	const classes = useStyles();
@@ -24,6 +31,19 @@ const MobileView = ({ game, currentPlayerId, players, activeView }: GameViewProp
 	const isGameCreator = game.createdBy.id === currentPlayerId;
 	const canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
 	const map = game.boardState.map;
+
+	useEffect(() => {
+		const elementId = viewsAnchors.get(activeView) ?? "";
+		const element = document.getElementById(elementId);
+		if (!element) {
+			return;
+		}
+		const gameViewWrapper = document.getElementById(GAMEVIEW_WRAPPER_ID)!;
+		const statusBar = document.getElementById(STATUSBAR_ID)!;
+		const top = element.offsetTop - TOOLBAR_HEIGHT - 3 - statusBar.clientHeight - 3; // 3px spacing below the toolbar and status bar
+		gameViewWrapper.scrollTo({ top, behavior: "smooth" });
+		// element.scrollIntoView({ behavior: "smooth" });
+	}, [activeView]);
 
 	useLayoutEffect(() => {
 		if (_.isNil(activeViewContainerRef.current)) {
@@ -37,10 +57,10 @@ const MobileView = ({ game, currentPlayerId, players, activeView }: GameViewProp
 	}, [activeViewContainerRef, game]);
 
 	const PlayerBoxesAndLogs = (
-		<div className={classes.playerBoxesAndLogs}>
+		<div id="boxesAndLogs" className={classes.playerBoxesAndLogs}>
 			{_.map(players, (p, index) => (
 				<div key={p.id} className={classes.playerBox}>
-					<PlayerBox player={p} index={index + 1} />
+					<PlayerBoxOrArea player={p} index={index + 1} />
 				</div>
 			))}
 			{_.map([...game.gameLogs].reverse(), (log, index) => (
@@ -55,18 +75,22 @@ const MobileView = ({ game, currentPlayerId, players, activeView }: GameViewProp
 		<div ref={activeViewContainerRef}>
 			{!_.isNil(activeViewDimensions) && (
 				<>
-					<div className={classes.boardArea}>
-						<Map map={map} width={activeViewDimensions.width} />
+					<div id="map" className={classes.boardArea}>
+						<GameMap map={map} width={activeViewDimensions.width} />
 					</div>
 					<div className={classes.spacer}></div>
-					<ResearchBoard board={game.boardState.researchBoard} width={activeViewDimensions.width} />
+					<div id="researchBoard">
+						<ResearchBoard board={game.boardState.researchBoard} width={activeViewDimensions.width} />
+					</div>
 					<div className={classes.spacer}></div>
-					<ScoringBoard
-						board={game.boardState.scoringBoard}
-						roundBoosters={game.boardState.availableRoundBoosters}
-						federationTokens={game.boardState.availableFederations}
-						isMobile={true}
-					/>
+					<div id="scoringBoard">
+						<ScoringBoard
+							board={game.boardState.scoringBoard}
+							roundBoosters={game.boardState.availableRoundBoosters}
+							federationTokens={game.boardState.availableFederations}
+							isMobile={true}
+						/>
+					</div>
 					<div className={classes.spacer}></div>
 					{PlayerBoxesAndLogs}
 				</>
