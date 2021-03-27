@@ -24,7 +24,11 @@ const useStyles = makeStyles((theme: Theme) =>
 				maxWidth: "100px",
 				margin: theme.spacing(0, 2, 2, 0),
 				[theme.breakpoints.down("sm")]: {
-					margin: theme.spacing(0, 1, 1, 0),
+					width: `calc((100% - 6 * ${theme.spacing(0.5)}px) / 7)`,
+					margin: theme.spacing(0, 0.5, 0.5, 0),
+				},
+				"&:last-child": {
+					marginRight: 0,
 				},
 			},
 		},
@@ -39,6 +43,9 @@ const useStyles = makeStyles((theme: Theme) =>
 				maxWidth: 150,
 				margin: theme.spacing(0, 3, 3, 0),
 				[theme.breakpoints.down("sm")]: {
+					minWidth: 50,
+					width: "5%",
+					maxWidth: 100,
 					margin: theme.spacing(0, 1, 1, 0),
 				},
 			},
