@@ -9,8 +9,16 @@ const useStyles = makeStyles(theme =>
 			display: "flex",
 			padding: theme.spacing(1),
 			backgroundColor: "black",
-			border: "3px solid darkgray",
-			borderRadius: "10px",
+			borderWidth: 3,
+			borderStyle: "solid",
+			borderColor: "lightgray",
+			borderRadius: 10,
+			[theme.breakpoints.down("sm")]: {
+				borderWidth: 2,
+			},
+			[theme.breakpoints.down("xs")]: {
+				borderWidth: 1,
+			},
 		},
 		roundColumn: {
 			...centeredFlexColumn,

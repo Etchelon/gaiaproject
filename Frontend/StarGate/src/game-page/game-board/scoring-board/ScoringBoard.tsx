@@ -35,11 +35,14 @@ const ScoringBoard = ({ board, roundBoosters, federationTokens, isMobile }: Scor
 					</Grid>
 					<Grid item xs={12}>
 						<div className={classes.federationTokens}>
-							{_.map(federationTokens, stack => (
-								<div key={stack.type} className="stack">
-									<FederationTokenStack stack={stack} />
-								</div>
-							))}
+							{_.chain(federationTokens)
+								.filter(stack => stack.remaining > 0)
+								.map(stack => (
+									<div key={stack.type} className="stack">
+										<FederationTokenStack stack={stack} />
+									</div>
+								))
+								.value()}
 						</div>
 					</Grid>
 				</Grid>

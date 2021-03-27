@@ -4,11 +4,12 @@ import _ from "lodash";
 import { useSelector } from "react-redux";
 import VpImg from "../../../assets/Resources/Markers/VP.png";
 import ActivePlayerImg from "../../../assets/Resources/PlayerLoader.gif";
-import { Race } from "../../../dto/enums";
+import { BuildingType, Race } from "../../../dto/enums";
 import { PlayerInGameDto, PowerPoolsDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";
 import { getRaceColor, getRaceImage, getRaceName } from "../../../utils/race-utils";
 import { selectIsOnline } from "../../store/active-game.slice";
+import Building from "../hex/Building";
 import ResourceToken from "../ResourceToken";
 import styles from "./PlayerBox.module.scss";
 
@@ -147,10 +148,12 @@ const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 						<ResourceToken type="Navigation" scale={0.9} />
 						<span className="gaia-font">{`${playerState.navigationRange}${playerState.rangeBoost ? ` (+${playerState.rangeBoost})` : ""}`}</span>
 					</div>
-					<div className={styles.resourceIndicator}>
-						<ResourceToken type="Gaiaformation" scale={2} />
-						<span className="gaia-font">{playerState.usableGaiaformers}</span>
-					</div>
+					{player.raceId !== null && (
+						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+							<Building raceId={player.raceId} type={BuildingType.Gaiaformer} noAnimation />
+							<span className="gaia-font">{playerState.usableGaiaformers}</span>
+						</div>
+					)}
 					<div className={styles.resourceIndicator}>
 						<ResourceToken type="Federations" scale={0.9} />
 						<span className="gaia-font">{`${playerState.usableFederations}/${playerState.numFederationTokens}`}</span>
@@ -174,6 +177,30 @@ const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 						<span className="gaia-font">{playerState.additionalInfo}</span>
 					</div>
 				</div>
+				{player.raceId !== null && (
+					<div className={styles.row}>
+						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+							<Building raceId={player.raceId} type={BuildingType.Mine} noAnimation />
+							<span className="gaia-font">{playerState.buildings.mines}</span>
+						</div>
+						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+							<Building raceId={player.raceId} type={BuildingType.TradingStation} noAnimation />
+							<span className="gaia-font">{playerState.buildings.tradingStations}</span>
+						</div>
+						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+							<Building raceId={player.raceId} type={BuildingType.ResearchLab} noAnimation />
+							<span className="gaia-font">{playerState.buildings.researchLabs}</span>
+						</div>
+						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+							<Building raceId={player.raceId} type={BuildingType.PlanetaryInstitute} noAnimation />
+							<span className="gaia-font">{Number(playerState.buildings.planetaryInstitute)}</span>
+						</div>
+						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+							<Building raceId={player.raceId} type={BuildingType.AcademyLeft} noAnimation />
+							<span className="gaia-font">{Number(playerState.buildings.academyLeft) + Number(playerState.buildings.academyRight)}</span>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

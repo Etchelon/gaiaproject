@@ -1,17 +1,25 @@
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { ElementSize } from "../../../utils/hooks";
 
 export const WIDTH_TO_HEIGHT_RATIO = 0.962;
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
 		scoringTrack: {
 			position: "relative",
 			width: "100%",
 			height: ({ height }: ElementSize) => height,
 			backgroundColor: "black",
-			border: "3px solid darkgray",
-			borderRadius: "10px",
+			[theme.breakpoints.down("sm")]: {
+				borderWidth: 2,
+			},
+			[theme.breakpoints.down("xs")]: {
+				borderWidth: 1,
+			},
+			borderWidth: 3,
+			borderStyle: "solid",
+			borderColor: "lightgray",
+			borderRadius: 10,
 		},
 		image: {
 			width: "100%",

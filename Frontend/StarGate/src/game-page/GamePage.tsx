@@ -42,6 +42,8 @@ import { GameStateDto, PlayerInGameDto } from "../dto/interfaces";
 
 const DIALOG_VIEWS = [ActiveView.RaceSelectionDialog, ActiveView.AuctionDialog, ActiveView.ConversionDialog, ActiveView.SortIncomesDialog, ActiveView.TerransConversionsDialog];
 const isDialogView = (view: ActiveView) => _.includes(DIALOG_VIEWS, view);
+export const STATUSBAR_ID = "statusBar";
+export const GAMEVIEW_WRAPPER_ID = "gameViewWrapper";
 
 export interface GameViewProps {
 	game: GameStateDto;
@@ -214,8 +216,8 @@ const GamePage = () => {
 
 	return (
 		<WorkflowContext.Provider key={id} value={{ activeWorkflow, startWorkflow, closeWorkflow }}>
-			<div className={classes.root}>
-				<div className={classes.statusBar + (isMobile ? " mobile" : " desktop")}>
+			<div id={GAMEVIEW_WRAPPER_ID} className={classes.root}>
+				<div id={STATUSBAR_ID} className={classes.statusBar + (isMobile ? " mobile" : " desktop")}>
 					<StatusBar game={game} playerId={currentPlayer.id} />
 				</div>
 				<div className={classes.gameView + (isMobile ? " mobile" : " desktop")}>

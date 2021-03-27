@@ -6,6 +6,7 @@ interface BuildingProps {
 	type: BuildingType;
 	raceId: Race;
 	onMap?: boolean;
+	noAnimation?: boolean;
 }
 
 function getBuildingImagePrefix(type: BuildingType): string {
@@ -103,7 +104,7 @@ const useStyles = makeStyles(() =>
 				objectFit: "cover",
 				pointerEvents: "none",
 			},
-			"&.on-player-board:hover .building": {
+			"&.animated:hover .building": {
 				transform: "rotateY(90deg)",
 				transformOrigin: "left -50%",
 				transition: "transform 250ms",
@@ -118,7 +119,7 @@ const Building = (props: BuildingProps) => {
 	const classes = useStyles(props);
 	const imgUrl = useAssetUrl(`Races/Buildings${getBuildingFolderSuffix(buildingStyle)}/${getBuildingImagePrefix(type)}_${getBuildingColor(raceId)}.png`);
 	return (
-		<div className={classes.root + (props.onMap ? "" : " on-player-board")}>
+		<div className={classes.root + (props.onMap || props.noAnimation ? "" : " animated")}>
 			<img className="building" src={imgUrl} alt="" />
 		</div>
 	);

@@ -23,10 +23,6 @@ const useStyles = makeStyles((theme: Theme) =>
 			"&:first-child": {
 				marginTop: 0,
 			},
-			"& > .hoverTrap": {
-				...fillParentAbs,
-				pointerEvents: "all",
-			},
 		},
 		gameLog: {
 			width: "100%",
