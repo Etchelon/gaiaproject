@@ -18,7 +18,7 @@ const roundTileCoordinates = new Map<number, { top: number; left: number; rotati
 
 const finalScoringTrackCoordinates = new Map<number, { top: number; left: number }>([
 	[0, { top: 0.495, left: 0.06 }],
-	[1, { top: 0.72, left: 0.06 }],
+	[1, { top: 0.73, left: 0.06 }],
 ]);
 
 interface ScoringTrackProps {

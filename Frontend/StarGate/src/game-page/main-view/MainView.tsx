@@ -55,7 +55,7 @@ const MainView = ({ game, width, height, showMinimaps, minimapClicked }: MainVie
 						</div>
 					</div>
 					<div className={`${classes.miniMap} ${classes.turnOrder}`}>
-						<TurnOrderMinimap game={game} />
+						<TurnOrderMinimap game={game} direction="vertical" />
 					</div>
 				</>
 			)}
