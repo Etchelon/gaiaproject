@@ -1,5 +1,5 @@
 import { createStyles, makeStyles } from "@material-ui/core";
-import { centeredFlexColumn } from "../../../utils/miscellanea";
+import { centeredFlexColumn, flexRow } from "../../../utils/miscellanea";
 
 const RACE_AVATAR_WIDTH = 50;
 
@@ -20,8 +20,11 @@ const useStyles = makeStyles(theme =>
 				borderWidth: 1,
 			},
 		},
-		roundColumn: {
+		playersColumn: {
 			...centeredFlexColumn,
+		},
+		playersRow: {
+			...flexRow,
 		},
 		nextRound: {
 			marginLeft: theme.spacing(2),
@@ -31,7 +34,12 @@ const useStyles = makeStyles(theme =>
 		},
 		avatar: {
 			width: RACE_AVATAR_WIDTH,
-			marginTop: theme.spacing(1),
+			"&.vertical": {
+				marginTop: theme.spacing(1),
+			},
+			"&.horizontal": {
+				marginLeft: theme.spacing(2),
+			},
 		},
 	})
 );

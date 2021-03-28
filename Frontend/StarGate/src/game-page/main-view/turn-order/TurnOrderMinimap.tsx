@@ -27,7 +27,7 @@ const OngoingAuction = ({ race, username, orderLabel }: { race: Race; username: 
 				className="gaia-font"
 				style={{ marginLeft: theme.spacing(1), maxWidth: 100, overflowX: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
 			>
-				{username}
+				{username.substr(0, 3)}
 			</Typography>
 		</div>
 	);
@@ -44,16 +44,17 @@ const PlayerAvatar = ({ race, username, orderLabel }: { race: Nullable<Race>; us
 		</div>
 	) : (
 		<Typography variant="body1" className="gaia-font">
-			{username}
+			{username.substr(0, 3)}
 		</Typography>
 	);
 };
 
 interface TurnOrderMinimapProps {
 	game: GameStateDto;
+	direction: "vertical" | "horizontal";
 }
 
-const TurnOrderMinimap = ({ game }: TurnOrderMinimapProps) => {
+const TurnOrderMinimap = ({ game, direction }: TurnOrderMinimapProps) => {
 	const classes = useStyles();
 	const isAuctioning = isAuctionOngoing(game);
 	const isLastRound_ = isLastRound(game);
@@ -63,13 +64,15 @@ const TurnOrderMinimap = ({ game }: TurnOrderMinimapProps) => {
 	if (isAuctioning) {
 		return (
 			<div className={classes.root}>
-				<div className={classes.roundColumn}>
+				<div>
 					<div className="gaia-font">Auction</div>
-					{_.map(game.auctionState!.auctionedRaces, (auction, index) => (
-						<div key={index} className={classes.ongoingAuction}>
-							<OngoingAuction race={auction.race} username={auction.playerUsername ?? "No bid"} orderLabel={`${auction.order + 1}°`} />
-						</div>
-					))}
+					<div className={direction === "vertical" ? classes.playersColumn : classes.playersRow}>
+						{_.map(game.auctionState!.auctionedRaces, (auction, index) => (
+							<div key={index} className={classes.ongoingAuction}>
+								<OngoingAuction race={auction.race} username={auction.playerUsername ?? "No bid"} orderLabel={`${auction.order + 1}°`} />
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
 		);
@@ -77,22 +80,30 @@ const TurnOrderMinimap = ({ game }: TurnOrderMinimapProps) => {
 
 	return (
 		<div className={classes.root}>
-			<div className={classes.roundColumn}>
-				<div className="gaia-font">Round {game.currentRound}</div>
-				{_.map(activePlayers, p => (
-					<div key={p.id} className={classes.avatar}>
-						<PlayerAvatar race={p.raceId} username={p.username} orderLabel={`${p.state?.currentRoundTurnOrder ?? 0}°`} />
-					</div>
-				))}
-			</div>
-			{game.currentPhase !== GamePhase.Setup && !isLastRound_ && _.some(passedPlayers) && (
-				<div className={`${classes.roundColumn} ${classes.nextRound}`}>
-					<div className="gaia-font">Round {game.currentRound + 1}</div>
-					{_.map(passedPlayers, pp => (
-						<div key={pp.id} className={classes.avatar}>
-							<PlayerAvatar race={pp.raceId} username={pp.username} orderLabel={`${pp.state!.nextRoundTurnOrder}°`} />
+			<div>
+				<Typography variant="body2" className="gaia-font">
+					Round {game.currentRound}
+				</Typography>
+				<div className={direction === "vertical" ? classes.playersColumn : classes.playersRow}>
+					{_.map(activePlayers, p => (
+						<div key={p.id} className={`${classes.avatar} ${direction}`}>
+							<PlayerAvatar race={p.raceId} username={p.username} orderLabel={`${p.state?.currentRoundTurnOrder ?? 0}°`} />
 						</div>
 					))}
+				</div>
+			</div>
+			{game.currentPhase !== GamePhase.Setup && !isLastRound_ && _.some(passedPlayers) && (
+				<div className={classes.nextRound}>
+					<Typography variant="body2" className="gaia-font">
+						Round {game.currentRound + 1}
+					</Typography>
+					<div className={direction === "vertical" ? classes.playersColumn : classes.playersRow}>
+						{_.map(passedPlayers, pp => (
+							<div key={pp.id} className={`${classes.avatar} ${direction}`}>
+								<PlayerAvatar race={pp.raceId} username={pp.username} orderLabel={`${pp.state!.nextRoundTurnOrder}°`} />
+							</div>
+						))}
+					</div>
 				</div>
 			)}
 		</div>

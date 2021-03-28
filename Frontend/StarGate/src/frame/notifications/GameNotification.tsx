@@ -22,7 +22,7 @@ const GameNotification = ({ notification, parentScrollable, bordered, notificati
 		if (isRead) {
 			return;
 		}
-		_.delay(() => dispatch(setNotificationRead({ id: notification.id })), 3000);
+		_.delay(() => dispatch(setNotificationRead({ id: notification.id })), 2000);
 	}, [isRead, isVisible]);
 
 	return (

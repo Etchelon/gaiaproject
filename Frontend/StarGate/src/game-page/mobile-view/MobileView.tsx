@@ -94,7 +94,7 @@ const MobileView = ({ game, currentPlayerId, players, activeView }: GameViewProp
 					</div>
 					<div className={classes.spacer}></div>
 					<div id="turnOrder">
-						<TurnOrderMinimap game={game} />
+						<TurnOrderMinimap game={game} direction="horizontal" />
 					</div>
 					<div className={classes.spacer}></div>
 					{PlayerBoxesAndLogs}
