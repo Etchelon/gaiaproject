@@ -59,10 +59,15 @@ namespace GaiaProject.Engine.DataAccess
         public async Task SaveGame(GaiaProjectGame game)
         {
             var isOver = game.Ended.HasValue;
+            // TODO: move the following code out of here and switch to a message driven architecture
             if (isOver)
             {
                 game.Actions = null;
                 await _repository.DeleteOneAsync<InitialGaiaProjectGameState>(o => o.GameId == game.Id);
+                await _repository.DeleteManyAsync<GameNotes>(gn => gn.GameId == game.Id);
+                // Delete all previous game notifications
+                var filter = Builders<Notification>.Filter.OfType<GameNotification>(gn => gn.GameId == game.Id);
+                await _repository.DeleteManyAsync(filter);
             }
             await _repository.UpdateOneAsync(game);
         }
