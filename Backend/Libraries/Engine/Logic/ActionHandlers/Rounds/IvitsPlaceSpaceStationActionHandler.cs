@@ -17,12 +17,16 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 	{
 		private Hex _targetHex;
 		private MapService _mapService;
+		private bool _isInRange;
 		private int _requiredQics = 0;
 
 		protected override void InitializeImpl(GaiaProjectGame game, IvitsPlaceSpaceStationAction action)
 		{
 			_targetHex = game.BoardState.Map.Hexes.Single(h => h.Id == action.HexId);
 			_mapService = new MapService(game.BoardState.Map);
+			// Calculate requiredQics as a side effect of IsInRange() here.
+			// So that when rolling back the game state (without validation) the value is still calculated
+			_isInRange = IsInRange();
 		}
 
 		protected override List<Effect> HandleImpl(GaiaProjectGame game, IvitsPlaceSpaceStationAction action)
@@ -82,7 +86,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			{
 				return (false, reason);
 			}
-			if (!IsInRange())
+			if (!_isInRange)
 			{
 				return (false, "The selected hex is not in range");
 			}

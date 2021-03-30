@@ -19,6 +19,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 		private ActionContext _ctx;
 		private Hex _targetHex;
 		private MapService _mapService;
+		private bool _isInRange;
 		private int _requiredQics = 0;
 
 		protected override void InitializeImpl(GaiaProjectGame game, StartGaiaProjectAction action)
@@ -26,6 +27,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			_ctx = new ActionContext(action, game);
 			_targetHex = game.BoardState.Map.Hexes.First(h => h.Id == action.HexId);
 			_mapService = new MapService(game.BoardState.Map);
+			_isInRange = IsInRange();
 		}
 
 		protected override List<Effect> HandleImpl(GaiaProjectGame game, StartGaiaProjectAction action)
@@ -58,7 +60,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			{
 				return (false, "The selected hex is already taken");
 			}
-			if (!IsInRange())
+			if (!_isInRange)
 			{
 				return (false, "The selected hex is not in range");
 			}

@@ -146,16 +146,13 @@ namespace GaiaProject.Common.Reflection
 			).ToList();
 			properties.ForEach(propInfo =>
 			{
-				Debug.WriteLine("Processing property {0}", propInfo.Name);
 				if (propInfo.SetMethod == null)
 				{
-					Debug.WriteLine("No setter found, skipping.", propInfo.Name);
 					return;
 				}
 				var thisVal = propInfo.GetValue(obj);
 				if (thisVal == null)
 				{
-					Debug.WriteLine("Value to copy is null, skipping.", propInfo.Name);
 					propInfo.SetValue(ret, null);
 					return;
 				}

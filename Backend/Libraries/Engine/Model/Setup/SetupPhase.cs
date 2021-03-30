@@ -1,5 +1,4 @@
-﻿using GaiaProject.Common.Reflection;
-using GaiaProject.Engine.Enums;
+﻿using GaiaProject.Engine.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace GaiaProject.Engine.Model.Setup
@@ -14,7 +13,11 @@ namespace GaiaProject.Engine.Model.Setup
 
 		public SetupPhase Clone()
 		{
-			return ReflectionUtils.Clone(this);
+			return new SetupPhase
+			{
+				SubPhase = SubPhase,
+				AuctionState = AuctionState.Clone()
+			};
 		}
 	}
 }

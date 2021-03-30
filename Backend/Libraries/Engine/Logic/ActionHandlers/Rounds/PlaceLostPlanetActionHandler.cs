@@ -20,12 +20,14 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 	{
 		private MapService _mapService;
 		private Hex _targetHex;
+		private bool _isInRange;
 		private int _requiredQics = 0;
 
 		protected override void InitializeImpl(GaiaProjectGame game, PlaceLostPlanetAction action)
 		{
 			_mapService = new MapService(game.BoardState.Map);
 			_targetHex = _mapService.GetHex(action.HexId);
+			_isInRange = IsInRange();
 		}
 
 		protected override List<Effect> HandleImpl(GaiaProjectGame game, PlaceLostPlanetAction action)
@@ -125,7 +127,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			{
 				return (false, "You cannot place the Lost Planet in a hex with an Ivits space station");
 			}
-			if (!IsInRange())
+			if (!_isInRange)
 			{
 				return (false, "The target hex is out of range");
 			}

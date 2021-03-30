@@ -17,7 +17,13 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 {
 	public class PowerActionHandler : ActionHandlerBase<PowerAction>
 	{
+		private bool _canPayCost;
 		private int? _powerToBurn;
+
+		protected override void InitializeImpl(GaiaProjectGame game, PowerAction action)
+		{
+			_canPayCost = CanPayCost(action);
+		}
 
 		protected override List<Effect> HandleImpl(GaiaProjectGame game, PowerAction action)
 		{
@@ -82,7 +88,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			{
 				return (false, "The selected action is not available");
 			}
-			if (!CanPayCost(action))
+			if (!_canPayCost)
 			{
 				return (false, "You do not have the necessary power");
 			}

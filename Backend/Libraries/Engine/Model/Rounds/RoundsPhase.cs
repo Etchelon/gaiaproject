@@ -1,4 +1,3 @@
-using GaiaProject.Common.Reflection;
 using GaiaProject.Engine.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -12,7 +11,11 @@ namespace GaiaProject.Engine.Model.Rounds
 
 		public RoundsPhase Clone()
 		{
-			return ReflectionUtils.Clone(this);
+			return new RoundsPhase
+			{
+				SubPhase = SubPhase,
+				CurrentRound = CurrentRound
+			};
 		}
 	}
 }

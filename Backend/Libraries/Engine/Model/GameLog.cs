@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using GaiaProject.Common.Reflection;
+using System.Linq;
 using GaiaProject.Engine.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -33,7 +33,17 @@ namespace GaiaProject.Engine.Model
 
 		public virtual GameLog Clone()
 		{
-			return ReflectionUtils.Clone(this);
+			return new GameLog
+			{
+				Timestamp = Timestamp,
+				Message = Message,
+				Important = Important,
+				Turn = Turn,
+				ActionId = ActionId,
+				PlayerId = PlayerId,
+				Race = Race,
+				SubLogs = SubLogs?.Select(o => o.Clone()).ToList()
+			};
 		}
 	}
 }
