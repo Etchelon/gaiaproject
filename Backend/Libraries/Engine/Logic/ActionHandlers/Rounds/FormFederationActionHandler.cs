@@ -94,13 +94,15 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			{
 				return (false, "The are no remaining tokens of the selected type");
 			}
-			if (HasHoles())
-			{
-				return (false, "Some of the buildings are not connected");
-			}
 			if (!HasEnoughPower())
 			{
 				return (false, "The federation doesn't have enough power");
+			}
+
+			// The following checks are to be reworked so currently they all return false
+			if (HasHoles())
+			{
+				return (false, "Some of the buildings are not connected");
 			}
 			if (HasNeedlessBuildings())
 			{
@@ -154,6 +156,9 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 
 		private bool HasNeedlessBuildings()
 		{
+			return false;
+
+			// TODO: rework validation logic in a dedicared branch
 			var powerRequired = GetRequiredPower();
 
 			var clustersFromBuildings = _hexesWithBuildings
