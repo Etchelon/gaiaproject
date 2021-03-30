@@ -1,5 +1,4 @@
-﻿using GaiaProject.Common.Reflection;
-using GaiaProject.Engine.Enums;
+﻿using GaiaProject.Engine.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace GaiaProject.Engine.Model
@@ -20,7 +19,19 @@ namespace GaiaProject.Engine.Model
 
 		internal GameOptions Clone()
 		{
-			return ReflectionUtils.Clone(this);
+			return new GameOptions
+			{
+				GameName = GameName,
+				MapShape = MapShape,
+				TurnOrderSelectionMode = TurnOrderSelectionMode,
+				FactionSelectionMode = FactionSelectionMode,
+				Auction = Auction,
+				PreventSandwiching = PreventSandwiching,
+				MinPlayers = MinPlayers,
+				MaxPlayers = MaxPlayers,
+				StartingVPs = StartingVPs,
+				MinutesPerMove = MinutesPerMove
+			};
 		}
 	}
 }

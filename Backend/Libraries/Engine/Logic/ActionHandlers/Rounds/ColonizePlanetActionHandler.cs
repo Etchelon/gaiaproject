@@ -24,6 +24,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 		private MapService _mapService;
 		private bool _isGaiaformedTransdim;
 		private bool _isLantidsParasiteMine;
+		private bool _isInRange;
 		private int _requiredQics = 0;
 
 		protected override void InitializeImpl(GaiaProjectGame game, ColonizePlanetAction action)
@@ -34,6 +35,9 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			_isGaiaformedTransdim = _targetHex.PlanetType == PlanetType.Transdim && (_targetHex.WasGaiaformed ?? false);
 			_isLantidsParasiteMine = Player.RaceId == Race.Lantids &&
 									 _targetHex.Buildings.SingleOrDefault(b => b.PlayerId != Player.Id) != null;
+			// Calculate requiredQics as a side effect of IsInRange() here.
+			// So that when rolling back the game state (without validation) the value is still calculated
+			_isInRange = IsInRange();
 		}
 
 		protected override List<Effect> HandleImpl(GaiaProjectGame game, ColonizePlanetAction action)
@@ -148,7 +152,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			{
 				return (false, "You have no mines left to build");
 			}
-			if (!IsInRange())
+			if (!_isInRange)
 			{
 				return (false, "The target hex is out of range");
 			}
