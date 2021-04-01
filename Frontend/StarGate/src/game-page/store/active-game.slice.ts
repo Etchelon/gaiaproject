@@ -48,10 +48,9 @@ const activeGameSlice = createSlice({
 			state.currentUserId = action.payload;
 		},
 		clear: state => {
-			state = {
-				...initialState,
-				currentUserId: state.currentUserId,
-			};
+			const currentUserId = state.currentUserId;
+			_.assign(state, initialState);
+			state.currentUserId = currentUserId;
 		},
 		clearStatus: state => {
 			state.activeView = ActiveView.Map;

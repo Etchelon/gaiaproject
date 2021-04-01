@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GaiaProject.Engine.Enums;
@@ -20,7 +21,8 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Setup
 			_mapService = new MapService(game.BoardState.Map, true);
 			action.Adjustments.ForEach(adj =>
 			{
-				_mapService.RotateSector(adj.SectorId, adj.Rotation, false);
+				var clockwise = adj.Rotation < 0;
+				_mapService.RotateSector(adj.SectorId, Math.Abs(adj.Rotation), clockwise);
 			});
 			_newMapState = _mapService.Map;
 		}

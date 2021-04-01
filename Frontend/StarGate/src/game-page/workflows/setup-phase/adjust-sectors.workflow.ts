@@ -97,7 +97,12 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 			case CommonWorkflowStates.RESET:
 				this._selectedSectorId = null;
 				this._adjustments = [];
+				this.advanceState(WaitingForSector);
 				this.dispatch!(resetSectors(this._initialMap));
+				return null;
+			case CommonWorkflowStates.CANCEL:
+				this._selectedSectorId = null;
+				this.advanceState(WaitingForSector);
 				return null;
 			case WaitingForSector:
 			case WaitingForConfirmation:
@@ -114,15 +119,16 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 				} else {
 					adjustment.Rotation += rotationAdjustment;
 				}
-				const initialRotation = _.find(this._initialMap.sectors, s => s.id === sectorId)!.rotation;
-				const currentRotation = (initialRotation + adjustment.Rotation) % ONE_FULL_ROTATION;
-				const actualRotation = currentRotation >= 0 ? currentRotation : ONE_FULL_ROTATION + currentRotation;
+				const actualRotation = this.getActualRotation(sectorId, adjustment.Rotation);
 				this.dispatch!(rotateSector({ id: sectorId, rotation: actualRotation }));
 				return null;
 			case CommonWorkflowStates.PERFORM_ACTION:
 				const action: AdjustSectorsActionDto = {
 					Type: ActionType.AdjustSectors,
-					Adjustments: this._adjustments,
+					Adjustments: _.map(this._adjustments, adj => ({
+						SectorId: adj.SectorId,
+						Rotation: adj.Rotation % ONE_FULL_ROTATION,
+					})),
 				};
 				return action;
 			default:
@@ -145,5 +151,12 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 					type: InteractiveElementType.Hex,
 					state: InteractiveElementState.Enabled,
 			  }));
+	}
+
+	private getActualRotation(sectorId: string, adjustment: number): number {
+		const initialRotation = _.find(this._initialMap.sectors, s => s.id === sectorId)!.rotation;
+		const currentRotation = (initialRotation + adjustment) % ONE_FULL_ROTATION;
+		const actualRotation = currentRotation >= 0 ? currentRotation : ONE_FULL_ROTATION + currentRotation;
+		return actualRotation;
 	}
 }

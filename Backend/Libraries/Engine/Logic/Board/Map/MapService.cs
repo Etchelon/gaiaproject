@@ -180,11 +180,8 @@ namespace GaiaProject.Engine.Logic.Board.Map
 				.First();
 			var sectorNumber = firstHexInSector.SectorNumber;
 			var currentRotation = firstHexInSector.SectorRotation;
-			var newRotationTmp = clockwise
-				? currentRotation - (steps % MaxRotationSteps)
-				: currentRotation + steps;
-			newRotationTmp = newRotationTmp < 0 ? (MaxRotationSteps - newRotationTmp) : newRotationTmp;
-			var newRotation = (newRotationTmp % MaxRotationSteps);
+			var newRotationTmp = (currentRotation + (clockwise ? -1 : 1) * steps) % MaxRotationSteps;
+			var newRotation = newRotationTmp >= 0 ? newRotationTmp : MaxRotationSteps + newRotationTmp;
 			var sectorData = _mapData.Sectors.First(s => s.Id == sectorId);
 			var sectorPosition = _mapShapeData.SectorPositions[sectorNumber];
 			var newHexes = CreateHexes(sectorData, sectorPosition, sectorNumber, newRotation);

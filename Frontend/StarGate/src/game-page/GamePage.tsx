@@ -189,7 +189,7 @@ const GamePage = () => {
 		if (!isMobile && isActivePlayer) {
 			const audio = new Audio(playersTurnAudioUrl);
 			audio.volume = 0.5;
-			audio.play();
+			audio.play().catch(_.noop);
 		}
 		let workflow: ActionWorkflow | null = null;
 		if (activePlayer.pendingDecision) {
@@ -204,10 +204,6 @@ const GamePage = () => {
 		}
 
 		startWorkflow(workflow);
-
-		// return () => {
-		// 	closeWorkflow();
-		// };
 	}, [user, game, currentPlayer]);
 
 	//#endregion

@@ -230,7 +230,8 @@ const NewGamePage = () => {
 							InputLabelProps={{ className: "gaia-font" }}
 							InputProps={{ className: "gaia-font" }}
 							value={gameName}
-							label="Game name (optional)"
+							label="Game name (required)"
+							required
 							onChange={evt => setGameName(evt.target.value)}
 						/>
 					</div>
@@ -240,7 +241,7 @@ const NewGamePage = () => {
 						<Button variant="contained" color="default" disabled={isCreating} onClick={reset}>
 							<span className="gaia-font">Cancel</span>
 						</Button>
-						<Button variant="contained" color="primary" disabled={isCreating || selectedUsers.length < MIN_OTHER_PLAYERS} onClick={startGame}>
+						<Button variant="contained" color="primary" disabled={isCreating || selectedUsers.length < MIN_OTHER_PLAYERS || !gameName} onClick={startGame}>
 							<span className="gaia-font">Start</span>
 						</Button>
 					</div>
