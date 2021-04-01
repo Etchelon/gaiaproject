@@ -29,6 +29,8 @@ const MIN_OTHER_PLAYERS = 1;
 const MAX_OTHER_PLAYERS = 3;
 const DEFAULT_STARTING_VPS = 10;
 
+type BalancingMethod = "auction" | "sector-rotation";
+
 const NewGamePage = () => {
 	const classes = useStyles();
 	const history = useHistory();
@@ -39,7 +41,7 @@ const NewGamePage = () => {
 
 	const [selectedUsers, setSelectedUsers] = useState<UserInfoDto[]>([]);
 	const [raceSelectionMode, setRaceSelectionMode] = useState(RaceSelectionMode.TurnOrder);
-	const [withAuction, setWithAuction] = useState(false);
+	const [balancingMethod, setBalancingMethod] = useState<Nullable<BalancingMethod>>(null);
 	const [startingVPs, setStartingVPs] = useState(DEFAULT_STARTING_VPS);
 	const [gameName, setGameName] = useState<Nullable<string>>(null);
 	const [isCreating, setIsCreating] = useState(false);
@@ -75,9 +77,15 @@ const NewGamePage = () => {
 		setSelectedUsers(remainingUsers);
 	};
 
+	const onRaceSelectionModeChanged = (mode: RaceSelectionMode) => {
+		setRaceSelectionMode(mode);
+		mode === RaceSelectionMode.Random && balancingMethod === "sector-rotation" && setBalancingMethod(null);
+	};
+
 	const reset = () => {
 		setSelectedUsers([]);
 		setRaceSelectionMode(RaceSelectionMode.TurnOrder);
+		setBalancingMethod(null);
 		setGameName(null);
 	};
 	const startGame = async () => {
@@ -88,7 +96,8 @@ const NewGamePage = () => {
 			options: {
 				factionSelectionMode: raceSelectionMode,
 				turnOrderSelectionMode: TurnOrderSelectionMode.Random,
-				auction: withAuction,
+				auction: balancingMethod === "auction",
+				rotateSectorsInSetup: balancingMethod === "sector-rotation",
 				mapShape: selectedUsers.length as MapShape,
 				startingVPs,
 				gameName: gameName ?? `Gaia Project - ${format(new Date(), "eee d, MMMM yyyy (HH:mm)")}`,
@@ -176,16 +185,33 @@ const NewGamePage = () => {
 								aria-label="Race selection mode"
 								name="Race selection mode"
 								value={raceSelectionMode}
-								onChange={evt => setRaceSelectionMode(+evt.target.value)}
+								onChange={evt => onRaceSelectionModeChanged(+evt.target.value)}
 							>
 								<FormControlLabel classes={{ label: "gaia-font" }} value={RaceSelectionMode.TurnOrder} control={<Radio />} label="Free Choice" />
 								<FormControlLabel classes={{ label: "gaia-font" }} value={RaceSelectionMode.Random} control={<Radio />} label="Random" />
 							</RadioGroup>
-							<FormControlLabel
-								control={<Checkbox checked={withAuction} onChange={o => setWithAuction(o.target.checked)} name="with-auction" color="secondary" />}
-								label="With auction"
-								classes={{ label: "gaia-font" }}
-							></FormControlLabel>
+						</FormControl>
+					</div>
+					<div className={classes.marginTop}>
+						<FormControl component="fieldset">
+							<FormLabel component="legend" className="gaia-font">
+								Balancing method
+							</FormLabel>
+							<RadioGroup
+								aria-label="Balancing method"
+								name="Balancing method"
+								value={balancingMethod}
+								onChange={evt => setBalancingMethod(evt.target.value as BalancingMethod)}
+							>
+								<FormControlLabel classes={{ label: "gaia-font" }} value={"auction"} control={<Radio />} label="Auction" />
+								<FormControlLabel
+									classes={{ label: "gaia-font" }}
+									value={"sector-rotation"}
+									control={<Radio />}
+									label="Last player adjusts sector rotation"
+									disabled={raceSelectionMode === RaceSelectionMode.Random}
+								/>
+							</RadioGroup>
 						</FormControl>
 					</div>
 					<div className={classes.marginTop}>

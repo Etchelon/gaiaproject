@@ -12,7 +12,7 @@ namespace GaiaProject.Engine.Model.Actions
 	[BsonNoId]
 	[BsonKnownTypes(
 		// Setup CurrentPhase
-		typeof(AdjustSectorAction),
+		typeof(AdjustSectorsAction),
 		typeof(BidForRaceAction),
 		typeof(PlaceInitialStructureAction),
 		typeof(SelectRaceAction),

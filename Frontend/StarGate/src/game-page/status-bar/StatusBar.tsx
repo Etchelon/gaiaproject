@@ -90,7 +90,7 @@ const StatusBar = ({ game, playerId }: StatusBarProps) => {
 	const isIdle = !isExecutingAction;
 	const statusBarMessage = isExecutingAction ? "Executing..." : statusMessage;
 	const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
-	const { activeWorkflow, startWorkflow } = useWorkflow();
+	const { activeWorkflow, startWorkflow, closeWorkflow } = useWorkflow();
 	const isActivePlayer = game.activePlayer?.id === playerId;
 	const showActionSelector = isActivePlayer && !activeWorkflow;
 
@@ -106,7 +106,7 @@ const StatusBar = ({ game, playerId }: StatusBarProps) => {
 	};
 
 	const onActionSelected = (action: AvailableActionDto) => {
-		const workflow = fromAction(playerId, game, action);
+		const workflow = fromAction(playerId, game, action, dispatch);
 		startWorkflow(workflow);
 		setMenuAnchor(null);
 	};

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Model;
@@ -15,8 +16,19 @@ namespace GaiaProject.Engine.Logic.Utils
 			var nPlayers = players.Count;
 			SetupSubPhase subPhase;
 			AuctionState auctionState = null;
+			// TODO: make it a pure method and return starting player Id and his ActionState
 			var firstPlayer = players.OrderBy(p => p.TurnOrder).First();
-			if (options.Auction)
+			if (options.RotateSectorsInSetup)
+			{
+				if (options.FactionSelectionMode == RaceSelectionMode.Random)
+				{
+					throw new ArgumentException("You cannot have sector rotation with randomized factions", nameof(options));
+				}
+				subPhase = SetupSubPhase.LastPlayerAssemblesMap;
+				var lastPlayer = players.OrderBy(p => p.TurnOrder).Last();
+				lastPlayer.Actions = ActionState.FromAction(ActionType.AdjustSectors);
+			}
+			else if (options.Auction)
 			{
 				if (options.FactionSelectionMode == RaceSelectionMode.Random)
 				{

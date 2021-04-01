@@ -8,8 +8,8 @@ namespace GaiaProject.Engine.Enums
 	{
 		// Setup
 		[AvailableInPhase(GamePhase.Setup)]
-		[Description("adjust sector rotation during setup phase")]
-		AdjustSector,
+		[Description("adjust sectors rotation")]
+		AdjustSectors,
 
 		[AvailableInPhase(GamePhase.Setup)]
 		[Description("select race to play with")]

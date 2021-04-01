@@ -1,4 +1,6 @@
-﻿using GaiaProject.Engine.Enums;
+﻿using System.Collections.Generic;
+using System.Linq;
+using GaiaProject.Engine.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace GaiaProject.Engine.Model.Board
@@ -8,6 +10,16 @@ namespace GaiaProject.Engine.Model.Board
 	{
 		public MapShape Shape { get; set; }
 		public int ActualPlayerCount { get; set; }
-		public Hex[] Hexes { get; set; }
+		public List<Hex> Hexes { get; set; }
+
+		public Map Clone()
+		{
+			return new Map
+			{
+				Shape = Shape,
+				ActualPlayerCount = ActualPlayerCount,
+				Hexes = Hexes.Select(h => h.Clone()).ToList()
+			};
+		}
 	}
 }

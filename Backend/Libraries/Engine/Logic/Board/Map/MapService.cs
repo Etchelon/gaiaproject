@@ -89,14 +89,14 @@ namespace GaiaProject.Engine.Logic.Board.Map
 			CreateMap();
 		}
 
-		public MapService(Model.Board.Map map) : this()
+		public MapService(Model.Board.Map map, bool clone = false) : this()
 		{
 			var nPlayers = map.ActualPlayerCount;
 			var mapShape = map.Shape;
 			_nPlayers = nPlayers;
 			_isIntroductoryGame = mapShape == MapShape.IntroductoryGame2P || mapShape == MapShape.IntroductoryGame34P;
 			_mapShapeData = _mapData.MapShapes.First(s => s.ShapeId == mapShape);
-			Map = map;
+			Map = clone ? map.Clone() : map;
 		}
 
 		private void CreateMap()
@@ -114,7 +114,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 			var sectorsAndPositions = sectorData.Zip(_mapShapeData.SectorPositions, (sector, position) => new { Sector = sector, Position = position });
 			var hexes = sectorsAndPositions.SelectMany(
 				o => CreateHexes(o.Sector, o.Position, sectorNumber++, _isIntroductoryGame ? 0 : (byte?)null)
-			).ToArray();
+			).ToList();
 			Map = new Model.Board.Map
 			{
 				Shape = _mapShapeData.ShapeId,
@@ -135,7 +135,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 			}
 		}
 
-		private (bool isValid, List<string> invalidHexIds) FindInvalidHexes()
+		public (bool isValid, List<string> invalidHexIds) FindInvalidHexes()
 		{
 			foreach (var hex in Map.Hexes)
 			{
@@ -172,7 +172,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 			}
 		}
 
-		private void RotateSector(string sectorId, int steps, bool clockwise)
+		public void RotateSector(string sectorId, int steps, bool clockwise)
 		{
 			var firstHexInSector = Map.Hexes
 				.Where(h => h.SectorId == sectorId)
@@ -188,30 +188,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 			var sectorData = _mapData.Sectors.First(s => s.Id == sectorId);
 			var sectorPosition = _mapShapeData.SectorPositions[sectorNumber];
 			var newHexes = CreateHexes(sectorData, sectorPosition, sectorNumber, newRotation);
-			Map.Hexes = Map.Hexes.Where(h => h.SectorId != sectorId).Concat(newHexes).OrderBy(h => h.SectorId).ToArray();
-		}
-
-		[Obsolete("Extremely heavy algorithm, avoid using it", true)]
-		public int GetHexesDistance(Hex first, Hex second)
-		{
-			if (first.Row == second.Row)
-			{
-				return Math.Abs(first.Column - second.Column);
-			}
-			if (first.Column == second.Column)
-			{
-				return Math.Abs((first.Row - second.Row) / 2);
-			}
-
-			int distance = 0;
-			bool found;
-			do
-			{
-				var hexesWithin1FromFirst = FindHexesWithinDistance(first, ++distance);
-				found = hexesWithin1FromFirst.Any(h => h.Id == second.Id);
-			}
-			while (!found);
-			return distance;
+			Map.Hexes = Map.Hexes.Where(h => h.SectorId != sectorId).Concat(newHexes).OrderBy(h => h.SectorId).ToList();
 		}
 
 		/// <summary>

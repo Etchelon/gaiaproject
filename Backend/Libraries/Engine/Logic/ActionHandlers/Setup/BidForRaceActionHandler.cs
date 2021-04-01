@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Logic.Abstractions;
@@ -12,12 +11,10 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Setup
 {
 	public class BidForRaceActionHandler : ActionHandlerBase<BidForRaceAction>
 	{
-		private PlayerInGame _player;
 		private AuctionState _auctionState;
 
 		protected override void InitializeImpl(GaiaProjectGame game, BidForRaceAction action)
 		{
-			_player = game.Players.First(p => p.Id == action.PlayerId);
 			_auctionState = game.Setup.AuctionState;
 		}
 
@@ -89,7 +86,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Setup
 			}
 			if (!HasEnoughPoints(action))
 			{
-				return (false, $"Player only has {_player.State.Points} and cannot bid more than that.");
+				return (false, $"Player only has {Player.State.Points} and cannot bid more than that.");
 			}
 			return (true, null);
 		}

@@ -416,7 +416,7 @@ namespace GaiaProject.Endpoint.Mapping.Resolvers
 							return new AvailableActionViewModel
 							{
 								Type = ActionType.ColonizePlanet,
-								Description = "Colonize",
+								Description = "should colonize a planet",
 								InteractionState = new InteractionStateViewModel
 								{
 									ClickableHexes = colonizableHexes.Select(h =>
@@ -487,6 +487,14 @@ namespace GaiaProject.Endpoint.Mapping.Resolvers
 								Type = type,
 								Description = "must bid for a race",
 								InteractionState = new InteractionStateViewModel()
+							};
+						}
+					case ActionType.AdjustSectors:
+						{
+							return new AvailableActionViewModel
+							{
+								Type = type,
+								Description = "can adjust the map",
 							};
 						}
 					case ActionType.SelectStartingRoundBooster:

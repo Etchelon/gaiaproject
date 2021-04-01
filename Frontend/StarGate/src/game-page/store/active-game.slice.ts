@@ -2,7 +2,7 @@ import { HubConnectionState } from "@microsoft/signalr";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { AdvancedTechnologyTileType, FederationTokenType, ResearchTrackType, RoundBoosterType, StandardTechnologyTileType } from "../../dto/enums";
-import { AvailableActionDto, GameStateDto } from "../../dto/interfaces";
+import { AvailableActionDto, GameStateDto, MapDto } from "../../dto/interfaces";
 import { AppStore } from "../../store/types";
 import httpClient from "../../utils/http-client";
 import { Identifier, isLastRound } from "../../utils/miscellanea";
@@ -128,6 +128,14 @@ const activeGameSlice = createSlice({
 		saveNotesFeedbackDisplayed: state => {
 			state.saveNotesProgress = "idle";
 		},
+		rotateSector: (state, action: PayloadAction<{ id: string; rotation: number }>) => {
+			const { id, rotation } = action.payload;
+			const sector = _.find(state.gameState!.boardState.map.sectors, s => s.id === id)!;
+			sector.rotation = rotation;
+		},
+		resetSectors: (state, action: PayloadAction<MapDto>) => {
+			state.gameState!.boardState.map = action.payload;
+		},
 	},
 	extraReducers: {
 		[fetchActiveGame.pending.type]: state => {
@@ -196,6 +204,8 @@ export const {
 	userLeft,
 	setOnlineUsers,
 	saveNotesFeedbackDisplayed,
+	rotateSector,
+	resetSectors,
 } = activeGameSlice.actions;
 
 //#region Selectors

@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { Dispatch } from "redux";
 import { ActionType, GamePhase, PendingDecisionType, Race } from "../../dto/enums";
 import { AvailableActionDto, GameStateDto, PendingDecisionDto } from "../../dto/interfaces";
 import { localizeRoundBooster } from "../../utils/localization";
@@ -23,6 +24,7 @@ import { TaklonsLeechDecisionDto, TaklonsLeechWorkflow } from "./rounds-phase/ta
 import { TerransDecideIncomeDecisionDto, TerransDecideIncomeWorkflow } from "./rounds-phase/terrans-decide-income.workflow";
 import { UpgradeExistingStructureWorkflow } from "./rounds-phase/upgrade-existing-structure.workflow";
 import { UseTechnologyTileWorkflow } from "./rounds-phase/use-technology-tile.workflow";
+import { AdjustSectorsWorkflow } from "./setup-phase/adjust-sectors.workflow";
 import { BidForRaceWorkflow } from "./setup-phase/bid-for-race.workflow";
 import { PlaceInitialStructureWorkflow } from "./setup-phase/place-initial-structure.workflow";
 import { SelectRaceWorkflow } from "./setup-phase/select-race.workflow";
@@ -39,9 +41,11 @@ const ACTIVATABLE_ACTIONS: ActionType[] = [
 	ActionType.UseTechnologyTile,
 ];
 
-export function fromAction(playerId: string, game: GameStateDto, action: AvailableActionDto): ActionWorkflow {
+export function fromAction(playerId: string, game: GameStateDto, action: AvailableActionDto, dispatch: Dispatch): ActionWorkflow {
 	const isSetup = game.currentPhase === GamePhase.Setup;
-	return isSetup ? fromSetupAction(game, action) : fromRoundsAction(playerId, game, action);
+	const workflow = isSetup ? fromSetupAction(game, action) : fromRoundsAction(playerId, game, action);
+	workflow.setDispatch(dispatch);
+	return workflow;
 }
 
 export function fromDecision(playerId: string, game: GameStateDto, decision: PendingDecisionDto): ActionWorkflow {
@@ -78,6 +82,8 @@ export function fromDecision(playerId: string, game: GameStateDto, decision: Pen
 
 function fromSetupAction(game: GameStateDto, action: AvailableActionDto): ActionWorkflow {
 	switch (action.type) {
+		case ActionType.AdjustSectors:
+			return new AdjustSectorsWorkflow(game.boardState.map);
 		case ActionType.SelectRace:
 			return new SelectRaceWorkflow(action.interactionState.availableRaces!);
 		case ActionType.BidForRace:

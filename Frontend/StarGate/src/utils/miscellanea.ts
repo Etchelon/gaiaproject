@@ -5,6 +5,7 @@ import { GamePhase } from "../dto/enums";
 import { GameStateDto, HexDto } from "../dto/interfaces";
 
 const LAST_ROUND = 6;
+export const CENTRAL_HEX_INDEX = 9;
 
 export function isAuctionOngoing(game: GameStateDto): boolean {
 	if (!game.auctionState) {

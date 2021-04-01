@@ -101,7 +101,7 @@ const GamePage = () => {
 				}
 
 				const action = _.find(availableActions, act => act.type === actionType)!;
-				const newWorkflow = fromAction(currentPlayer!.id, game!, action);
+				const newWorkflow = fromAction(currentPlayer!.id, game!, action, dispatch);
 				startWorkflow(newWorkflow);
 			})
 		);
@@ -154,6 +154,14 @@ const GamePage = () => {
 			return;
 		}
 
+		// With the adjust-sectors action I'm introducing a new feature: a workflow that dispatches
+		// changes to the store. This causes game to be updated, which triggers this effect
+		// but in this case all changes are temporary and client side so the workflow will manage
+		// everything, we don't need to run the effect
+		if (!_.isNil(activeWorkflow)) {
+			return;
+		}
+
 		const gameIsOver = !_.isNil(game.ended);
 		if (gameIsOver) {
 			const winnersNames = _.chain(game.players)
@@ -187,7 +195,7 @@ const GamePage = () => {
 		if (activePlayer.pendingDecision) {
 			workflow = fromDecision(currentPlayer.id, game, activePlayer.pendingDecision);
 		} else if (_.size(activePlayer.availableActions) === 1) {
-			workflow = fromAction(currentPlayer.id, game, activePlayer.availableActions[0]);
+			workflow = fromAction(currentPlayer.id, game, activePlayer.availableActions[0], dispatch);
 		}
 
 		if (!workflow) {
@@ -197,9 +205,9 @@ const GamePage = () => {
 
 		startWorkflow(workflow);
 
-		return () => {
-			closeWorkflow();
-		};
+		// return () => {
+		// 	closeWorkflow();
+		// };
 	}, [user, game, currentPlayer]);
 
 	//#endregion

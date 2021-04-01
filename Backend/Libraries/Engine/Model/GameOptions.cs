@@ -12,6 +12,7 @@ namespace GaiaProject.Engine.Model
 		public RaceSelectionMode FactionSelectionMode { get; set; } = RaceSelectionMode.Random;
 		public bool Auction { get; set; }
 		public bool PreventSandwiching { get; set; }
+		public bool RotateSectorsInSetup { get; set; }
 		public int MinPlayers { get; set; } = 2;
 		public int MaxPlayers { get; set; } = 4;
 		public int StartingVPs { get; set; } = 10;
@@ -27,6 +28,7 @@ namespace GaiaProject.Engine.Model
 				FactionSelectionMode = FactionSelectionMode,
 				Auction = Auction,
 				PreventSandwiching = PreventSandwiching,
+				RotateSectorsInSetup = RotateSectorsInSetup,
 				MinPlayers = MinPlayers,
 				MaxPlayers = MaxPlayers,
 				StartingVPs = StartingVPs,

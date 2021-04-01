@@ -1,21 +1,21 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
-using GaiaProject.ViewModels.Board;
+using GaiaProject.Core.Model;
 using GaiaProject.Endpoint.Mapping.Converters;
 using GaiaProject.Endpoint.Mapping.Resolvers;
+using GaiaProject.Engine.Enums;
+using GaiaProject.Engine.Logic.Utils;
 using GaiaProject.Engine.Model;
 using GaiaProject.Engine.Model.Board;
-using GaiaProject.ViewModels;
-using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Model.Players;
-using GaiaProject.ViewModels.Users;
-using GaiaProject.ViewModels.Players;
-using System.Collections.Generic;
-using GaiaProject.Engine.Logic.Utils;
-using GaiaProject.ViewModels.Game;
-using System;
-using GaiaProject.Core.Model;
 using GaiaProject.Engine.Model.Setup;
+using GaiaProject.ViewModels;
+using GaiaProject.ViewModels.Board;
+using GaiaProject.ViewModels.Game;
+using GaiaProject.ViewModels.Players;
+using GaiaProject.ViewModels.Users;
 
 namespace GaiaProject.Endpoint.Mapping
 {
@@ -242,7 +242,7 @@ namespace GaiaProject.Endpoint.Mapping
 			.ToList();
 		}
 
-		private BuildingViewModel GetMainBuilding(Hex hex, Building[] buildings, ResolutionContext ctx)
+		private BuildingViewModel GetMainBuilding(Hex hex, IEnumerable<Building> buildings, ResolutionContext ctx)
 		{
 			if (!buildings.Any())
 			{
@@ -282,14 +282,14 @@ namespace GaiaProject.Endpoint.Mapping
 			return ctx.Mapper.Map<BuildingViewModel>(InnerGet());
 		}
 
-		private BuildingViewModel GetLantidsParasiteBuilding(Building[] buildings, HexViewModel hexViewModel, ResolutionContext ctx)
+		private BuildingViewModel GetLantidsParasiteBuilding(IEnumerable<Building> buildings, HexViewModel hexViewModel, ResolutionContext ctx)
 		{
 			var constructions = buildings.Where(b => b.Type <= BuildingType.AcademyRight).ToArray();
 			var ret = constructions.Length == 2 ? constructions.FirstOrDefault(b => b.RaceId == Race.Lantids) : null;
 			return ctx.Mapper.Map<BuildingViewModel>(ret);
 		}
 
-		private BuildingViewModel GetIvitsSpaceStation(Hex hex, Building[] buildings, ResolutionContext ctx)
+		private BuildingViewModel GetIvitsSpaceStation(Hex hex, IEnumerable<Building> buildings, ResolutionContext ctx)
 		{
 			if (hex.PlanetType.HasValue || !buildings.Any())
 			{
@@ -299,7 +299,7 @@ namespace GaiaProject.Endpoint.Mapping
 			return ctx.Mapper.Map<BuildingViewModel>(spaceStation);
 		}
 
-		private List<BuildingViewModel> GetSatellites(Hex hex, Building[] buildings, ResolutionContext ctx)
+		private List<BuildingViewModel> GetSatellites(Hex hex, IEnumerable<Building> buildings, ResolutionContext ctx)
 		{
 			if (hex.PlanetType.HasValue || !buildings.Any())
 			{

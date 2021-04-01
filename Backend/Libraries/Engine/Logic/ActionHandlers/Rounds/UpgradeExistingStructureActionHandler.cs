@@ -103,7 +103,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 		{
 			var targetBuildingType = action.TargetBuildingType;
 			var sourceBuilding = _targetHex.Buildings.Single(b => b.PlayerId == Player.Id);
-			if (Player.RaceId == Race.Lantids && _targetHex.Buildings.Length == 2)
+			if (Player.RaceId == Race.Lantids && _targetHex.Buildings.Count == 2)
 			{
 				Debug.Assert(sourceBuilding.Type == BuildingType.Mine, "Lantids cannot have anything else than a mine on a planet with another player");
 				reason = "you cannot upgrade a parasite symbiontic mine";
