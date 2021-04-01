@@ -16,7 +16,7 @@ namespace GaiaProject.Engine.Model.Setup
 			return new SetupPhase
 			{
 				SubPhase = SubPhase,
-				AuctionState = AuctionState.Clone()
+				AuctionState = AuctionState?.Clone()
 			};
 		}
 	}

@@ -42,7 +42,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 		public static IEnumerable<Hex> Colonizable(this IEnumerable<Hex> hexes, bool alsoWithLantidsMine = false)
 		{
 			static bool PredNormal(Hex h) => !h.Buildings.Any();
-			static bool PredLantids(Hex h) => !h.Buildings.Any() || h.Buildings.Length == 1 && h.Buildings.Single().RaceId != Race.Lantids;
+			static bool PredLantids(Hex h) => !h.Buildings.Any() || h.Buildings.Count == 1 && h.Buildings.Single().RaceId != Race.Lantids;
 			return hexes.Except(hexes.Space()).Where(alsoWithLantidsMine ? (Func<Hex, bool>)PredLantids : PredNormal);
 		}
 
@@ -58,7 +58,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 
 		public static IEnumerable<Hex> WithLantidsMine(this IEnumerable<Hex> hexes)
 		{
-			return hexes.Where(h => h.Buildings.Length == 2);
+			return hexes.Where(h => h.Buildings.Count == 2);
 		}
 
 		public static IEnumerable<Hex> WithGaiaformer(this IEnumerable<Hex> hexes)

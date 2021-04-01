@@ -98,7 +98,7 @@ export enum ResearchTrackType {
 }
 
 export enum ActionType {
-	AdjustSector,
+	AdjustSectors,
 	SelectRace,
 	BidForRace,
 	PlaceInitialStructure,

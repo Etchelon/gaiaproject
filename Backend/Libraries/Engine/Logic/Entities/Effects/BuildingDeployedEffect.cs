@@ -30,7 +30,7 @@ namespace GaiaProject.Engine.Logic.Entities.Effects
 			{
 				targetHex.PlanetType = PlanetType.LostPlanet;
 				hexBuildings.Add(Building.Factory.Create(BuildingType.LostPlanet, player, targetHex.Id, PlanetType.LostPlanet));
-				targetHex.Buildings = hexBuildings.ToArray();
+				targetHex.Buildings = hexBuildings.ToList();
 				playerBuildings.HasLostPlanet = true;
 				return;
 			}
@@ -115,7 +115,7 @@ namespace GaiaProject.Engine.Logic.Entities.Effects
 					break;
 			}
 
-			targetHex.Buildings = hexBuildings.ToArray();
+			targetHex.Buildings = hexBuildings.ToList();
 		}
 	}
 }

@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { Dispatch } from "redux";
 import { BehaviorSubject, Subject } from "rxjs";
 import { ActionType } from "../../dto/enums";
 import { ActionDto, InteractionStateDto } from "../../dto/interfaces";
@@ -8,7 +9,7 @@ import { Command, InteractiveElement, WorkflowState } from "./types";
 
 export abstract class ActionWorkflow {
 	states: WorkflowState[] = [];
-	private readonly _switchToAction = new Subject<ActionType | null>();
+	private readonly _switchToAction = new Subject<Nullable<ActionType>>();
 	switchToAction$ = this._switchToAction.asObservable();
 	private readonly _currentState = new BehaviorSubject<WorkflowState>({ id: 0, message: "" });
 	currentState$ = this._currentState.asObservable();
@@ -22,8 +23,9 @@ export abstract class ActionWorkflow {
 	protected get stateId(): number {
 		return this.currentState.id;
 	}
+	protected dispatch: Nullable<Dispatch> = null;
 
-	constructor(protected interactionState: InteractionStateDto | null = null, skipInit = true) {
+	constructor(protected interactionState: Nullable<InteractionStateDto> = null, skipInit = true) {
 		if (skipInit) {
 			return;
 		}
@@ -31,7 +33,7 @@ export abstract class ActionWorkflow {
 	}
 
 	protected abstract init(): void;
-	abstract handleCommand(command: Command): ActionDto | null;
+	abstract handleCommand(command: Command): Nullable<ActionDto>;
 
 	protected switchToAction(type: ActionType): void {
 		this._switchToAction.next(type);
@@ -114,6 +116,10 @@ export abstract class ActionWorkflow {
 		this.interactionState?.canUseRightAcademy && ret.push({ type: InteractiveElementType.RightAcademy, state: InteractiveElementState.Enabled });
 
 		return ret;
+	}
+
+	setDispatch(dispatch: Dispatch): void {
+		this.dispatch = dispatch;
 	}
 }
 

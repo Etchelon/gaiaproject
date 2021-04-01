@@ -1,4 +1,6 @@
-﻿using GaiaProject.Engine.Enums;
+﻿using System.Collections.Generic;
+using System.Linq;
+using GaiaProject.Engine.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace GaiaProject.Engine.Model.Board
@@ -15,7 +17,7 @@ namespace GaiaProject.Engine.Model.Board
 		public int Column { get; set; }
 		public PlanetType? PlanetType { get; set; }
 		public bool? WasGaiaformed { get; set; }
-		public Building[] Buildings { get; set; }
+		public List<Building> Buildings { get; set; }
 
 		[BsonIgnore]
 		public PlanetType? ActualPlanetType => PlanetType == Enums.PlanetType.Gaia ||
@@ -34,7 +36,23 @@ namespace GaiaProject.Engine.Model.Board
 				Row = row,
 				Column = column,
 				PlanetType = planetType,
-				Buildings = new Building[0]
+				Buildings = new List<Building>()
+			};
+		}
+
+		public Hex Clone()
+		{
+			return new Hex
+			{
+				SectorId = SectorId,
+				SectorNumber = SectorNumber,
+				SectorRotation = SectorRotation,
+				Index = Index,
+				Row = Row,
+				Column = Column,
+				PlanetType = PlanetType,
+				WasGaiaformed = WasGaiaformed,
+				Buildings = Buildings.Select(b => b.Clone()).ToList()
 			};
 		}
 	}

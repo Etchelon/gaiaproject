@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using GaiaProject.Common.Reflection;
 using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Logic;
@@ -33,6 +34,19 @@ namespace GaiaProject.Endpoint.WorkerServices
 						return new SelectRaceAction
 						{
 							Race = actionVm.Race,
+						};
+					}
+				case ActionType.AdjustSectors:
+					{
+						var actionVm = action.ToObject<AdjustSectorsActionViewModel>();
+						return new AdjustSectorsAction
+						{
+							Adjustments = actionVm.Adjustments.Select(o => new AdjustSectorsAction.SectorAdjustment
+							{
+								SectorId = o.SectorId,
+								Rotation = o.Rotation,
+							})
+							.ToList(),
 						};
 					}
 				case ActionType.BidForRace:

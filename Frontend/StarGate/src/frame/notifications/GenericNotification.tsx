@@ -50,7 +50,7 @@ const GenericNotification = ({ notification, parentScrollable, bordered, notific
 		if (isRead) {
 			return;
 		}
-		_.delay(() => dispatch(setNotificationRead({ id: notification.id })), 2000);
+		_.delay(() => dispatch(setNotificationRead({ id: notification.id })), 1000);
 	}, [isRead, isVisible]);
 
 	return (

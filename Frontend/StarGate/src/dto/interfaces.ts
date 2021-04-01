@@ -377,6 +377,7 @@ export interface GameOptions {
 	turnOrderSelectionMode: TurnOrderSelectionMode;
 	factionSelectionMode: RaceSelectionMode;
 	auction: boolean;
+	rotateSectorsInSetup?: boolean;
 	preventSandwiching?: boolean;
 	minPlayers?: number;
 	maxPlayers?: number;

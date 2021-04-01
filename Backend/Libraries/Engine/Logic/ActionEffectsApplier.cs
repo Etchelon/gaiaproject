@@ -79,6 +79,7 @@ namespace GaiaProject.Engine.Logic
 			effects.OfType<AuctionEndedEffect>().SingleOrDefault()?.ApplyTo(newGameState);
 			effects.OfType<GotoSubphaseEffect>().SingleOrDefault()?.ApplyTo(newGameState);
 			effects.OfType<StartRoundsPhaseEffect>().SingleOrDefault()?.ApplyTo(newGameState);
+			effects.OfType<MapAdjustedEffect>().SingleOrDefault()?.ApplyTo(newGameState);
 			return newGameState;
 		}
 	}
