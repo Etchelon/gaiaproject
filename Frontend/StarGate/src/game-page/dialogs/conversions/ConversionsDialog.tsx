@@ -48,7 +48,8 @@ const hasPlanetaryInstitute = (playerState: PlayerStateDto) => playerState.build
 const hasQicAcademy = (playerState: PlayerStateDto) => playerState.buildings.academyRight;
 const playerIs = (p: PlayerInGameDto, race: Race) => p.raceId === race;
 const isHadschHallasWithPlanetaryInstitute = (player: PlayerInGameDto) => playerIs(player, Race.HadschHallas) && hasPlanetaryInstitute(player.state);
-const isNevlasWithPlanetaryInstitute = (player: PlayerInGameDto) => playerIs(player, Race.Nevlas) && hasPlanetaryInstitute(player.state);
+const isNevlas = (player: PlayerInGameDto) => playerIs(player, Race.Nevlas);
+const isNevlasWithPlanetaryInstitute = (player: PlayerInGameDto) => isNevlas(player) && hasPlanetaryInstitute(player.state);
 const isGleensWithoutQicAcademy = (player: PlayerInGameDto) => playerIs(player, Race.Gleens) && !hasQicAcademy(player.state);
 const isTaklons = (player: PlayerInGameDto) => playerIs(player, Race.Taklons);
 const isTaklonsWithBrainstone = (player: PlayerInGameDto) => {
@@ -290,27 +291,27 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 							<Button variant="contained" color="default" className={classes.conversion} disabled={!canBurn} onClick={() => dispatch({ type: Conversion.BurnPower })}>
 								<span className="gaia-font">Burn 1 Power</span>
 							</Button>
+							{isNevlas(player) && (
+								<Button
+									variant="contained"
+									color="default"
+									className={classes.conversion}
+									disabled={power3(playerState) <= 0}
+									onClick={() => dispatch({ type: Conversion.NevlasPower3ToKnowledge })}
+								>
+									<span className="gaia-font">{"Bowl 3 -> Knowledge"}</span>
+								</Button>
+							)}
 							{isNevlasWithPlanetaryInstitute(player) && (
-								<>
-									<Button
-										variant="contained"
-										color="default"
-										className={classes.conversion}
-										disabled={power3(playerState) <= 0}
-										onClick={() => dispatch({ type: Conversion.NevlasPower3ToKnowledge })}
-									>
-										<span className="gaia-font">{"Bowl 3 -> Knowledge"}</span>
-									</Button>
-									<Button
-										variant="contained"
-										color="default"
-										className={classes.conversion}
-										disabled={equivalentPower3(player) < 6}
-										onClick={() => dispatch({ type: Conversion.Nevlas3PowerTo2Ores })}
-									>
-										<span className="gaia-font">{"3 Power -> 2 Ores"}</span>
-									</Button>
-								</>
+								<Button
+									variant="contained"
+									color="default"
+									className={classes.conversion}
+									disabled={equivalentPower3(player) < 6}
+									onClick={() => dispatch({ type: Conversion.Nevlas3PowerTo2Ores })}
+								>
+									<span className="gaia-font">{"3 Power -> 2 Ores"}</span>
+								</Button>
 							)}
 							{isHadschHallasWithPlanetaryInstitute(player) && (
 								<>
