@@ -21,7 +21,7 @@ const viewsAnchors = new Map<ActiveView, string>([
 	[ActiveView.Map, "map"],
 	[ActiveView.ResearchBoard, "researchBoard"],
 	[ActiveView.ScoringBoard, "scoringBoard"],
-	[ActiveView.MobilePlayerBoxes, "boxesAndLogs"],
+	[ActiveView.PlayerArea, "boxesAndLogs"],
 ]);
 
 const MobileView = ({ game, currentPlayerId, players, activeView }: GameViewProps) => {
@@ -43,7 +43,6 @@ const MobileView = ({ game, currentPlayerId, players, activeView }: GameViewProp
 		const statusBar = document.getElementById(STATUSBAR_ID)!;
 		const top = element.offsetTop - TOOLBAR_HEIGHT - 3 - statusBar.clientHeight - 3; // 3px spacing below the toolbar and status bar
 		gameViewWrapper.scrollTo({ top, behavior: "smooth" });
-		// element.scrollIntoView({ behavior: "smooth" });
 	}, [activeView]);
 
 	useLayoutEffect(() => {
@@ -61,7 +60,7 @@ const MobileView = ({ game, currentPlayerId, players, activeView }: GameViewProp
 		<div id="boxesAndLogs" className={classes.playerBoxesAndLogs}>
 			{_.map(players, (p, index) => (
 				<div key={p.id} className={classes.playerBox}>
-					<PlayerBoxOrArea player={p} index={index + 1} />
+					<PlayerBoxOrArea player={p} index={index + 1} forcePlayerAreaView={p.id === currentPlayerId && activeView === ActiveView.PlayerArea} />
 				</div>
 			))}
 			{_.map([...game.gameLogs].reverse(), (log, index) => (

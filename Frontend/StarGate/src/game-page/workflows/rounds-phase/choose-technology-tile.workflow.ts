@@ -38,7 +38,7 @@ export class ChooseTechnologyTileWorkflow extends ActionWorkflow {
 			{
 				id: ChooseStandardTileToCover,
 				message: "Select a standard tile to cover",
-				view: ActiveView.PlayerAreas,
+				view: ActiveView.PlayerArea,
 			},
 			{
 				id: WaitingForConfirmation,

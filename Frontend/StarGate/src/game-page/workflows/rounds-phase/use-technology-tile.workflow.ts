@@ -25,7 +25,7 @@ export class UseTechnologyTileWorkflow extends ActionWorkflow {
 			{
 				id: WaitingForTile,
 				message: "Select one of your tiles",
-				view: ActiveView.PlayerAreas,
+				view: ActiveView.PlayerArea,
 				commands: [CommonCommands.Abort],
 			},
 			{
