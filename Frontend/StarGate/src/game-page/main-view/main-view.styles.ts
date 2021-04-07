@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme =>
 				zIndex: 2,
 			},
 			"&.zoomable:hover": {
-				zoom: 2,
+				zoom: 3, // Lantids parasite mines have z-index 2
 			},
 			"& > .click-trap": {
 				...fillParentAbs,

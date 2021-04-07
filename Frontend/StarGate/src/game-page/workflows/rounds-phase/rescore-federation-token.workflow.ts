@@ -26,7 +26,7 @@ export class RescoreFederationTokenWorkflow extends ActionWorkflow {
 			{
 				id: WaitingForToken,
 				message: "Select which Federation token to score",
-				view: ActiveView.PlayerAreas,
+				view: ActiveView.PlayerArea,
 			},
 			{
 				id: WaitingForConfirmation,

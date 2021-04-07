@@ -350,7 +350,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 			return ret;
 		}
 
-		public List<Hex> FindHexesWithinDistance(Hex hex, int distance)
+		public List<Hex> FindHexesWithinDistance(Hex hex, int distance, bool skipSelf = true)
 		{
 			if (distance < 0)
 			{
@@ -362,7 +362,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 			}
 
 			return Map.Hexes
-				.Where(h => h.Id != hex.Id
+				.Where(h => (!skipSelf || h.Id != hex.Id)
 					&& Math.Abs(h.Column - hex.Column) <= distance
 					&& Math.Abs(h.Row - hex.Row) + Math.Abs(h.Column - hex.Column) <= 2 * distance
 				)
@@ -442,7 +442,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 
 		public bool IsInRangeOfOtherPlayers(Hex hex, string playerId, int range)
 		{
-			var hexesWithOtherPlayersBuildings = FindHexesWithinDistance(hex, range).WithPlayersOtherThan(playerId);
+			var hexesWithOtherPlayersBuildings = FindHexesWithinDistance(hex, range, false).WithPlayersOtherThan(playerId);
 			return hexesWithOtherPlayersBuildings
 				.Except(hexesWithOtherPlayersBuildings.WithBuildingType(BuildingType.IvitsSpaceStation))
 				.Except(hexesWithOtherPlayersBuildings.WithBuildingType(BuildingType.Satellite))

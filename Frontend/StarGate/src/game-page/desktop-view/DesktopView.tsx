@@ -1,12 +1,12 @@
 import { Grid, Tab, Tabs } from "@material-ui/core";
 import _ from "lodash";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { GamePhase } from "../../dto/enums";
 import { ElementSize } from "../../utils/hooks";
 import { Nullable } from "../../utils/miscellanea";
 import PlayerConfig from "../config/PlayerConfig";
-import PlayerAreas from "../game-board/player-area/PlayerAreas";
+import PlayerArea from "../game-board/player-area/PlayerArea";
 import PlayerBox from "../game-board/player-box/PlayerBox";
 import ResearchBoard from "../game-board/research-board/ResearchBoard";
 import ScoringBoard from "../game-board/scoring-board/ScoringBoard";
@@ -17,6 +17,9 @@ import { setActiveView } from "../store/active-game.slice";
 import { rollbackGameAtAction } from "../store/actions-thunks";
 import { ActiveView } from "../workflows/types";
 import useStyles from "./desktop-view.styles";
+import { PlayerInGameDto } from "../../dto/interfaces";
+
+const PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO = 1.439;
 
 const DesktopView = ({ game, currentPlayerId, players, activeView }: GameViewProps) => {
 	const classes = useStyles();
@@ -25,6 +28,26 @@ const DesktopView = ({ game, currentPlayerId, players, activeView }: GameViewPro
 	const [activeViewDimensions, setActiveViewDimensions] = useState<Nullable<ElementSize>>(null);
 	const isGameCreator = game.createdBy.id === currentPlayerId;
 	const canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
+
+	const [playerAreaToShow, setPlayerAreaToShow] = useState<Nullable<PlayerInGameDto>>(null);
+	const showPlayerArea = (playerId: string) => {
+		if (playerId === playerAreaToShow?.id) {
+			hidePlayerArea();
+			return;
+		}
+		const player = _.find(players, p => p.id === playerId)!;
+		setPlayerAreaToShow(player);
+	};
+	const hidePlayerArea = () => {
+		setPlayerAreaToShow(null);
+	};
+	useEffect(() => {
+		if (activeView !== ActiveView.PlayerArea) {
+			hidePlayerArea();
+			return;
+		}
+		showPlayerArea(currentPlayerId);
+	}, [activeView]);
 
 	useLayoutEffect(() => {
 		if (_.isNil(activeViewContainerRef.current)) {
@@ -37,10 +60,29 @@ const DesktopView = ({ game, currentPlayerId, players, activeView }: GameViewPro
 		});
 	}, [activeViewContainerRef, game]);
 
+	const dialogPlayerAreaDimensions = {
+		width: 0,
+		height: 0,
+		top: 0,
+		left: 0,
+	};
+	if (!_.isNil(activeViewDimensions)) {
+		let dpaHeight = activeViewDimensions.height * 0.9;
+		let dpaWidth = dpaHeight * PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO;
+		if (dpaWidth > activeViewDimensions.width) {
+			dpaWidth = activeViewDimensions.width * 0.9;
+			dpaHeight = dpaWidth / PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO;
+		}
+		dialogPlayerAreaDimensions.width = dpaWidth;
+		dialogPlayerAreaDimensions.height = dpaHeight;
+		dialogPlayerAreaDimensions.top = (activeViewDimensions.height - dpaHeight) / 2;
+		dialogPlayerAreaDimensions.left = (activeViewDimensions.width - dpaWidth) / 2;
+	}
+
 	const PlayerBoxesAndLogs = (
 		<div className={classes.playerBoxesAndLogs}>
 			{_.map(players, (p, index) => (
-				<div key={p.id} className={classes.playerBox}>
+				<div key={p.id} className={classes.playerBox} onClick={() => showPlayerArea(p.id)}>
 					<PlayerBox player={p} index={index + 1} />
 				</div>
 			))}
@@ -52,11 +94,13 @@ const DesktopView = ({ game, currentPlayerId, players, activeView }: GameViewPro
 		</div>
 	);
 
+	const actualView = activeView === ActiveView.Map || activeView === ActiveView.PlayerArea ? ActiveView.Map : activeView;
+
 	return (
 		<Grid container className={classes.root}>
 			<Grid item className={classes.boardArea} xs={12} md={9}>
 				<div ref={activeViewContainerRef} className={classes.activeViewContainer}>
-					{activeView === ActiveView.Map && activeViewDimensions && (
+					{actualView === ActiveView.Map && activeViewDimensions && (
 						<MainView
 							game={game}
 							width={activeViewDimensions.width}
@@ -65,10 +109,10 @@ const DesktopView = ({ game, currentPlayerId, players, activeView }: GameViewPro
 							minimapClicked={view => dispatch(setActiveView(view))}
 						/>
 					)}
-					{activeView === ActiveView.ResearchBoard && activeViewDimensions && (
+					{actualView === ActiveView.ResearchBoard && activeViewDimensions && (
 						<ResearchBoard board={game.boardState.researchBoard} width={activeViewDimensions.width} height={activeViewDimensions.height} />
 					)}
-					{activeView === ActiveView.ScoringBoard && (
+					{actualView === ActiveView.ScoringBoard && (
 						<ScoringBoard
 							board={game.boardState.scoringBoard}
 							roundBoosters={game.boardState.availableRoundBoosters}
@@ -76,12 +120,24 @@ const DesktopView = ({ game, currentPlayerId, players, activeView }: GameViewPro
 							isMobile={false}
 						/>
 					)}
-					{activeView === ActiveView.PlayerAreas && <PlayerAreas players={players} />}
-					{activeView === ActiveView.NotesAndSettings && <PlayerConfig gameId={game.id} />}
+					{actualView === ActiveView.NotesAndSettings && <PlayerConfig gameId={game.id} />}
+					{!_.isNil(playerAreaToShow) && (
+						<div
+							className={classes.hoveredPlayerArea}
+							style={{
+								width: dialogPlayerAreaDimensions.width,
+								height: dialogPlayerAreaDimensions.height,
+								left: dialogPlayerAreaDimensions.left,
+								top: dialogPlayerAreaDimensions.top,
+							}}
+						>
+							<PlayerArea player={playerAreaToShow} framed={true} />
+						</div>
+					)}
 				</div>
 				<Tabs
 					className={classes.tabs}
-					value={activeView}
+					value={actualView}
 					onChange={(__, val: ActiveView) => dispatch(setActiveView(val))}
 					indicatorColor="primary"
 					variant={"standard"}
@@ -90,7 +146,6 @@ const DesktopView = ({ game, currentPlayerId, players, activeView }: GameViewPro
 					<Tab className="gaia-font" label="Map" value={ActiveView.Map} />
 					<Tab className="gaia-font" label="Research" value={ActiveView.ResearchBoard} />
 					<Tab className="gaia-font" label="Scoring" value={ActiveView.ScoringBoard} />
-					<Tab className="gaia-font" label="Players" value={ActiveView.PlayerAreas} />
 					<Tab className="gaia-font" label="Notes" value={ActiveView.NotesAndSettings} />
 				</Tabs>
 			</Grid>

@@ -142,7 +142,6 @@ const activeViews = new Map<ActiveView, string>([
 	[ActiveView.Map, "Map"],
 	[ActiveView.ResearchBoard, "Research"],
 	[ActiveView.ScoringBoard, "Scoring"],
-	[ActiveView.PlayerAreas, "Players"],
 ]);
 
 const dictionaries = new Map<LocalizableEnum, Map<number, string>>([
