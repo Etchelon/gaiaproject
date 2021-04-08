@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
 		root: {
 			...centeredFlexRow,
+			flexDirection: ({ useVerticalLayout }: { useVerticalLayout: boolean }) => (useVerticalLayout ? "column" : "row"),
 			...fillParent,
 			padding: theme.spacing(1, 2),
 			[theme.breakpoints.down("sm")]: {
@@ -56,7 +57,8 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		commands: {
 			flex: "0 0 auto",
-			marginLeft: theme.spacing(2),
+			marginTop: ({ useVerticalLayout }: { useVerticalLayout: boolean }) => (useVerticalLayout ? theme.spacing(0.25) : 0),
+			marginLeft: ({ useVerticalLayout }: { useVerticalLayout: boolean }) => (useVerticalLayout ? 0 : theme.spacing(2)),
 			[theme.breakpoints.down("sm")]: {
 				marginLeft: theme.spacing(1),
 			},
@@ -78,10 +80,10 @@ const useStyles = makeStyles((theme: Theme) =>
 interface StatusBarProps {
 	game: GameStateDto;
 	playerId: string;
+	isMobile: boolean;
 }
 
-const StatusBar = ({ game, playerId }: StatusBarProps) => {
-	const classes = useStyles();
+const StatusBar = ({ game, playerId, isMobile }: StatusBarProps) => {
 	const dispatch = useDispatch();
 	const statusMessage = useSelector(selectStatusMessage);
 	const commands = useSelector(selectAvailableCommands);
@@ -90,7 +92,9 @@ const StatusBar = ({ game, playerId }: StatusBarProps) => {
 	const isIdle = !isExecutingAction;
 	const statusBarMessage = isExecutingAction ? "Executing..." : statusMessage;
 	const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
-	const { activeWorkflow, startWorkflow, closeWorkflow } = useWorkflow();
+	const { activeWorkflow, startWorkflow } = useWorkflow();
+	const useVerticalLayout = isMobile && commands.length > 1;
+	const classes = useStyles({ useVerticalLayout });
 	const isActivePlayer = game.activePlayer?.id === playerId;
 	const showActionSelector = isActivePlayer && !activeWorkflow;
 
