@@ -20,6 +20,7 @@ const useStyles = makeStyles(theme =>
 		},
 		miniMap: {
 			position: "absolute",
+			zIndex: 0,
 			"&:hover": {
 				zIndex: 3, // Lantids parasite mines have z-index 2
 			},
