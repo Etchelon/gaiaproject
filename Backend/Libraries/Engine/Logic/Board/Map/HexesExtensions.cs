@@ -106,6 +106,11 @@ namespace GaiaProject.Engine.Logic.Board.Map
 			return hexes.Where(h => h.Buildings.Any(b => b.Type == type));
 		}
 
+		public static IEnumerable<Hex> WithOwnBuildingsOfType(this IEnumerable<Hex> hexes, string playerId, BuildingType type)
+		{
+			return hexes.Where(h => h.Buildings.Any(b => b.PlayerId == playerId && b.Type == type));
+		}
+
 		public static IEnumerable<Hex> WithFederatableBuildings(this IEnumerable<Hex> hexes)
 		{
 			return hexes.WithBuildings().Except(hexes.WithBuildingType(BuildingType.Gaiaformer));

@@ -27,7 +27,7 @@ namespace GaiaProject.Engine.Logic.Entities.Effects
 			buildingTypes.ForEach(type =>
 			{
 				mapService.GetPlayersHexes(PlayerId)
-					.WithBuildingType(type)
+					.WithOwnBuildingsOfType(PlayerId, type)
 					.SelectMany(h => h.Buildings)
 					// Filter out Lantids parasite buildings
 					.Where(b => b.PlayerId == PlayerId)
