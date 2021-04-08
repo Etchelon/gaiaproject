@@ -7,7 +7,7 @@ import { ConversionsActionDto } from "./conversions.workflow";
 
 const WaitingForDecision = 0;
 const WaitingForConversions = 1;
-const PassTurn = 2;
+export const PassTurn = 2;
 
 interface PassTurnActionDto extends ActionDto {
 	Type: ActionType.PassTurn;
@@ -23,6 +23,7 @@ export class PerformConversionsOrPassTurnWorkflow extends ActionWorkflow {
 					{ nextState: WaitingForConversions, text: "Conversions" },
 					{ nextState: PassTurn, text: "End turn" },
 				],
+				view: ActiveView.Map,
 			},
 			{
 				id: WaitingForConversions,
@@ -38,6 +39,9 @@ export class PerformConversionsOrPassTurnWorkflow extends ActionWorkflow {
 			case WaitingForConversions:
 				this.advanceState(WaitingForConversions);
 				return null;
+			case CommonWorkflowStates.CANCEL:
+				this.advanceState(WaitingForDecision);
+				return null;
 			case CommonWorkflowStates.PERFORM_CONVERSION:
 				const conversions = command.data as Conversion[];
 				const conversionAction: ConversionsActionDto = {
@@ -45,7 +49,6 @@ export class PerformConversionsOrPassTurnWorkflow extends ActionWorkflow {
 					Conversions: conversions,
 				};
 				return conversionAction;
-			case CommonWorkflowStates.CANCEL:
 			case PassTurn:
 				const action: PassTurnActionDto = {
 					Type: ActionType.PassTurn,
