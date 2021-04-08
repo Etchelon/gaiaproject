@@ -13,12 +13,27 @@ namespace GaiaProject.Engine.Model.Players
 	{
 		public bool IsCurrentPlayer { get; set; }
 		public ActivationState ActivationState { get; set; } = ActivationState.Inactive;
+
+		[BsonIgnoreIfDefault]
 		public bool CanPerformConversions { get; set; }
+
+		[BsonIgnoreIfDefault]
 		public bool HasPerformedMainAction { get; set; }
+
+		[BsonIgnoreIfDefault]
 		public bool HasUsedPlanetaryInstitute { get; set; }
+
+		[BsonIgnoreIfDefault]
 		public bool HasUsedRightAcademy { get; set; }
+
+		[BsonIgnoreIfDefault]
 		public bool HasUsedRaceAction { get; set; }
+
+		[BsonIgnoreIfDefault]
 		public bool HasPassed { get; set; }
+
+		[BsonIgnoreIfDefault]
+		public bool AutoPassAfterPendingDecisions { get; set; }
 		public List<ActionType> PossibleActions { get; set; } = new List<ActionType>();
 
 		[BsonIgnoreIfNull]
@@ -34,6 +49,7 @@ namespace GaiaProject.Engine.Model.Players
 			HasUsedRightAcademy = false;
 			HasUsedRaceAction = false;
 			HasPassed = false;
+			AutoPassAfterPendingDecisions = false;
 			return this;
 		}
 
@@ -114,6 +130,7 @@ namespace GaiaProject.Engine.Model.Players
 			CanPerformConversions = false;
 			PossibleActions = new List<ActionType>();
 			PendingDecision = null;
+			AutoPassAfterPendingDecisions = false;
 		}
 
 		public void RoundPassed()
@@ -141,6 +158,7 @@ namespace GaiaProject.Engine.Model.Players
 				HasUsedRightAcademy = HasUsedRightAcademy,
 				HasUsedRaceAction = HasUsedRaceAction,
 				HasPassed = HasPassed,
+				AutoPassAfterPendingDecisions = AutoPassAfterPendingDecisions,
 				PossibleActions = PossibleActions.ToList(),
 				PendingDecision = PendingDecision?.Clone(),
 			};

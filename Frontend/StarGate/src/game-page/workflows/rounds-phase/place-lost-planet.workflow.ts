@@ -12,6 +12,7 @@ const WaitingForConfirmation = 1;
 interface PlaceLostPlanetActionDto extends ActionDto {
 	Type: ActionType.PlaceLostPlanet;
 	HexId: string;
+	AndPass: boolean;
 }
 
 // TODO: exact duplicate of the Colonize Planet workflow. Refactor!!
@@ -33,7 +34,21 @@ export class PlaceLostPlanetWorkflow extends ActionWorkflow {
 			{
 				id: WaitingForConfirmation,
 				message: "Place the Lost Planet in the selected hex?",
-				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
+				commands: [
+					CommonCommands.Cancel,
+					{
+						text: "Place & Pass",
+						nextState: CommonWorkflowStates.PERFORM_ACTION,
+						isPrimary: false,
+						data: true,
+					},
+					{
+						text: "Place",
+						nextState: CommonWorkflowStates.PERFORM_ACTION,
+						isPrimary: true,
+						data: false,
+					},
+				],
 			},
 		];
 		this.currentState = _.first(this.states)!;
@@ -71,6 +86,7 @@ export class PlaceLostPlanetWorkflow extends ActionWorkflow {
 				const action: PlaceLostPlanetActionDto = {
 					Type: ActionType.PlaceLostPlanet,
 					HexId: this._selectedHexId!,
+					AndPass: command.data as boolean,
 				};
 				return action;
 			default:

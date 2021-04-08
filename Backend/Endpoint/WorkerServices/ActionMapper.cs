@@ -95,6 +95,7 @@ namespace GaiaProject.Endpoint.WorkerServices
 						return new ColonizePlanetAction
 						{
 							TargetHexId = actionVm.HexId,
+							AndPass = actionVm.AndPass
 						};
 					}
 				case ActionType.UpgradeExistingStructure:
@@ -103,7 +104,8 @@ namespace GaiaProject.Endpoint.WorkerServices
 						return new UpgradeExistingStructureAction
 						{
 							TargetHexId = actionVm.HexId,
-							TargetBuildingType = actionVm.TargetBuilding
+							TargetBuildingType = actionVm.TargetBuilding,
+							AndPass = actionVm.AndPass
 						};
 					}
 				case ActionType.ResearchTechnology:
@@ -255,7 +257,8 @@ namespace GaiaProject.Endpoint.WorkerServices
 						var actionVm = action.ToObject<PlaceLostPlanetActionViewModel>();
 						return new PlaceLostPlanetAction
 						{
-							HexId = actionVm.HexId
+							HexId = actionVm.HexId,
+							AndPass = actionVm.AndPass
 						};
 					}
 				case ActionType.RescoreFederationToken:

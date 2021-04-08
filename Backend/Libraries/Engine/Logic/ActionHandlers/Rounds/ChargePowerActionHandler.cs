@@ -5,6 +5,7 @@ using GaiaProject.Engine.Logic.Abstractions;
 using GaiaProject.Engine.Logic.Entities;
 using GaiaProject.Engine.Logic.Entities.Effects;
 using GaiaProject.Engine.Logic.Entities.Effects.Gains;
+using GaiaProject.Engine.Logic.Utils;
 using GaiaProject.Engine.Model;
 using GaiaProject.Engine.Model.Actions;
 using GaiaProject.Engine.Model.Decisions;
@@ -16,6 +17,15 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 		protected override List<Effect> HandleImpl(GaiaProjectGame game, ChargePowerAction action)
 		{
 			var effects = new List<Effect>();
+
+			var isLastPendingDecision = game.PendingDecisions!.Count() == 1;
+			var autopass = game.CurrentPlayer.Actions.AutoPassAfterPendingDecisions;
+			if (isLastPendingDecision && autopass)
+			{
+				var nextPlayerId = TurnOrderUtils.GetNextPlayer(game.CurrentPlayerId, game, true);
+				effects.Add(new PassTurnToPlayerEffect(nextPlayerId));
+			}
+
 			if (!action.Accepted)
 			{
 				return effects;

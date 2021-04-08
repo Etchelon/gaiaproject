@@ -6,10 +6,12 @@ namespace GaiaProject.ViewModels.Actions
 	{
 		public override ActionType Type => ActionType.ColonizePlanet;
 		public string HexId { get; }
+		public bool AndPass { get; }
 
-		public ColonizePlanetActionViewModel(string hexId)
+		public ColonizePlanetActionViewModel(string hexId, bool andPass)
 		{
 			HexId = hexId;
+			AndPass = andPass;
 		}
 	}
 }
