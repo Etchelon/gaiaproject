@@ -222,7 +222,7 @@ const GamePage = () => {
 		<WorkflowContext.Provider key={id} value={{ activeWorkflow, startWorkflow, closeWorkflow }}>
 			<div id={GAMEVIEW_WRAPPER_ID} className={classes.root}>
 				<div id={STATUSBAR_ID} className={classes.statusBar + (isMobile ? " mobile" : " desktop")}>
-					<StatusBar game={game} playerId={currentPlayer.id} />
+					<StatusBar game={game} playerId={currentPlayer.id} isMobile={isMobile} />
 				</div>
 				<div className={classes.gameView + (isMobile ? " mobile" : " desktop")}>
 					{!isMobile && <DesktopView game={game} currentPlayerId={currentPlayer.id} players={players} activeView={activeView} />}

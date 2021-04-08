@@ -9,6 +9,9 @@ namespace GaiaProject.Engine.Model.Actions
 		public override ActionType Type => ActionType.PlaceLostPlanet;
 		public string HexId { get; set; }
 
+		[BsonIgnoreIfDefault]
+		public bool AndPass { get; set; }
+
 		public override string ToString()
 		{
 			return $"discovers the Lost Planet on hex {HexId}";

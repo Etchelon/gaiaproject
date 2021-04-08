@@ -11,6 +11,7 @@ import styles from "../../game-board/player-box/PlayerBox.module.scss";
 import ResourceToken from "../../game-board/ResourceToken";
 import { executePlayerAction } from "../../store/actions-thunks";
 import { useWorkflow } from "../../WorkflowContext";
+import { PassTurn, PerformConversionsOrPassTurnWorkflow } from "../../workflows/rounds-phase/perform-conversions-or-pass.workflow";
 import { CommonWorkflowStates } from "../../workflows/types";
 import ClickableRectangle from "../ClickableRectangle";
 import useStyles from "./conversions-dialog.styles";
@@ -219,9 +220,11 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 	const [conversionsState, dispatch] = useReducer(reducer, { player: _.cloneDeep(currentPlayer), conversions: [] });
 	const player = conversionsState.player;
 	const playerState = player.state;
+	const isFinalConversions = activeWorkflow instanceof PerformConversionsOrPassTurnWorkflow;
 
-	const cancel = () => {
-		const action = activeWorkflow!.handleCommand({ nextState: CommonWorkflowStates.CANCEL });
+	const cancel = (pass: boolean) => () => {
+		const nextState = isFinalConversions && pass ? PassTurn : CommonWorkflowStates.CANCEL;
+		const action = activeWorkflow!.handleCommand({ nextState });
 		action && storeDispatch(executePlayerAction({ gameId, action }));
 	};
 	const convert = () => {
@@ -429,9 +432,21 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 							</div>
 						</div>
 						<div className={classes.commands}>
-							<Button variant="contained" color="default" className="command" onClick={cancel}>
-								<span className="gaia-font">Cancel</span>
-							</Button>
+							{isFinalConversions && (
+								<>
+									<Button variant="contained" color="secondary" className="command" onClick={cancel(true)}>
+										<span className="gaia-font">Pass</span>
+									</Button>
+									<Button variant="contained" color="default" className="command" onClick={cancel(false)}>
+										<span className="gaia-font">Cancel</span>
+									</Button>
+								</>
+							)}
+							{!isFinalConversions && (
+								<Button variant="contained" color="default" className="command" onClick={cancel(false)}>
+									<span className="gaia-font">Cancel</span>
+								</Button>
+							)}
 							<Button variant="contained" color="default" className="command" onClick={() => dispatch({ type: "reset", data: currentPlayer })}>
 								<span className="gaia-font">Reset</span>
 							</Button>

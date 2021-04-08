@@ -54,6 +54,7 @@ namespace GaiaProject.Engine.Logic
 			effectsOnPlayer.OfType<ChangePowerValueOfFederationEffect>().ToList().ForEach(eff => eff.ApplyTo(newGameState));
 			effectsOnPlayer.OfType<MergeFederationsEffect>().SingleOrDefault()?.ApplyTo(newGameState);
 			effectsOnPlayer.OfType<IncomeVariationEffect>().ToList().ForEach(eff => eff.ApplyTo(newGameState));
+			effectsOnPlayer.OfType<AutoPassAfterPendingDecisionsEffect>().ToList().ForEach(eff => eff.ApplyTo(newGameState));
 
 			// Apply effects to other players, such as decisions and power charging
 			var effectsOnOtherPlayers = effects
