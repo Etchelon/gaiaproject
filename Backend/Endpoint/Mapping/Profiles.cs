@@ -21,7 +21,7 @@ namespace GaiaProject.Endpoint.Mapping
 {
 	public class Profiles : Profile
 	{
-		private const int LogsPageSize = 20;
+		private const int LogsPageSize = 30;
 
 		public Profiles()
 		{

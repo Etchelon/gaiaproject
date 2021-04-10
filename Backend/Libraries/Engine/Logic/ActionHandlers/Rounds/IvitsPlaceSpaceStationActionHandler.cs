@@ -67,7 +67,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 				effects.Add(
 					new EnlargeFederationEffect(
 						ivitsFederation.Id,
-						_targetHex,
+						_targetHex.Id,
 						clusters
 					)
 				);

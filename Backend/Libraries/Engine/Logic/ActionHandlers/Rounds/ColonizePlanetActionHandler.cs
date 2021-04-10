@@ -126,7 +126,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 					effects.Add(
 						new EnlargeFederationEffect(
 							federationToEnlarge.FederationId,
-							_targetHex,
+							_targetHex.Id,
 							clustersAndFederations.Where(o => o.FederationId == null).Select(o => o.Cluster).ToList()
 						)
 					);
