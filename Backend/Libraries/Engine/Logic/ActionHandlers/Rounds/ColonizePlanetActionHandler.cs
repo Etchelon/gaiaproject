@@ -137,8 +137,23 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			var chargePowerEffects = PowerManagementUtils.GetChargePowerEffects(_targetHex, _mapService, action, game);
 			effects.AddRange(chargePowerEffects);
 
-			// Player can now decide whether to perform a free conversion or pass the turn
-			effects.Add(new PendingDecisionEffect(new PerformConversionOrPassTurnDecision()));
+			if (action.AndPass)
+			{
+				var someoneCanChargePower = chargePowerEffects.OfType<PendingDecisionEffect>().Any();
+				if (someoneCanChargePower)
+				{
+					effects.Add(new AutoPassAfterPendingDecisionsEffect());
+				}
+				else
+				{
+					var nextPlayerId = TurnOrderUtils.GetNextPlayer(action.PlayerId, game, true);
+					effects.Add(new PassTurnToPlayerEffect(nextPlayerId));
+				}
+			}
+			else
+			{
+				effects.Add(new PendingDecisionEffect(new PerformConversionOrPassTurnDecision()));
+			}
 			return effects;
 		}
 

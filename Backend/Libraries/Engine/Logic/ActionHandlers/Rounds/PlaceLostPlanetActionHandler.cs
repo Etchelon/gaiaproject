@@ -37,7 +37,6 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 				new ClearTempStatsEffect(),
 				new BuildingDeployedEffect(BuildingType.LostPlanet, action.HexId),
 				new HexColonizedEffect(PlanetType.LostPlanet, _targetHex.SectorId),
-				new PendingDecisionEffect(new PerformConversionOrPassTurnDecision())
 			};
 			if (this._requiredQics > 0)
 			{
@@ -114,6 +113,23 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			var chargePowerEffects = PowerManagementUtils.GetChargePowerEffects(_targetHex, _mapService, action, game);
 			effects.AddRange(chargePowerEffects);
 
+			if (action.AndPass)
+			{
+				var someoneCanChargePower = chargePowerEffects.OfType<PendingDecisionEffect>().Any();
+				if (someoneCanChargePower)
+				{
+					effects.Add(new AutoPassAfterPendingDecisionsEffect());
+				}
+				else
+				{
+					var nextPlayerId = TurnOrderUtils.GetNextPlayer(action.PlayerId, game, true);
+					effects.Add(new PassTurnToPlayerEffect(nextPlayerId));
+				}
+			}
+			else
+			{
+				effects.Add(new PendingDecisionEffect(new PerformConversionOrPassTurnDecision()));
+			}
 			return effects;
 		}
 

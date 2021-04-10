@@ -9,6 +9,9 @@ namespace GaiaProject.Engine.Model.Actions
 		public override ActionType Type => ActionType.ColonizePlanet;
 		public string TargetHexId { get; set; }
 
+		[BsonIgnoreIfDefault]
+		public bool AndPass { get; set; }
+
 		public override string ToString()
 		{
 			return $"builds a mine on hex {TargetHexId}";

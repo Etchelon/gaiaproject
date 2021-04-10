@@ -17,6 +17,7 @@ interface UpgradeExistingStructureActionDto extends ActionDto {
 	Type: ActionType.UpgradeExistingStructure;
 	HexId: string;
 	TargetBuilding: BuildingType;
+	AndPass: boolean;
 }
 
 export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
@@ -45,7 +46,21 @@ export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
 			{
 				id: WaitingForConfirmation,
 				message: "Upgrade the selected building?",
-				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
+				commands: [
+					CommonCommands.Cancel,
+					{
+						text: "Upgrade & Pass",
+						nextState: CommonWorkflowStates.PERFORM_ACTION,
+						isPrimary: false,
+						data: true,
+					},
+					{
+						text: "Upgrade",
+						nextState: CommonWorkflowStates.PERFORM_ACTION,
+						isPrimary: true,
+						data: false,
+					},
+				],
 			},
 		];
 		this.currentState = _.first(this.states)!;
@@ -140,6 +155,19 @@ export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
 		this.advanceState(WaitingForChoice, message, commands);
 	}
 
+	advanceState(next: Nullable<number> = null, message: Nullable<string> = null, commands: Nullable<Command[]> = null): void {
+		if (next !== WaitingForConfirmation || _.isNil(this._targetBuilding)) {
+			super.advanceState(next, message, commands);
+			return;
+		}
+
+		const commands_ = [..._.find(this.states, s => s.id === WaitingForConfirmation)!.commands!];
+		if ([BuildingType.ResearchLab, BuildingType.AcademyLeft, BuildingType.AcademyRight].includes(this._targetBuilding!)) {
+			_.remove(commands_, c => c.nextState === CommonWorkflowStates.PERFORM_ACTION && c.data === true);
+		}
+		super.advanceState(next, message, commands_);
+	}
+
 	handleCommand(command: Command): ActionDto | null {
 		if (command.nextState === CommonWorkflowStates.ABORT) {
 			this.cancelAction();
@@ -166,6 +194,7 @@ export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
 					Type: ActionType.UpgradeExistingStructure,
 					HexId: this._selectedHexId!,
 					TargetBuilding: this._targetBuilding!,
+					AndPass: command.data as boolean,
 				};
 				return action;
 			default:

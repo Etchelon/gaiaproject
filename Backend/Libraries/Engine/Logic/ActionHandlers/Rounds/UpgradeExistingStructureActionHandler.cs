@@ -67,10 +67,38 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			var shouldTakeTechnologyTile = action.TargetBuildingType == BuildingType.ResearchLab
 										   || action.TargetBuildingType == BuildingType.AcademyLeft
 										   || action.TargetBuildingType == BuildingType.AcademyRight;
-			var decision = shouldTakeTechnologyTile
-				? (PendingDecision)new ChooseTechnologyTileDecision()
-				: new PerformConversionOrPassTurnDecision();
-			effects.Add(new PendingDecisionEffect(decision));
+
+			if (action.AndPass)
+			{
+				if (shouldTakeTechnologyTile)
+				{
+					throw new System.Exception("Cannot pass without choosing a technology tile");
+				}
+				if (action.AndPass)
+				{
+					var someoneCanChargePower = chargePowerEffects.OfType<PendingDecisionEffect>().Any();
+					if (someoneCanChargePower)
+					{
+						effects.Add(new AutoPassAfterPendingDecisionsEffect());
+					}
+					else
+					{
+						var nextPlayerId = TurnOrderUtils.GetNextPlayer(action.PlayerId, game, true);
+						effects.Add(new PassTurnToPlayerEffect(nextPlayerId));
+					}
+				}
+				else
+				{
+					effects.Add(new PendingDecisionEffect(new PerformConversionOrPassTurnDecision()));
+				}
+			}
+			else
+			{
+				var decision = shouldTakeTechnologyTile
+					? (PendingDecision)new ChooseTechnologyTileDecision()
+					: new PerformConversionOrPassTurnDecision();
+				effects.Add(new PendingDecisionEffect(decision));
+			}
 			return effects;
 		}
 

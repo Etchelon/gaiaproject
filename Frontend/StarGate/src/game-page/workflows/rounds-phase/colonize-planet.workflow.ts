@@ -12,6 +12,7 @@ const WaitingForConfirmation = 1;
 interface ColonizePlanetActionDto extends ActionDto {
 	Type: ActionType.ColonizePlanet;
 	HexId: string;
+	AndPass: boolean;
 }
 
 export class ColonizePlanetWorkflow extends ActionWorkflow {
@@ -33,7 +34,21 @@ export class ColonizePlanetWorkflow extends ActionWorkflow {
 			{
 				id: WaitingForConfirmation,
 				message: "Colonize the selected hex?",
-				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
+				commands: [
+					CommonCommands.Cancel,
+					{
+						text: "Build & Pass",
+						nextState: CommonWorkflowStates.PERFORM_ACTION,
+						isPrimary: false,
+						data: true,
+					},
+					{
+						text: "Build",
+						nextState: CommonWorkflowStates.PERFORM_ACTION,
+						isPrimary: true,
+						data: false,
+					},
+				],
 			},
 		];
 		this.currentState = _.first(this.states)!;
@@ -75,6 +90,7 @@ export class ColonizePlanetWorkflow extends ActionWorkflow {
 				const action: ColonizePlanetActionDto = {
 					Type: ActionType.ColonizePlanet,
 					HexId: this._selectedHexId!,
+					AndPass: command.data as boolean,
 				};
 				return action;
 			default:
