@@ -8,21 +8,22 @@ namespace GaiaProject.Engine.Logic.Entities.Effects
 	public class EnlargeFederationEffect : Effect
 	{
 		public string FederationId { get; }
-		public Hex ConnectingHex { get; }
+		public string ConnectingHexId { get; }
 		public List<List<Hex>> AdditionalClusters { get; }
 
-		public EnlargeFederationEffect(string federationId, Hex connectingHex, List<List<Hex>> additionalClusters)
+		public EnlargeFederationEffect(string federationId, string connectingHexId, List<List<Hex>> additionalClusters)
 		{
 			FederationId = federationId;
-			ConnectingHex = connectingHex;
+			ConnectingHexId = connectingHexId;
 			AdditionalClusters = additionalClusters;
 		}
 
 		public override void ApplyTo(GaiaProjectGame game)
 		{
 			var player = game.GetPlayer(PlayerId);
+			var connectingHex = game.BoardState.Map.Hexes.Single(h => h.Id == ConnectingHexId);
 			var federation = player.State.Federations.Single(fed => fed.Id == FederationId);
-			federation.Add(PlayerId, ConnectingHex);
+			federation.Add(PlayerId, connectingHex);
 			AdditionalClusters?.ForEach(cluster => federation.Enlarge(PlayerId, cluster));
 		}
 	}
