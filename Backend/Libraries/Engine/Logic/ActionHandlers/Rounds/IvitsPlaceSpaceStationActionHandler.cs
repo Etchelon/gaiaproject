@@ -60,6 +60,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 			{
 				var clusters = adjacentHexes
 					.Where(h => !hexesInFederation.Contains(h.Id))
+					.WithFederatableBuildings()
 					.Select(h => _mapService.GetBuildingCluster(h, Player.Id))
 					.NotEmpty()
 					.Distinct()
