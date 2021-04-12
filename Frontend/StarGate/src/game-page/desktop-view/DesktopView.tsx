@@ -67,10 +67,10 @@ const DesktopView = ({ game, currentPlayerId, players, activeView }: GameViewPro
 		left: 0,
 	};
 	if (!_.isNil(activeViewDimensions)) {
-		let dpaHeight = activeViewDimensions.height * 0.9;
+		let dpaHeight = activeViewDimensions.height * 0.95;
 		let dpaWidth = dpaHeight * PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO;
 		if (dpaWidth > activeViewDimensions.width) {
-			dpaWidth = activeViewDimensions.width * 0.9;
+			dpaWidth = activeViewDimensions.width * 0.95;
 			dpaHeight = dpaWidth / PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO;
 		}
 		dialogPlayerAreaDimensions.width = dpaWidth;

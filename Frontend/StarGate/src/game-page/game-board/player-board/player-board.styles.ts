@@ -1,4 +1,5 @@
 import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { Race } from "../../../dto/enums";
 import { fillParent, fillParentAbs, withAspectRatioW } from "../../../utils/miscellanea";
 
 const WIDTH_TO_HEIGHT_RATIO = 1.577;
@@ -48,10 +49,22 @@ export const buildingGeometries: { [type: string]: BuildingGeometry } = {
 		x: 0.45,
 		y: 0.459,
 	},
-	piAs: {
-		w: 0.06,
+	piAsAmbas: {
+		w: 0.08,
 		h: 0.098,
-		x: 0.2475,
+		x: 0.235,
+		y: 0.4875,
+	},
+	piAsFiraks: {
+		w: 0.08,
+		h: 0.098,
+		x: 0.2075,
+		y: 0.49,
+	},
+	piAsIvits: {
+		w: 0.07,
+		h: 0.098,
+		x: 0.2375,
 		y: 0.48,
 	},
 	acl: {
@@ -117,61 +130,62 @@ const boardElementClass = (type: string) => ({
 	left: `${buildingGeometries[type].x * 100}%`,
 });
 
-const useStyles = makeStyles(() =>
-	createStyles({
-		root: {
-			...withAspectRatioW(WIDTH_TO_HEIGHT_RATIO),
-		},
-		wrapper: {
-			...fillParentAbs,
-			display: "flex",
-			justifyContent: "center",
-			alignItems: "center",
-			"& > .building": {
-				position: "absolute",
+const useStyles = (props: { race: Race }) =>
+	makeStyles(() =>
+		createStyles({
+			root: {
+				...withAspectRatioW(WIDTH_TO_HEIGHT_RATIO),
 			},
-			"& > .actionSpace": {
-				position: "absolute",
-			},
-			"& > .powerToken": {
-				position: "absolute",
-				width: "3%",
-			},
-		},
-		image: {
-			...fillParent,
-		},
-		resourceTokens: {
-			position: "absolute",
-			top: 0,
-			left: 0,
-			width: "100%",
-			paddingTop: `${resourcesH * 100}%`,
-			"& > .token": {
-				position: "absolute",
-				top: "1%",
-				width: "3%",
-				paddingTop: "3%",
-				"& > *": {
-					...fillParentAbs,
+			wrapper: {
+				...fillParentAbs,
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
+				"& > .building": {
+					position: "absolute",
+				},
+				"& > .actionSpace": {
+					position: "absolute",
+				},
+				"& > .powerToken": {
+					position: "absolute",
+					width: "3%",
 				},
 			},
-		},
-		pi: boardElementClass("pi"),
-		piBescods: boardElementClass("piBescods"),
-		piAs: boardElementClass("piAs"),
-		acl: boardElementClass("acl"),
-		aclBescods: boardElementClass("aclBescods"),
-		acr: boardElementClass("acr"),
-		acrBescods: boardElementClass("acrBescods"),
-		acrAs: boardElementClass("acrAs"),
-		acrAsBescods: boardElementClass("acrAsBescods"),
-		ts: boardElementClass("ts"),
-		rl: boardElementClass("rl"),
-		mine: boardElementClass("mine"),
-		gf: boardElementClass("gf"),
-		raceAsBescods: boardElementClass("raceAsBescods"),
-	})
-);
+			image: {
+				...fillParent,
+			},
+			resourceTokens: {
+				position: "absolute",
+				top: 0,
+				left: 0,
+				width: "100%",
+				paddingTop: `${resourcesH * 100}%`,
+				"& > .token": {
+					position: "absolute",
+					top: "1%",
+					width: "3%",
+					paddingTop: "3%",
+					"& > *": {
+						...fillParentAbs,
+					},
+				},
+			},
+			pi: boardElementClass("pi"),
+			piBescods: boardElementClass("piBescods"),
+			piAs: boardElementClass(props.race === Race.Ambas ? "piAsAmbas" : props.race === Race.Firaks ? "piAsFiraks" : "piAsIvits"),
+			acl: boardElementClass("acl"),
+			aclBescods: boardElementClass("aclBescods"),
+			acr: boardElementClass("acr"),
+			acrBescods: boardElementClass("acrBescods"),
+			acrAs: boardElementClass("acrAs"),
+			acrAsBescods: boardElementClass("acrAsBescods"),
+			ts: boardElementClass("ts"),
+			rl: boardElementClass("rl"),
+			mine: boardElementClass("mine"),
+			gf: boardElementClass("gf"),
+			raceAsBescods: boardElementClass("raceAsBescods"),
+		})
+	);
 
 export default useStyles;
