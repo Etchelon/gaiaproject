@@ -99,7 +99,7 @@ interface PlayerBoardProps {
 }
 
 const PlayerBoard = ({ player }: PlayerBoardProps) => {
-	const classes = useStyles();
+	const classes = useStyles({ race: player.raceId! })();
 	const imgUrl = useAssetUrl(`Races/Boards_${boardVersion}/${getRaceBoard(player.raceId)}`);
 	const isBescods = player?.raceId === Race.Bescods;
 

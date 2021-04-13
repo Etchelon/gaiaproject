@@ -232,7 +232,7 @@ const GamePage = () => {
 			<Dialog
 				aria-labelledby="dialog-title"
 				fullScreen={isMobile}
-				style={isMobile ? undefined : { maxHeight: "90vh", top: "5vh" }}
+				style={isMobile ? undefined : { maxHeight: "95vh", top: "2.5vh" }}
 				open={showDialog}
 				maxWidth={"lg"}
 				fullWidth={false}
