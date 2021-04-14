@@ -1,8 +1,8 @@
 import { Theme } from "@material-ui/core";
 import { formatDistance } from "date-fns";
 import _ from "lodash";
-import { GamePhase } from "../dto/enums";
-import { GameStateDto, HexDto } from "../dto/interfaces";
+import { ActionType, AdvancedTechnologyTileType, GamePhase, RoundBoosterType, StandardTechnologyTileType } from "../dto/enums";
+import { GameStateDto, HexDto, PlayerInGameDto } from "../dto/interfaces";
 
 const LAST_ROUND = 6;
 export const CENTRAL_HEX_INDEX = 9;
@@ -149,3 +149,68 @@ export function prettyTimestamp(isoDate: string): string {
 }
 
 export type UniversalFn = (...args: any[]) => any;
+
+const ACTIVATABLE_ACTIONS: ActionType[] = [
+	ActionType.AmbasSwapPlanetaryInstituteAndMine,
+	ActionType.BescodsResearchProgress,
+	ActionType.FiraksDowngradeResearchLab,
+	ActionType.IvitsPlaceSpaceStation,
+	ActionType.StartGaiaProject,
+	ActionType.UseRightAcademy,
+	ActionType.UseRoundBooster,
+	ActionType.UseTechnologyTile,
+];
+
+const ACTIVATABLE_ROUND_BOOSTERS: RoundBoosterType[] = [RoundBoosterType.BoostRangeGainPower, RoundBoosterType.TerraformActionGainCredits];
+
+const ACTIVATABLE_ADVANCED_TILES: AdvancedTechnologyTileType[] = [
+	AdvancedTechnologyTileType.ActionGain1Qic5Credits,
+	AdvancedTechnologyTileType.ActionGain3Knowledge,
+	AdvancedTechnologyTileType.ActionGain3Ores,
+];
+
+const ACTIVATABLE_STANDARD_TILES: StandardTechnologyTileType[] = [StandardTechnologyTileType.ActionGain4Power];
+
+export const countActivatableActions = (player: PlayerInGameDto, includeGaiaformers: boolean) => {
+	const ps = player.state;
+	let allSpecialActionsCount = 0;
+	let availableSpecialActionsCount = 0;
+
+	if (!_.isNil(ps.planetaryInstituteActionSpace)) {
+		allSpecialActionsCount += 1;
+		availableSpecialActionsCount += Number(ps.planetaryInstituteActionSpace.isAvailable);
+	}
+	if (!_.isNil(ps.rightAcademyActionSpace)) {
+		allSpecialActionsCount += 1;
+		availableSpecialActionsCount += Number(ps.rightAcademyActionSpace.isAvailable);
+	}
+	if (!_.isNil(ps.raceActionSpace)) {
+		allSpecialActionsCount += 1;
+		availableSpecialActionsCount += Number(ps.raceActionSpace.isAvailable);
+	}
+
+	if (ACTIVATABLE_ROUND_BOOSTERS.includes(ps.roundBooster.id)) {
+		allSpecialActionsCount += 1;
+		availableSpecialActionsCount += Number(!ps.roundBooster.used);
+	}
+
+	const gain4PowerTile = _.find(ps.technologyTiles, tt => tt.id === StandardTechnologyTileType.ActionGain4Power && _.isNil(tt.coveredByAdvancedTile));
+	if (gain4PowerTile) {
+		allSpecialActionsCount += 1;
+		availableSpecialActionsCount += Number(!gain4PowerTile.used);
+	}
+
+	_.chain(ps.technologyTiles)
+		.filter(tt => !_.isNil(tt.coveredByAdvancedTile) && ACTIVATABLE_ADVANCED_TILES.includes(tt.coveredByAdvancedTile))
+		.each(tt => {
+			allSpecialActionsCount += 1;
+			availableSpecialActionsCount += Number(!tt.used);
+		});
+
+	if (includeGaiaformers) {
+		allSpecialActionsCount += ps.unlockedGaiaformers;
+		availableSpecialActionsCount += ps.usableGaiaformers;
+	}
+
+	return { available: availableSpecialActionsCount, all: allSpecialActionsCount };
+};

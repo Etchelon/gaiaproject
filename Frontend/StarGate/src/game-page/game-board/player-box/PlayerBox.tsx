@@ -7,11 +7,19 @@ import ActivePlayerImg from "../../../assets/Resources/PlayerLoader.gif";
 import { BuildingType, Race } from "../../../dto/enums";
 import { PlayerInGameDto, PowerPoolsDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";
+import { countActivatableActions } from "../../../utils/miscellanea";
 import { getRaceColor, getRaceImage, getRaceName } from "../../../utils/race-utils";
 import { selectIsOnline } from "../../store/active-game.slice";
 import Building from "../hex/Building";
 import ResourceToken from "../ResourceToken";
 import styles from "./PlayerBox.module.scss";
+
+const MAX_ORES_KNOWLEDGE = 15;
+const MAX_CREDITS = 30;
+const MAX_DEPLOYABLE_MINES = 8;
+const MAX_DEPLOYABLE_TRADING_STATIONS = 4;
+const MAX_DEPLOYABLE_RESEARCH_LABS = 3;
+const MAX_RESEARCH_STEPS = 5;
 
 interface PlayerBoxProps {
 	player: PlayerInGameDto;
@@ -64,7 +72,9 @@ const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 
 	const color = getRaceColor(player.raceId);
 	const textColor = theme.palette.getContrastText(color);
+	const { available: availableSpecialActions, all: allSpecialActions } = countActivatableActions(player, false);
 	const playerState = player.state!;
+	const hasLostPlanet = playerState.researchAdvancements.navigation === MAX_RESEARCH_STEPS;
 	const showNextRoundTurnOrder = playerState.hasPassed && playerState.nextRoundTurnOrder !== null;
 
 	return (
@@ -94,15 +104,15 @@ const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 			</div>
 			<div className={styles.playerData}>
 				<div className={styles.row}>
-					<div className={styles.resourceIndicator}>
+					<div className={`${styles.resourceIndicator} ${playerState.resources.ores === MAX_ORES_KNOWLEDGE ? styles.maxedOut : ""}`}>
 						<ResourceToken type="Ores" />
 						<span className="gaia-font">{playerState.resources.ores}</span>
 					</div>
-					<div className={styles.resourceIndicator}>
+					<div className={`${styles.resourceIndicator} ${playerState.resources.credits === MAX_CREDITS ? styles.maxedOut : ""}`}>
 						<ResourceToken type="Credits" />
 						<span className="gaia-font">{playerState.resources.credits}</span>
 					</div>
-					<div className={styles.resourceIndicator}>
+					<div className={`${styles.resourceIndicator} ${playerState.resources.knowledge === MAX_ORES_KNOWLEDGE ? styles.maxedOut : ""}`}>
 						<ResourceToken type="Knowledge" />
 						<span className="gaia-font">{playerState.resources.knowledge}</span>
 					</div>
@@ -139,6 +149,7 @@ const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 						<span className="gaia-font">{`${playerState.income.power} (+${playerState.income.powerTokens})`}</span>
 					</div>
 				</div>
+				<hr />
 				<div className={styles.row}>
 					<div className={styles.resourceIndicator}>
 						<ResourceToken type="Terraformation" scale={0.9} />
@@ -148,18 +159,6 @@ const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 						<ResourceToken type="Navigation" scale={0.9} />
 						<span className="gaia-font">{`${playerState.navigationRange}${playerState.rangeBoost ? ` (+${playerState.rangeBoost})` : ""}`}</span>
 					</div>
-					{player.raceId !== null && (
-						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
-							<Building raceId={player.raceId} type={BuildingType.Gaiaformer} noAnimation />
-							<span className="gaia-font">{playerState.usableGaiaformers}</span>
-						</div>
-					)}
-					<div className={styles.resourceIndicator}>
-						<ResourceToken type="Federations" scale={0.9} />
-						<span className="gaia-font">{`${playerState.usableFederations}/${playerState.numFederationTokens}`}</span>
-					</div>
-				</div>
-				<div className={styles.row}>
 					<div className={styles.resourceIndicator}>
 						<ResourceToken type="PlanetTypes" scale={0.8} />
 						<span className="gaia-font">{playerState.knownPlanetTypes}</span>
@@ -172,22 +171,57 @@ const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 						<ResourceToken type="Sectors" scale={0.7} />
 						<span className="gaia-font">{playerState.colonizedSectors}</span>
 					</div>
+				</div>
+				<div className={styles.rowSpacer}></div>
+				<div className={styles.row}>
+					{player.raceId !== null && (
+						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+							<Building raceId={player.raceId} type={BuildingType.Gaiaformer} noAnimation />
+							<span className="gaia-font">
+								{playerState.usableGaiaformers}/{playerState.unlockedGaiaformers}
+							</span>
+						</div>
+					)}
+					<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+						<ResourceToken type="ActionToken" scale={0.9} />
+						<span className="gaia-font">
+							{availableSpecialActions}/{allSpecialActions}
+						</span>
+					</div>
+					<div className={styles.resourceIndicator}>
+						<ResourceToken type="Federations" scale={0.9} />
+						<span className="gaia-font">{`${playerState.usableFederations}/${playerState.numFederationTokens}`}</span>
+					</div>
 					<div className={styles.resourceIndicator + (player.raceId === Race.Ivits ? "" : ` ${styles.invisible}`)}>
 						<ResourceToken type="RecordToken" scale={0.7} />
 						<span className="gaia-font">{playerState.additionalInfo}</span>
 					</div>
 				</div>
+				<hr />
 				{player.raceId !== null && (
 					<div className={styles.row}>
-						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+						<div
+							className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight} ${
+								playerState.buildings.mines === MAX_DEPLOYABLE_MINES ? styles.maxedOut : ""
+							}`}
+						>
 							<Building raceId={player.raceId} type={BuildingType.Mine} noAnimation />
 							<span className="gaia-font">{playerState.buildings.mines}</span>
+							{hasLostPlanet && <span className="gaia-font">+LP</span>}
 						</div>
-						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+						<div
+							className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight} ${
+								playerState.buildings.tradingStations === MAX_DEPLOYABLE_TRADING_STATIONS ? styles.maxedOut : ""
+							}`}
+						>
 							<Building raceId={player.raceId} type={BuildingType.TradingStation} noAnimation />
 							<span className="gaia-font">{playerState.buildings.tradingStations}</span>
 						</div>
-						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+						<div
+							className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight} ${
+								playerState.buildings.researchLabs === MAX_DEPLOYABLE_RESEARCH_LABS ? styles.maxedOut : ""
+							}`}
+						>
 							<Building raceId={player.raceId} type={BuildingType.ResearchLab} noAnimation />
 							<span className="gaia-font">{playerState.buildings.researchLabs}</span>
 						</div>
@@ -195,7 +229,11 @@ const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 							<Building raceId={player.raceId} type={BuildingType.PlanetaryInstitute} noAnimation />
 							<span className="gaia-font">{Number(playerState.buildings.planetaryInstitute)}</span>
 						</div>
-						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+						<div
+							className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight} ${
+								playerState.buildings.academyLeft && playerState.buildings.academyRight ? styles.maxedOut : ""
+							}`}
+						>
 							<Building raceId={player.raceId} type={BuildingType.AcademyLeft} noAnimation />
 							<span className="gaia-font">{Number(playerState.buildings.academyLeft) + Number(playerState.buildings.academyRight)}</span>
 						</div>
