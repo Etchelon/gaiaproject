@@ -91,6 +91,10 @@ $spacing3: 24px;
 		}
 	}
 
+	.maxedOut > span {
+		color: rgb(210, 19, 24);
+	}
+
 	.resourceIndicatorFixedHeight {
 		height: 35px;
 	}
@@ -104,5 +108,10 @@ $spacing3: 24px;
 		align-items: center;
 		justify-content: space-between;
 		height: 30px;
+	}
+
+	.rowSpacer {
+		width: 100%;
+		margin-top: $spacingHalf;
 	}
 }

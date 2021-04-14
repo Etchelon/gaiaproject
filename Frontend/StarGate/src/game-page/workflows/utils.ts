@@ -3,6 +3,7 @@ import { Dispatch } from "redux";
 import { ActionType, GamePhase, PendingDecisionType, Race } from "../../dto/enums";
 import { AvailableActionDto, GameStateDto, PendingDecisionDto } from "../../dto/interfaces";
 import { localizeRoundBooster } from "../../utils/localization";
+import { countActivatableActions } from "../../utils/miscellanea";
 import { ActionWorkflow } from "./action-workflow.base";
 import { AcceptOrDeclineLastStepDecisionDto, AcceptOrDeclineLastStepWorkflow } from "./rounds-phase/accept-last-step.workflow";
 import { ChargePowerDecisionDto, ChargePowerWorkflow } from "./rounds-phase/charge-power.workflow";
@@ -29,17 +30,6 @@ import { BidForRaceWorkflow } from "./setup-phase/bid-for-race.workflow";
 import { PlaceInitialStructureWorkflow } from "./setup-phase/place-initial-structure.workflow";
 import { SelectRaceWorkflow } from "./setup-phase/select-race.workflow";
 import { SelectStartingRoundBoosterWorkflow } from "./setup-phase/select-starting-round-booster.workflow";
-
-const ACTIVATABLE_ACTIONS: ActionType[] = [
-	ActionType.AmbasSwapPlanetaryInstituteAndMine,
-	ActionType.BescodsResearchProgress,
-	ActionType.FiraksDowngradeResearchLab,
-	ActionType.IvitsPlaceSpaceStation,
-	ActionType.StartGaiaProject,
-	ActionType.UseRightAcademy,
-	ActionType.UseRoundBooster,
-	ActionType.UseTechnologyTile,
-];
 
 export function fromAction(playerId: string, game: GameStateDto, action: AvailableActionDto, dispatch: Dispatch): ActionWorkflow {
 	const isSetup = game.currentPhase === GamePhase.Setup;
@@ -107,8 +97,9 @@ function fromRoundsAction(playerId: string, game: GameStateDto, action: Availabl
 		case ActionType.ResearchTechnology:
 			return new ResearchTechnologyWorkflow(action.interactionState, true);
 		case ActionType.Pass:
-			const stillHasActivatables = _.some(game.activePlayer.availableActions, aa => ACTIVATABLE_ACTIONS.includes(aa.type));
-			return new PassWorkflow(action.interactionState, stillHasActivatables, game.currentRound === 6);
+			const activePlayer = _.find(game.players, p => p.id === game.activePlayer.id)!;
+			const { available } = countActivatableActions(activePlayer, true);
+			return new PassWorkflow(action.interactionState, available > 0, game.currentRound === 6);
 		case ActionType.Conversions:
 			return new ConversionsWorkflow(null, false);
 		case ActionType.StartGaiaProject:
