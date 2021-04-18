@@ -332,7 +332,7 @@ namespace GaiaProject.Endpoint.Mapping
 			var hasStandardTile = player.State.StandardTechnologyTiles.SingleOrDefault(t => t.Id == StandardTechnologyTileType.PassiveBigBuildingsWorth4Power && !t.CoveredByAdvancedTile) != null;
 			var totalPowerValueOfDeployedBuildings = buildings.Mines
 				+ (buildings.TradingStations + buildings.ResearchLabs) * 2
-				+ (1 + (buildings.AcademyLeft ? 1 : 0) + (buildings.AcademyRight ? 1 : 0)) * (hasStandardTile ? 4 : 3)
+				+ ((buildings.PlanetaryInstitute ? 1 : 0) + (buildings.AcademyLeft ? 1 : 0) + (buildings.AcademyRight ? 1 : 0)) * (hasStandardTile ? 4 : 3)
 				+ buildings.IvitsSpaceStations;
 			var powerOfFederation = player.State.Federations.SingleOrDefault()?.TotalPowerValue ?? 0;
 			var powerOfBuildingsOutsideFederation = totalPowerValueOfDeployedBuildings - powerOfFederation;

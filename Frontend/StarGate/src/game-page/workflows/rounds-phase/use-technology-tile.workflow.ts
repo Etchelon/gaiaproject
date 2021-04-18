@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { ActionType, AdvancedTechnologyTileType, StandardTechnologyTileType } from "../../../dto/enums";
-import { ActionDto } from "../../../dto/interfaces";
+import { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
 import { localizeEnum } from "../../../utils/localization";
 import { Identifier, Nullable } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
@@ -19,6 +19,31 @@ interface UseTechnologyTileActionDto extends ActionDto {
 export class UseTechnologyTileWorkflow extends ActionWorkflow {
 	private _selectedStandardTile: Nullable<StandardTechnologyTileType> = null;
 	private _selectedAdvancedTile: Nullable<AdvancedTechnologyTileType> = null;
+	private readonly _hasOnlyOneSelectableTile: boolean;
+
+	constructor(interactionState: Nullable<InteractionStateDto>) {
+		super(interactionState, true);
+
+		this._hasOnlyOneSelectableTile = _.size(interactionState!.clickableOwnStandardTiles) + _.size(interactionState!.clickableOwnAdvancedTiles) === 1;
+		if (!this._hasOnlyOneSelectableTile) {
+			this.init();
+			return;
+		}
+
+		const selectableStandardTile = _.first(interactionState!.clickableOwnStandardTiles);
+		if (!_.isNil(selectableStandardTile)) {
+			this._selectedStandardTile = selectableStandardTile;
+			this.init();
+			return;
+		}
+
+		const selectableAdvancedTile = _.first(interactionState!.clickableOwnAdvancedTiles);
+		if (_.isNil(selectableAdvancedTile)) {
+			throw new Error("There must be one selectable advanced tile!");
+		}
+		this._selectedAdvancedTile = selectableAdvancedTile;
+		this.init();
+	}
 
 	protected init(): void {
 		this.states = [
@@ -35,6 +60,11 @@ export class UseTechnologyTileWorkflow extends ActionWorkflow {
 			},
 		];
 		this.currentState = _.first(this.states)!;
+
+		if (this._hasOnlyOneSelectableTile) {
+			this._selectedStandardTile !== null && this.elementSelected(this._selectedStandardTile, InteractiveElementType.OwnStandardTile);
+			this._selectedAdvancedTile !== null && this.elementSelected(this._selectedAdvancedTile, InteractiveElementType.OwnAdvancedTile);
+		}
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
@@ -68,6 +98,11 @@ export class UseTechnologyTileWorkflow extends ActionWorkflow {
 		switch (command.nextState) {
 			case CommonWorkflowStates.RESET:
 			case CommonWorkflowStates.CANCEL:
+				if (this._hasOnlyOneSelectableTile) {
+					this.cancelAction();
+					return null;
+				}
+
 				this._selectedStandardTile = null;
 				this._selectedAdvancedTile = null;
 				this.advanceState(WaitingForTile);
