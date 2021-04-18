@@ -109,7 +109,7 @@ function fromRoundsAction(playerId: string, game: GameStateDto, action: Availabl
 		case ActionType.Qic:
 			return new PowerOrQicActionWorkflow(action.interactionState, false);
 		case ActionType.UseTechnologyTile:
-			return new UseTechnologyTileWorkflow(action.interactionState, false);
+			return new UseTechnologyTileWorkflow(action.interactionState);
 		case ActionType.UseRoundBooster:
 			const message = `Activate the action of booster ${localizeRoundBooster(player.state.roundBooster.id)}?`;
 			return new GenericActionWorkflow(action.type, player.raceId!, message);

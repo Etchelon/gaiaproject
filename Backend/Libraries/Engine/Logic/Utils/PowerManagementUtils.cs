@@ -84,7 +84,7 @@ namespace GaiaProject.Engine.Logic.Utils
 
 				// Itars should always decide whether to charge even 1x0 because they may not be able to burn power to send 4 to Gaia area
 				// In the last round it doesn't matter
-				if (chargeablePower == 1 && (player.RaceId != Race.Itars || isLastRound))
+				if (chargeablePower == 1 && (player.RaceId != Race.Itars || (isLastRound || player.HasPassed)))
 				{
 					var powerGain = new PowerGain(1);
 					powerGain.ForPlayer(playerId);
