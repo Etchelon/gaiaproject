@@ -225,7 +225,7 @@ const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 							<Building raceId={player.raceId} type={BuildingType.ResearchLab} noAnimation />
 							<span className="gaia-font">{playerState.buildings.researchLabs}</span>
 						</div>
-						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight}`}>
+						<div className={`${styles.resourceIndicator} ${styles.resourceIndicatorFixedHeight} ${playerState.buildings.planetaryInstitute ? styles.maxedOut : ""}`}>
 							<Building raceId={player.raceId} type={BuildingType.PlanetaryInstitute} noAnimation />
 							<span className="gaia-font">{Number(playerState.buildings.planetaryInstitute)}</span>
 						</div>

@@ -176,6 +176,10 @@ export const countActivatableActions = (player: PlayerInGameDto, includeGaiaform
 	let allSpecialActionsCount = 0;
 	let availableSpecialActionsCount = 0;
 
+	if (player.raceId === null) {
+		return { available: 0, all: 0 };
+	}
+
 	if (!_.isNil(ps.planetaryInstituteActionSpace)) {
 		allSpecialActionsCount += 1;
 		availableSpecialActionsCount += Number(ps.planetaryInstituteActionSpace.isAvailable);
@@ -189,7 +193,7 @@ export const countActivatableActions = (player: PlayerInGameDto, includeGaiaform
 		availableSpecialActionsCount += Number(ps.raceActionSpace.isAvailable);
 	}
 
-	if (ACTIVATABLE_ROUND_BOOSTERS.includes(ps.roundBooster.id)) {
+	if (ACTIVATABLE_ROUND_BOOSTERS.includes(ps.roundBooster?.id)) {
 		allSpecialActionsCount += 1;
 		availableSpecialActionsCount += Number(!ps.roundBooster.used);
 	}
