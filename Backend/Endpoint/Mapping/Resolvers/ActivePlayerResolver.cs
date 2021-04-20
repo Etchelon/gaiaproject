@@ -327,8 +327,8 @@ namespace GaiaProject.Endpoint.Mapping.Resolvers
 					var actionInfo = RaceUtils.GetPlanetaryInstituteActionInfo(player);
 					var clickableHexes = player.RaceId switch
 					{
-						Race.Ambas => mapService.GetPlayersHexes(player.Id, false, false).WithBuildingType(BuildingType.Mine).Select(h => new InteractionStateViewModel.ColonizableHexViewModel { Id = h.Id }).ToList(),
-						Race.Firaks => mapService.GetPlayersHexes(player.Id, false, false).WithBuildingType(BuildingType.ResearchLab).Select(h => new InteractionStateViewModel.ColonizableHexViewModel { Id = h.Id }).ToList(),
+						Race.Ambas => mapService.GetPlayersHexes(player.Id, false, true).WithBuildingType(BuildingType.Mine).Select(h => new InteractionStateViewModel.ColonizableHexViewModel { Id = h.Id }).ToList(),
+						Race.Firaks => mapService.GetPlayersHexes(player.Id, false, true).WithBuildingType(BuildingType.ResearchLab).Select(h => new InteractionStateViewModel.ColonizableHexViewModel { Id = h.Id }).ToList(),
 						Race.Ivits => mapService.GetHexesReachableBy(player)
 							.Where(o => !o.hex.PlanetType.HasValue)
 							.Select(o => new InteractionStateViewModel.ColonizableHexViewModel { Id = o.hex.Id, RequiredQics = o.requiredQics })
