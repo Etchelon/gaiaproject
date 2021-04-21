@@ -24,7 +24,7 @@ const viewsAnchors = new Map<ActiveView, string>([
 	[ActiveView.PlayerArea, "boxesAndLogs"],
 ]);
 
-const MobileView = ({ game, currentPlayerId, players, activeView }: GameViewProps) => {
+const MobileView = ({ game, players, activeView, currentPlayerId }: GameViewProps) => {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const activeViewContainerRef = useRef<HTMLDivElement>(null);

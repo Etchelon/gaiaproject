@@ -75,7 +75,8 @@ function fromSetupAction(game: GameStateDto, action: AvailableActionDto): Action
 		case ActionType.AdjustSectors:
 			return new AdjustSectorsWorkflow(game.boardState.map);
 		case ActionType.SelectRace:
-			return new SelectRaceWorkflow(action.interactionState.availableRaces!);
+			const thisRaceTurnOrder = _.filter(game.players, p => !_.isNil(p.raceId)).length + 1;
+			return new SelectRaceWorkflow(action.interactionState.availableRaces!, thisRaceTurnOrder, game.auctionState !== null);
 		case ActionType.BidForRace:
 			return new BidForRaceWorkflow(game.auctionState!);
 		case ActionType.PlaceInitialStructure:

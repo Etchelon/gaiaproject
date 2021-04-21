@@ -15,7 +15,8 @@ namespace GaiaProject.Engine.Logic.Entities.Effects
 		public override void ApplyTo(GaiaProjectGame game)
 		{
 			game.BoardState.Map = NewMapState;
-			game.LogEffect(this, $"rotates sectors to adjust the map");
+			var player = game.GetPlayer(PlayerId);
+			game.LogEffect(this, $"{player.Username} rotates sectors to adjust the map");
 		}
 	}
 }

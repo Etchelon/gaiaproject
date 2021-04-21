@@ -4,7 +4,6 @@ import _ from "lodash";
 import { Fragment, useReducer, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Race } from "../../../dto/enums";
-import { PlayerInGameDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";
 import { getRaceBoard, getRaceName } from "../../../utils/race-utils";
 import { executePlayerAction } from "../../store/actions-thunks";
@@ -41,7 +40,6 @@ const reducer = (
 
 interface AuctionDialogProps {
 	gameId: string;
-	currentPlayer: PlayerInGameDto;
 }
 
 const AuctionDialog = ({ gameId }: AuctionDialogProps) => {

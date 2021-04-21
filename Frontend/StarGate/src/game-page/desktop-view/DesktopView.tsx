@@ -21,7 +21,7 @@ import { PlayerInGameDto } from "../../dto/interfaces";
 
 const PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO = 1.439;
 
-const DesktopView = ({ game, currentPlayerId, players, activeView }: GameViewProps) => {
+const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }: GameViewProps) => {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const activeViewContainerRef = useRef<HTMLDivElement>(null);
@@ -31,6 +31,9 @@ const DesktopView = ({ game, currentPlayerId, players, activeView }: GameViewPro
 
 	const [playerAreaToShow, setPlayerAreaToShow] = useState<Nullable<PlayerInGameDto>>(null);
 	const showPlayerArea = (playerId: string) => {
+		if (isSpectator) {
+			return;
+		}
 		if (playerId === playerAreaToShow?.id) {
 			hidePlayerArea();
 			return;

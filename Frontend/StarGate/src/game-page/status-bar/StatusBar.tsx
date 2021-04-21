@@ -7,7 +7,7 @@ import _ from "lodash";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AvailableActionDto, GameStateDto } from "../../dto/interfaces";
-import { centeredFlexRow, fillParent } from "../../utils/miscellanea";
+import { centeredFlexRow, fillParent, Nullable } from "../../utils/miscellanea";
 import { selectAvailableActions, selectAvailableCommands, selectStatusMessage } from "../store/active-game.slice";
 import { executePlayerAction, selectIsExecutingAction } from "../store/actions-thunks";
 import { useWorkflow } from "../WorkflowContext";
@@ -79,11 +79,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface StatusBarProps {
 	game: GameStateDto;
-	playerId: string;
 	isMobile: boolean;
+	playerId: Nullable<string>;
+	isSpectator: boolean;
 }
 
-const StatusBar = ({ game, playerId, isMobile }: StatusBarProps) => {
+const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) => {
 	const dispatch = useDispatch();
 	const statusMessage = useSelector(selectStatusMessage);
 	const commands = useSelector(selectAvailableCommands);
@@ -110,7 +111,10 @@ const StatusBar = ({ game, playerId, isMobile }: StatusBarProps) => {
 	};
 
 	const onActionSelected = (action: AvailableActionDto) => {
-		const workflow = fromAction(playerId, game, action, dispatch);
+		if (isSpectator) {
+			return;
+		}
+		const workflow = fromAction(playerId!, game, action, dispatch);
 		startWorkflow(workflow);
 		setMenuAnchor(null);
 	};
@@ -120,42 +124,46 @@ const StatusBar = ({ game, playerId, isMobile }: StatusBarProps) => {
 			<Typography variant="body1" component="div">
 				<div className={classes.message + " gaia-font"}>{statusBarMessage}</div>
 			</Typography>
-			{isIdle && (
-				<div className={classes.commands}>
-					{_.map(commands, cmd => (
-						<Button
-							key={`${cmd.nextState}§${cmd.text}`}
-							className={classes.command}
-							onClick={() => handleCommand(cmd)}
-							variant="contained"
-							color={cmd.isPrimary ? "primary" : "default"}
-						>
-							<span className="gaia-font">{cmd.text}</span>
-						</Button>
-					))}
-				</div>
-			)}
-			{showActionSelector && (
-				<div className={classes.actionSelector}>
-					<Button className={classes.command} onClick={evt => setMenuAnchor(evt.currentTarget)} variant="contained" color="primary">
-						<span className="gaia-font">Actions</span>
-					</Button>
-					<Menu
-						anchorEl={menuAnchor}
-						keepMounted
-						open={!!menuAnchor}
-						onClose={() => setMenuAnchor(null)}
-						PaperProps={{
-							className: classes.actionList,
-						}}
-					>
-						{_.map(availableActions, action => (
-							<MenuItem key={action.type} onClick={() => onActionSelected(action)}>
-								<span className="gaia-font">{action.description}</span>
-							</MenuItem>
-						))}
-					</Menu>
-				</div>
+			{!isSpectator && (
+				<>
+					{isIdle && (
+						<div className={classes.commands}>
+							{_.map(commands, cmd => (
+								<Button
+									key={`${cmd.nextState}§${cmd.text}`}
+									className={classes.command}
+									onClick={() => handleCommand(cmd)}
+									variant="contained"
+									color={cmd.isPrimary ? "primary" : "default"}
+								>
+									<span className="gaia-font">{cmd.text}</span>
+								</Button>
+							))}
+						</div>
+					)}
+					{showActionSelector && (
+						<div className={classes.actionSelector}>
+							<Button className={classes.command} onClick={evt => setMenuAnchor(evt.currentTarget)} variant="contained" color="primary">
+								<span className="gaia-font">Actions</span>
+							</Button>
+							<Menu
+								anchorEl={menuAnchor}
+								keepMounted
+								open={!!menuAnchor}
+								onClose={() => setMenuAnchor(null)}
+								PaperProps={{
+									className: classes.actionList,
+								}}
+							>
+								{_.map(availableActions, action => (
+									<MenuItem key={action.type} onClick={() => onActionSelected(action)}>
+										<span className="gaia-font">{action.description}</span>
+									</MenuItem>
+								))}
+							</Menu>
+						</div>
+					)}
+				</>
 			)}
 		</div>
 	);
