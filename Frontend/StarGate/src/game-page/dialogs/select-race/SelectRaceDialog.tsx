@@ -41,7 +41,6 @@ const RaceBoard = ({ race }: { race: Race }) => {
 
 interface SelectRaceDialogProps {
 	gameId: string;
-	currentPlayer: PlayerInGameDto;
 }
 
 const SelectRaceDialog = ({ gameId }: SelectRaceDialogProps) => {

@@ -72,9 +72,7 @@ class HubClient {
 	}
 
 	async getConnection(): Promise<HubConnection> {
-		if (this._hubConnection?.state !== HubConnectionState.Connected) {
-			await this.initConnection();
-		}
+		await this.initConnection();
 		return this._hubConnection!;
 	}
 }

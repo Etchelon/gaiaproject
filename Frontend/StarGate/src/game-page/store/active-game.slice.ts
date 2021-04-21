@@ -214,13 +214,19 @@ export const selectActiveGameStatus = (state: AppStore) => state.activeGame.stat
 export const selectActiveView = (state: AppStore) => state.activeGame.activeView;
 export const selectCurrentPlayer = (state: AppStore) => _.find(state.activeGame.gameState?.players, p => p.id === state.activeGame.currentUserId) ?? null;
 export const selectActivePlayer = (state: AppStore) => state.activeGame.gameState?.activePlayer;
+export const selectIsSpectator = (state: AppStore) => selectActiveGame(state) !== null && selectCurrentPlayer(state) === null;
 export const selectPlayers = (state: AppStore) => {
 	const game = selectActiveGame(state);
-	const currentPlayer = selectCurrentPlayer(state);
-	if (_.isNil(game) || _.isNil(currentPlayer)) {
+	if (_.isNil(game)) {
 		return [];
 	}
 
+	const isSpectator = selectIsSpectator(state);
+	if (isSpectator) {
+		return game.players;
+	}
+
+	const currentPlayer = selectCurrentPlayer(state)!;
 	const currentPlayerIndex = _.findIndex(game.players, p => p.id === currentPlayer.id);
 	if (currentPlayerIndex === 0) {
 		return game.players;
@@ -261,15 +267,15 @@ export const selectSortedPassedPlayers = (state: AppStore) => {
 };
 export const selectAllRoundBoosters = (state: AppStore) => {
 	const game = selectActiveGame(state);
-	const currentPlayer = selectCurrentPlayer(state);
-	if (_.isNil(game) || _.isNil(currentPlayer)) {
+	if (_.isNil(game)) {
 		return [];
 	}
 
+	const currentPlayer = selectCurrentPlayer(state);
 	const available = game.boardState.availableRoundBoosters;
 	const playersBoosters = _.chain(game.players)
 		.filter(p => !_.isNil(p.state?.roundBooster))
-		.sortBy(p => (p.id === currentPlayer.id ? 0 : 1))
+		.sortBy(p => (p.id === currentPlayer?.id ? 0 : 1))
 		.map(p => ({
 			id: p.state.roundBooster.id,
 			isTaken: true,

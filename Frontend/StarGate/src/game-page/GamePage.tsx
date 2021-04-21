@@ -25,6 +25,7 @@ import {
 	selectActiveView,
 	selectAvailableActions,
 	selectCurrentPlayer,
+	selectIsSpectator,
 	selectPlayers,
 	setCurrentUser,
 	setStatusFromWorkflow,
@@ -47,9 +48,10 @@ export const GAMEVIEW_WRAPPER_ID = "gameViewWrapper";
 
 export interface GameViewProps {
 	game: GameStateDto;
-	currentPlayerId: string;
 	players: PlayerInGameDto[];
 	activeView: ActiveView;
+	currentPlayerId: string;
+	isSpectator: boolean;
 }
 
 interface GamePageRouteParams {
@@ -69,6 +71,7 @@ const GamePage = () => {
 	const game = useSelector(selectActiveGame);
 	const players = useSelector(selectPlayers);
 	const currentPlayer = useSelector(selectCurrentPlayer);
+	const isSpectator = useSelector(selectIsSpectator);
 	const status = useSelector(selectActiveGameStatus);
 	const availableActions = useSelector(selectAvailableActions);
 	const isLoading = status === "loading";
@@ -150,7 +153,7 @@ const GamePage = () => {
 	//#region When game has loaded check for the player's state
 
 	useEffect(() => {
-		if (_.isNull(game) || _.isNull(currentPlayer)) {
+		if (_.isNull(game)) {
 			return;
 		}
 
@@ -179,8 +182,8 @@ const GamePage = () => {
 			return;
 		}
 
-		const isActivePlayer = activePlayer.id === currentPlayer.id;
-		if (!isActivePlayer) {
+		const isActivePlayer = activePlayer.id === currentPlayer?.id;
+		if (isSpectator || !isActivePlayer) {
 			setActiveWorkflow(null);
 			dispatch(setStatusMessage(activePlayer.reason));
 			return;
@@ -193,9 +196,9 @@ const GamePage = () => {
 		}
 		let workflow: ActionWorkflow | null = null;
 		if (activePlayer.pendingDecision) {
-			workflow = fromDecision(currentPlayer.id, game, activePlayer.pendingDecision);
+			workflow = fromDecision(currentPlayer!.id, game, activePlayer.pendingDecision);
 		} else if (_.size(activePlayer.availableActions) === 1) {
-			workflow = fromAction(currentPlayer.id, game, activePlayer.availableActions[0], dispatch);
+			workflow = fromAction(currentPlayer!.id, game, activePlayer.availableActions[0], dispatch);
 		}
 
 		if (!workflow) {
@@ -204,11 +207,11 @@ const GamePage = () => {
 		}
 
 		startWorkflow(workflow);
-	}, [user, game, currentPlayer]);
+	}, [user, game, currentPlayer, isSpectator]);
 
 	//#endregion
 
-	if (isLoading || _.isNull(game) || _.isNull(currentPlayer)) {
+	if (isLoading || user === null || game === null) {
 		return (
 			<div className={classes.loader}>
 				<CircularProgress />
@@ -222,34 +225,40 @@ const GamePage = () => {
 		<WorkflowContext.Provider key={id} value={{ activeWorkflow, startWorkflow, closeWorkflow }}>
 			<div id={GAMEVIEW_WRAPPER_ID} className={classes.root}>
 				<div id={STATUSBAR_ID} className={classes.statusBar + (isMobile ? " mobile" : " desktop")}>
-					<StatusBar game={game} playerId={currentPlayer.id} isMobile={isMobile} />
+					<StatusBar game={game} playerId={currentPlayer?.id ?? null} isSpectator={isSpectator} isMobile={isMobile} />
 				</div>
 				<div className={classes.gameView + (isMobile ? " mobile" : " desktop")}>
-					{!isMobile && <DesktopView game={game} currentPlayerId={currentPlayer.id} players={players} activeView={activeView} />}
-					{isMobile && <MobileView game={game} currentPlayerId={currentPlayer.id} players={players} activeView={activeView} />}
+					{!isMobile && (
+						<DesktopView game={game} currentPlayerId={isSpectator ? user.id : currentPlayer!.id} isSpectator={isSpectator} players={players} activeView={activeView} />
+					)}
+					{isMobile && (
+						<MobileView game={game} currentPlayerId={isSpectator ? user.id : currentPlayer!.id} isSpectator={isSpectator} players={players} activeView={activeView} />
+					)}
 				</div>
 			</div>
-			<Dialog
-				aria-labelledby="dialog-title"
-				fullScreen={isMobile}
-				style={isMobile ? undefined : { maxHeight: "95vh", top: "2.5vh" }}
-				open={showDialog}
-				maxWidth={"lg"}
-				fullWidth={false}
-				disableBackdropClick={true}
-				keepMounted={false}
-			>
-				{activeViewName && (
-					<DialogTitle id="dialog-title">
-						<div className="gaia-font text-center">{activeViewName}</div>
-					</DialogTitle>
-				)}
-				{activeView === ActiveView.RaceSelectionDialog && <SelectRaceDialog gameId={game.id} currentPlayer={currentPlayer} />}
-				{activeView === ActiveView.AuctionDialog && <AuctionDialog gameId={game.id} currentPlayer={currentPlayer} />}
-				{activeView === ActiveView.ConversionDialog && <ConversionsDialog gameId={game.id} currentPlayer={currentPlayer} />}
-				{activeView === ActiveView.SortIncomesDialog && <SortIncomesDialog gameId={game.id} currentPlayer={currentPlayer} />}
-				{activeView === ActiveView.TerransConversionsDialog && <TerransDecideIncomeDialog gameId={game.id} currentPlayer={currentPlayer} />}
-			</Dialog>
+			{!isSpectator && currentPlayer !== null && (
+				<Dialog
+					aria-labelledby="dialog-title"
+					fullScreen={isMobile}
+					style={isMobile ? undefined : { maxHeight: "95vh", top: "2.5vh" }}
+					open={showDialog}
+					maxWidth={"lg"}
+					fullWidth={false}
+					disableBackdropClick={true}
+					keepMounted={false}
+				>
+					{activeViewName && (
+						<DialogTitle id="dialog-title">
+							<div className="gaia-font text-center">{activeViewName}</div>
+						</DialogTitle>
+					)}
+					{activeView === ActiveView.RaceSelectionDialog && <SelectRaceDialog gameId={game.id} />}
+					{activeView === ActiveView.AuctionDialog && <AuctionDialog gameId={game.id} />}
+					{activeView === ActiveView.ConversionDialog && <ConversionsDialog gameId={game.id} currentPlayer={currentPlayer!} />}
+					{activeView === ActiveView.SortIncomesDialog && <SortIncomesDialog gameId={game.id} currentPlayer={currentPlayer!} />}
+					{activeView === ActiveView.TerransConversionsDialog && <TerransDecideIncomeDialog gameId={game.id} currentPlayer={currentPlayer!} />}
+				</Dialog>
+			)}
 		</WorkflowContext.Provider>
 	);
 };

@@ -4,6 +4,12 @@ import { ActionDto } from "../../../dto/interfaces";
 import { ActionWorkflow } from "../action-workflow.base";
 import { ActiveView, Command, CommonWorkflowStates } from "../types";
 
+const cardinalNumbers = new Map<number, string>([
+	[1, "1st"],
+	[2, "2nd"],
+	[3, "3rd"],
+	[4, "4th"],
+]);
 const BoardExamination = 0;
 const WaitingForSelection = 1;
 
@@ -13,15 +19,16 @@ interface SelectRaceActionDto extends ActionDto {
 }
 
 export class SelectRaceWorkflow extends ActionWorkflow {
-	constructor(public readonly availableRaces: Race[]) {
-		super(null, false);
+	constructor(public readonly availableRaces: Race[], private readonly turnOrder: number, private readonly isForBid: boolean) {
+		super(null, true);
+		this.init();
 	}
 
 	protected init(): void {
 		this.states = [
 			{
 				id: BoardExamination,
-				message: "Select your race",
+				message: `Select ${this.isForBid ? "a" : "your"} race to play in ${cardinalNumbers.get(this.turnOrder)!} position`,
 				commands: [
 					{
 						nextState: WaitingForSelection,
