@@ -62,7 +62,7 @@ const App = () => {
 					});
 					navigationService.navigateTo("/profile");
 				}
-				return hubClient.openConnection();
+				return hubClient.establishConnection();
 			})
 			.then(() => {
 				setIsReady(true);

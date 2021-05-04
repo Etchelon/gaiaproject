@@ -1,12 +1,21 @@
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
-import _ from "lodash";
 import { timer } from "rxjs";
 import { BASE_URL } from "../config";
 import { BearerTokenFactoryFn } from "./http-client";
 import { Nullable } from "./miscellanea";
 
-const isConnecting = (connection_: HubConnection) => connection_.state === HubConnectionState.Connecting || connection_.state === HubConnectionState.Reconnecting;
-const isConnected = (connection_: HubConnection) => connection_.state === HubConnectionState.Connected;
+const isConnecting = (connection_: Nullable<HubConnection>) => {
+	if (connection_ === null) {
+		return false;
+	}
+	return connection_.state === HubConnectionState.Connecting || connection_.state === HubConnectionState.Reconnecting;
+};
+const isConnected = (connection_: Nullable<HubConnection>) => {
+	if (connection_ === null) {
+		return false;
+	}
+	return connection_.state === HubConnectionState.Connected;
+};
 
 class HubClient {
 	private _hubConnection: Nullable<HubConnection> = null;
@@ -15,11 +24,11 @@ class HubClient {
 
 	private _bearerTokenFactory: BearerTokenFactoryFn = async () => null;
 
-	private async initConnection(): Promise<void> {
-		if (!_.isNull(this._hubConnection)) {
-			return;
+	private async initConnection(): Promise<HubConnection> {
+		if (this._hubConnection !== null) {
+			return this._hubConnection;
 		}
-		this._hubConnection = new HubConnectionBuilder()
+		return (this._hubConnection = new HubConnectionBuilder()
 			.withUrl(`${this.baseUrl}/hubs/gaia`, {
 				accessTokenFactory: async () => {
 					const token = await this._bearerTokenFactory();
@@ -27,25 +36,23 @@ class HubClient {
 				},
 			})
 			.withAutomaticReconnect()
-			.build();
+			.build());
 	}
 
 	setBearerTokenFactory(factory: BearerTokenFactoryFn): void {
 		this._bearerTokenFactory = factory;
 	}
 
-	async openConnection(): Promise<void> {
-		await this.initConnection();
-		await this._hubConnection!.start();
+	private async openConnection(): Promise<void> {
+		await this._hubConnection?.start();
 	}
 
 	async closeConnection(): Promise<void> {
 		await this._hubConnection?.stop();
 	}
 
-	async ensureConnected(): Promise<void> {
-		await this.initConnection();
-		const connection = this._hubConnection!;
+	async establishConnection(): Promise<void> {
+		const connection = await this.initConnection();
 		if (isConnected(connection)) {
 			return;
 		}
@@ -64,16 +71,18 @@ class HubClient {
 			return;
 		}
 
-		await connection.start();
-	}
-
-	isConnected(): boolean {
-		return this._hubConnection?.state === HubConnectionState.Connected;
+		await this.openConnection();
 	}
 
 	async getConnection(): Promise<HubConnection> {
-		await this.initConnection();
-		return this._hubConnection!;
+		return await this.initConnection();
+	}
+
+	async send(method: string, ...args: any[]): Promise<void> {
+		if (!isConnected(this._hubConnection)) {
+			return Promise.resolve();
+		}
+		return await this._hubConnection!.send(method, ...args);
 	}
 }
 
