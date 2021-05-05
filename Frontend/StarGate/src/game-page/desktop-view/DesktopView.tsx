@@ -31,9 +31,6 @@ const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }
 
 	const [playerAreaToShow, setPlayerAreaToShow] = useState<Nullable<PlayerInGameDto>>(null);
 	const showPlayerArea = (playerId: string) => {
-		if (isSpectator) {
-			return;
-		}
 		if (playerId === playerAreaToShow?.id) {
 			hidePlayerArea();
 			return;

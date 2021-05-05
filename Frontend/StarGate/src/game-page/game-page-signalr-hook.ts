@@ -9,25 +9,14 @@ import { Nullable } from "../utils/miscellanea";
 import { gameUpdated, setConnectedToGame, setConnecting, setDisconnected, setDisconnecting, setOnlineUsers, userJoined, userLeft } from "./store/active-game.slice";
 
 async function startGameEventsListener(gameId: string): Promise<HubConnection> {
-	const connection = await hubClient.getConnection();
-	if (!connection) {
-		throw new Error("Hub Connection unavailable.");
-	}
-
-	await connection.send("JoinGame", gameId);
-	return connection;
+	await hubClient.send("JoinGame", gameId);
+	return await hubClient.getConnection();
 }
 
 async function leaveGame(gameId: string): Promise<Nullable<HubConnection>> {
-	if (!hubClient.isConnected()) {
-		console.warn("Hub Connection unavailable.");
-		return null;
-	}
-
-	const connection = await hubClient.getConnection();
 	try {
-		await connection.send("LeaveGame", gameId);
-		return connection;
+		await hubClient.send("LeaveGame", gameId);
+		return await hubClient.getConnection();
 	} catch (err) {
 		console.warn("Hub doesn't see we're leaving the game because of this error", err);
 		return null;
