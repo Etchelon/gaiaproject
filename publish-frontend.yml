@@ -62,3 +62,7 @@ steps:
     storage: 'gaiaproject'
     ContainerName: '$web'
     CleanTargetBeforeCopy: true
+
+- task: CmdLine@2
+  inputs:
+    script: 'git reset --hard'
