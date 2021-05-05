@@ -25,14 +25,12 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '10.x'
+    versionSpec: '14.x'
   displayName: 'Install Node.js'
 
 - task: Cache@2
   inputs:
     key: $(Build.SourcesDirectory)/Frontend/StarGate/package-lock.json
-    restoreKeys: |
-       npm | "$(Agent.OS)"
     path: $(Build.SourcesDirectory)/Frontend/StarGate/node_modules
     cacheHitVar: CACHE_RESTORED
   displayName: Cache npm
