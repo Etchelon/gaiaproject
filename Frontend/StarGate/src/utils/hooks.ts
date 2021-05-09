@@ -81,7 +81,7 @@ export function useAssetUrl(relativeUrl: string): string {
 }
 
 export function useCurrentUser(): Nullable<UserInfoDto> {
-	const [currentUser, setCurrentUser] = useState<Nullable<UserInfoDto>>(null);
+	const [currentUser, setCurrentUser] = useState<Nullable<UserInfoDto>>(userInfoService.getCurrentUser());
 	useEffect(() => {
 		const sub = userInfoService.userInfo$.subscribe(user => {
 			setCurrentUser(user);

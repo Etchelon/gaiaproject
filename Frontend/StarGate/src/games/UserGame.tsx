@@ -1,24 +1,53 @@
 import { useTheme } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Paper from "@material-ui/core/Paper";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { format, parseISO } from "date-fns";
 import _ from "lodash";
+import { MouseEvent, MouseEventHandler, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import ActivePlayerImg from "../assets/Resources/PlayerLoader.gif";
 import { getRaceColor } from "../utils/race-utils";
-import { selectGame } from "./store/games.slice";
+import { selectDeleteGameProgress, selectGame } from "./store/games.slice";
+import { UserInfoDto } from "../dto/interfaces";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
+import ButtonWithProgress from "../utils/ButtonWithProgress";
 
 const AVATAR_WIDTH = 40;
+
+function withStopPropagation(handler: MouseEventHandler) {
+	return (evt: MouseEvent) => {
+		evt.stopPropagation();
+		handler(evt);
+	};
+}
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
 		wrapper: {
 			padding: theme.spacing(2),
 			cursor: "pointer",
+		},
+		header: {
+			display: "flex",
+		},
+		info: {
+			flexGrow: 1,
+			minWidth: 0,
+		},
+		deleteBtn: {
+			marginLeft: theme.spacing(1),
+			flexShrink: 0,
 		},
 		players: {
 			padding: theme.spacing(1, 0),
@@ -37,13 +66,25 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface UserGameProps {
 	id: string;
+	user: UserInfoDto;
+	doDeleteGame(gameId: string): void;
 }
 
-const UserGame = ({ id }: UserGameProps) => {
+const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	const theme = useTheme();
 	const classes = useStyles();
 	const history = useHistory();
 	const game = useSelector(_.partialRight(selectGame, id))!;
+	const [isPromptingForDeletion, setIsPromptingForDeletion] = useState(false);
+	const deleteProgress = useSelector(selectDeleteGameProgress);
+	const isGameCreator = user.id === game.createdBy.id;
+	const canDelete = isGameCreator && !game.ended;
+
+	useEffect(() => {
+		if (isPromptingForDeletion && (deleteProgress === "success" || deleteProgress === "failure")) {
+			setIsPromptingForDeletion(false);
+		}
+	}, [isPromptingForDeletion, deleteProgress]);
 
 	const navigateToGamePage = () => {
 		history.push(`/game/${game.id}`);
@@ -57,22 +98,65 @@ const UserGame = ({ id }: UserGameProps) => {
 				.value()
 				.join(", ")
 		: null;
+
 	return (
 		<Paper className={classes.wrapper} onClick={navigateToGamePage}>
-			<Typography variant="h5" className="gaia-font">
-				{game.name}
-			</Typography>
-			<Typography variant="subtitle2" className="gaia-font">
-				{finishDate ? (
-					<span>
-						Finished on {format(finishDate, "MMM d, y")}, {winnersNames} won!
-					</span>
-				) : (
-					<span>
-						Started on {format(creationDate, "MMM d, y")} by {game.createdBy.username}
-					</span>
+			<div className={classes.header}>
+				<div className={classes.info}>
+					<Typography variant="h5" className="gaia-font">
+						{game.name}
+					</Typography>
+					<Typography variant="subtitle2" className="gaia-font">
+						{finishDate ? (
+							<span>
+								Finished on {format(finishDate, "MMM d, y")}, {winnersNames} won!
+							</span>
+						) : (
+							<span>
+								Started on {format(creationDate, "MMM d, y")} by {game.createdBy.username}
+							</span>
+						)}
+					</Typography>
+				</div>
+				{canDelete && (
+					<div className={classes.deleteBtn}>
+						<IconButton
+							aria-label="Delete this game"
+							onClick={withStopPropagation(() => {
+								setIsPromptingForDeletion(true);
+							})}
+						>
+							<DeleteIcon />
+							<Dialog
+								open={isPromptingForDeletion}
+								onClose={() => setIsPromptingForDeletion(false)}
+								aria-labelledby="alert-dialog-title"
+								aria-describedby="alert-dialog-description"
+							>
+								<DialogTitle id="alert-dialog-title">Delete this game?</DialogTitle>
+								<DialogContent>
+									<DialogContentText id="alert-dialog-description">You can delete this game. Other players will be notified of this action.</DialogContentText>
+								</DialogContent>
+								<DialogActions>
+									<Button onClick={withStopPropagation(() => setIsPromptingForDeletion(false))} color="default" disabled={deleteProgress !== "idle"}>
+										Cancel
+									</Button>
+									<ButtonWithProgress
+										label={"Yes"}
+										loading={deleteProgress === "loading"}
+										onClick={withStopPropagation(() => {
+											doDeleteGame(game.id);
+										})}
+										color="default"
+										disabled={deleteProgress !== "idle"}
+										autoFocus
+									/>
+								</DialogActions>
+							</Dialog>
+						</IconButton>
+					</div>
 				)}
-			</Typography>
+			</div>
 			<div className={classes.players}>
 				<Grid container spacing={2}>
 					{_.chain(game.players)

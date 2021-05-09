@@ -236,6 +236,11 @@ namespace GaiaProject.Engine.Logic
 				.ToList();
 		}
 
+		public async Task DeleteGame(string id)
+		{
+			await _gameDataProvider.DeleteGame(id);
+		}
+
 		public async Task<HandleActionResult> HandleAction(string gameId, PlayerAction action)
 		{
 			var game = await LoadGame(gameId);
