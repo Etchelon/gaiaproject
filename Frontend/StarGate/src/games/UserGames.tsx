@@ -9,7 +9,8 @@ import _ from "lodash";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchGames, GameKind, selectGamesIds, selectGamesStatus, selectLastFetchInfo } from "./store/games.slice";
+import { useCurrentUser } from "../utils/hooks";
+import { deleteGameAction, fetchGames, GameKind, selectDeleteGameProgress, selectGamesIds, selectGamesStatus, selectLastFetchInfo } from "./store/games.slice";
 import useStyles from "./user-games.styles";
 import UserGame from "./UserGame";
 
@@ -18,9 +19,11 @@ interface UserGamesProps {
 }
 
 const UserGames = ({ kind }: UserGamesProps) => {
+	const user = useCurrentUser()!;
 	const gamesIds = useSelector(selectGamesIds);
 	const gamesStatus = useSelector(selectGamesStatus);
 	const lastFetchInfo = useSelector(selectLastFetchInfo);
+	const deleteGameStatus = useSelector(selectDeleteGameProgress);
 	const isLoading = gamesStatus === "loading";
 	const dispatch = useDispatch();
 	const classes = useStyles();
@@ -34,6 +37,13 @@ const UserGames = ({ kind }: UserGamesProps) => {
 			dispatch(fetchGames(kind));
 		}
 	}, [kind, gamesStatus, lastFetchInfo]);
+
+	useEffect(() => {
+		if (deleteGameStatus !== "success") {
+			return;
+		}
+		dispatch(fetchGames(kind));
+	}, [kind, deleteGameStatus]);
 
 	if (isLoading) {
 		return (
@@ -59,7 +69,7 @@ const UserGames = ({ kind }: UserGamesProps) => {
 			<div className={classes.games}>
 				{_.map(gamesIds, id => (
 					<div className="game" key={id}>
-						<UserGame id={String(id)} />
+						<UserGame id={String(id)} user={user} doDeleteGame={gameId => dispatch(deleteGameAction({ gameId }))} />
 					</div>
 				))}
 			</div>

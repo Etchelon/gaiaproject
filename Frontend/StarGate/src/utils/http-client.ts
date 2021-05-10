@@ -69,6 +69,11 @@ class HttpClient {
 		const options = await this.fetchOptions("PUT", body, additionalOptions);
 		return await this.checkedFetch<T | null>(url, options, additionalOptions?.readAsString);
 	}
+
+	async delete<T = void>(url: string, additionalOptions?: FetchAdditionalOptions): Promise<T | null> {
+		const options = await this.fetchOptions("DELETE", undefined, additionalOptions);
+		return await this.checkedFetch<T | null>(url, options, additionalOptions?.readAsString);
+	}
 }
 
 const actualBaseUrl = BASE_URL.replace("<hostname>", window.location.hostname);
