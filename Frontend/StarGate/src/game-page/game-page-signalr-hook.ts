@@ -9,6 +9,7 @@ import { Nullable } from "../utils/miscellanea";
 import { gameUpdated, setConnectedToGame, setConnecting, setDisconnected, setDisconnecting, setOnlineUsers, userJoined, userLeft } from "./store/active-game.slice";
 
 async function startGameEventsListener(gameId: string): Promise<HubConnection> {
+	await hubClient.establishConnection();
 	await hubClient.send("JoinGame", gameId);
 	return await hubClient.getConnection();
 }

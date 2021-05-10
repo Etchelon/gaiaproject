@@ -70,10 +70,10 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 	const color = theme.palette.getContrastText(background);
 
 	useEffect(() => {
-		if (isPromptingForRollback && (rollbackProgress === "success" || rollbackProgress === "failure")) {
+		if (rollbackProgress === "success" || rollbackProgress === "failure") {
 			setIsPromptingForRollback(false);
 		}
-	}, [isPromptingForRollback, rollbackProgress]);
+	}, [rollbackProgress]);
 
 	const subLogs = () => (
 		<>
@@ -110,7 +110,7 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 							<DialogContentText id="alert-dialog-description">The game state will be rolled back to just after the selected action was performed</DialogContentText>
 						</DialogContent>
 						<DialogActions>
-							<Button onClick={() => setIsPromptingForRollback(false)} color="default" disabled={rollbackProgress !== "idle"}>
+							<Button onClick={() => setIsPromptingForRollback(false)} color="default" disabled={rollbackProgress === "loading"}>
 								Cancel
 							</Button>
 							<ButtonWithProgress
@@ -118,7 +118,7 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 								loading={rollbackProgress === "loading"}
 								onClick={() => doRollback(log.actionId!)}
 								color="default"
-								disabled={rollbackProgress !== "idle"}
+								disabled={rollbackProgress === "loading"}
 								autoFocus
 							/>
 						</DialogActions>

@@ -81,10 +81,10 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	const canDelete = isGameCreator && !game.ended;
 
 	useEffect(() => {
-		if (isPromptingForDeletion && (deleteProgress === "success" || deleteProgress === "failure")) {
+		if (deleteProgress === "success" || deleteProgress === "failure") {
 			setIsPromptingForDeletion(false);
 		}
-	}, [isPromptingForDeletion, deleteProgress]);
+	}, [deleteProgress]);
 
 	const navigateToGamePage = () => {
 		history.push(`/game/${game.id}`);
@@ -138,7 +138,7 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 									<DialogContentText id="alert-dialog-description">You can delete this game. Other players will be notified of this action.</DialogContentText>
 								</DialogContent>
 								<DialogActions>
-									<Button onClick={withStopPropagation(() => setIsPromptingForDeletion(false))} color="default" disabled={deleteProgress !== "idle"}>
+									<Button onClick={withStopPropagation(() => setIsPromptingForDeletion(false))} color="default" disabled={deleteProgress === "loading"}>
 										Cancel
 									</Button>
 									<ButtonWithProgress
@@ -148,7 +148,7 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 											doDeleteGame(game.id);
 										})}
 										color="default"
-										disabled={deleteProgress !== "idle"}
+										disabled={deleteProgress === "loading"}
 										autoFocus
 									/>
 								</DialogActions>
