@@ -1,5 +1,6 @@
 using System.Linq;
 using GaiaProject.Core.Model;
+using GaiaProject.Endpoint.Shared;
 using GaiaProject.Engine.Logic.Utils;
 using GaiaProject.ViewModels;
 using SendGrid;
@@ -16,23 +17,20 @@ namespace GaiaProject.Endpoint.Utils
 			_reactFrontendUrl = reactFrontendUrl;
 		}
 
-		public SendGridMessage GetEmail(User recipient, GameStateViewModel game)
+		public SendGridMessage GetEmail(User recipient, GameStateViewModel game, NotificationReason reason)
 		{
 			var mail = new SendGridMessage();
 			mail.SetFrom(new EmailAddress("gaiaproject@donotreply.com", "The GaiaProject online team"));
 			mail.AddTo(new EmailAddress(recipient.Email, $"{recipient.FirstName} {recipient.LastName}"));
-			string subject;
-			string content;
-			if (game.Ended.HasValue)
+			var (subject, content) = reason switch
 			{
-				(subject, content) = GetGameEndedMessage(recipient, game);
-			}
-			else
-			{
-				(subject, content) = GetYourTurnMessage(recipient, game);
-				mail.SetSubject(subject);
-				mail.AddContent(MimeType.Html, content);
-			}
+				NotificationReason.GameStarted => GetYourTurnMessage(recipient, game),
+				NotificationReason.YourTurn => GetYourTurnMessage(recipient, game),
+				NotificationReason.GameEnded => GetGameEndedMessage(recipient, game),
+				NotificationReason.GameDeleted => GetGameDeletedMessage(recipient, game),
+			};
+			mail.SetSubject(subject);
+			mail.AddContent(MimeType.Html, content);
 			return mail;
 		}
 
@@ -63,6 +61,18 @@ namespace GaiaProject.Endpoint.Utils
 {string.Join("<br>", game.Players.Select(p => $"{p.Placement}°: {p.Username} ({RaceUtils.GetName(p.RaceId)}) - {p.State.Points} pts").ToArray())}
 <br>
 <a href='{_reactFrontendUrl}game/{game.Id}'>Click here to go check out the game.</a>
+";
+			return (subject, content);
+		}
+
+		private (string subject, string content) GetGameDeletedMessage(User recipient, GameStateViewModel game)
+		{
+			var subject = $"The Gaia Project game {game.Name} has been deleted";
+
+			var gameCreator = game.CreatedBy.Username;
+			var content = @$"
+<h1>{gameCreator} has decided to delete the game.</h1>
+<p>The game won't be visible any longer in your list, nor in the history of your played games.</p>
 ";
 			return (subject, content);
 		}

@@ -77,7 +77,7 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	const game = useSelector(_.partialRight(selectGame, id))!;
 	const [isPromptingForDeletion, setIsPromptingForDeletion] = useState(false);
 	const deleteProgress = useSelector(selectDeleteGameProgress);
-	const isGameCreator = user.id === game.createdBy.id;
+	const isGameCreator = user?.id === game.createdBy.id;
 	const canDelete = isGameCreator && !game.ended;
 
 	useEffect(() => {

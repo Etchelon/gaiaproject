@@ -86,6 +86,17 @@ namespace GaiaProject.Core.Logic
 			await this._userDataProvider.SetNotificationRead(notificationId);
 		}
 
+		public async Task NotifyUser(string userId, string message)
+		{
+			var notification = new Notification
+			{
+				DateCreated = DateTime.Now,
+				TargetUserId = userId,
+				Text = message,
+			};
+			await this._userDataProvider.CreateUserNotification(notification);
+		}
+
 		public async Task NotifyUserForGame(string userId, string gameId, string message)
 		{
 			var notification = new GameNotification
@@ -96,6 +107,12 @@ namespace GaiaProject.Core.Logic
 				Text = message,
 			};
 			await this._userDataProvider.CreateUserNotification(notification);
+		}
+
+		public async Task SetNotificationsForGameRead(string userId, string gameId)
+		{
+			var notifications = await this._userDataProvider.GetUserNotificationsByGame(userId, gameId);
+			await this._userDataProvider.SetNotificationsRead(notifications.Select(n => n.Id));
 		}
 	}
 }

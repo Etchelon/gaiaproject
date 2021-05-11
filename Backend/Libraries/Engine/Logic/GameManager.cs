@@ -238,6 +238,11 @@ namespace GaiaProject.Engine.Logic
 
 		public async Task DeleteGame(string id)
 		{
+			var game = await GetGame(id);
+			if (game.Ended.HasValue)
+			{
+				throw new Exception("You can only delete active games");
+			}
 			await _gameDataProvider.DeleteGame(id);
 		}
 
