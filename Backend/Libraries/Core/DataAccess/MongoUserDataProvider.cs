@@ -83,10 +83,23 @@ namespace GaiaProject.Core.DataAccess
 			return await _repository.GetPaginatedAsync(filter, sorter, 0, pageSize);
 		}
 
+		public async Task<List<Notification>> GetUserNotificationsByGame(string userId, string gameId)
+		{
+			var filter = Builders<Notification>.Filter.Eq(n => n.TargetUserId, userId);
+			filter &= Builders<Notification>.Filter.OfType<GameNotification>(gn => gn.GameId == gameId);
+			return await _repository.GetAllAsync(filter);
+		}
+
 		public async Task SetNotificationRead(string notificationId)
 		{
 			var updateDefinition = Builders<Notification>.Update.Set(n => n.IsRead, true);
 			await _repository.UpdateOneAsync(n => n.Id == notificationId, updateDefinition);
+		}
+
+		public async Task SetNotificationsRead(IEnumerable<string> notificationIds)
+		{
+			var updateDefinition = Builders<Notification>.Update.Set(n => n.IsRead, true);
+			await _repository.UpdateManyAsync(notificationIds, updateDefinition);
 		}
 
 		public async Task<string> CreateUserNotification(Notification notification)

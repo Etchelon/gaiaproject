@@ -5,6 +5,7 @@ using AutoMapper;
 using GaiaProject.Core.Logic;
 using GaiaProject.Endpoint.Hubs;
 using GaiaProject.Endpoint.Mapping.Resolvers;
+using GaiaProject.Endpoint.Shared;
 using GaiaProject.Endpoint.Utils;
 using GaiaProject.Engine.Commands;
 using GaiaProject.Engine.Logic;
@@ -19,14 +20,6 @@ using Newtonsoft.Json.Serialization;
 
 namespace GaiaProject.Endpoint.WorkerServices
 {
-	public enum NotificationReason
-	{
-		GameStarted,
-		YourTurn,
-		GameEnded,
-		GameDeleted,
-	}
-
 	public class GamesWorkerService
 	{
 		private readonly IMapper _mapper;
@@ -131,6 +124,7 @@ namespace GaiaProject.Endpoint.WorkerServices
 			var result = await _gameManager.HandleAction(gameId, actualAction);
 			if (result.Handled)
 			{
+				await _userManager.SetNotificationsForGameRead(userId, gameId);
 				NotifyPlayersAsync(result.NewState);
 			}
 			return result;
@@ -210,7 +204,7 @@ namespace GaiaProject.Endpoint.WorkerServices
 		private async Task SendDelayedNotifications(string userId, GameStateViewModel gameVm, NotificationReason reason)
 		{
 			var user = await _userManager.GetUser(userId);
-			var mailMessage = _mailHelper.GetEmail(user, gameVm);
+			var mailMessage = _mailHelper.GetEmail(user, gameVm, reason);
 			await this._mailService.Send(mailMessage);
 			var notificationMessage = reason switch
 			{
@@ -219,6 +213,11 @@ namespace GaiaProject.Endpoint.WorkerServices
 				NotificationReason.GameEnded => $"Game {gameVm.Name} has ended",
 				NotificationReason.GameDeleted => $"Game {gameVm.Name} has been deleted",
 			};
+			if (reason == NotificationReason.GameDeleted)
+			{
+				await _userManager.NotifyUser(userId, notificationMessage);
+				return;
+			}
 			await _userManager.NotifyUserForGame(userId, gameVm.Id, notificationMessage);
 		}
 

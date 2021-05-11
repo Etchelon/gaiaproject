@@ -18,7 +18,9 @@ namespace GaiaProject.Core.DataAccess.Abstractions
 		Task UpdateUser(User user);
 		Task<long> CountUnreadNotifications(string userId);
 		Task<List<Notification>> GetUserNotifications(string userId, DateTime earlierThan, int pageSize);
+		Task<List<Notification>> GetUserNotificationsByGame(string userId, string gameId);
 		Task SetNotificationRead(string notificationId);
+		Task SetNotificationsRead(IEnumerable<string> notificationIds);
 		Task<string> CreateUserNotification(Notification notification);
 	}
 }

@@ -114,9 +114,19 @@ namespace GaiaProject.Core.DataAccess
 			return await _mongoUserProvider.GetUserNotifications(userId, earlierThan, pageSize);
 		}
 
+		public async Task<List<Notification>> GetUserNotificationsByGame(string userId, string gameId)
+		{
+			return await _mongoUserProvider.GetUserNotificationsByGame(userId, gameId);
+		}
+
 		public async Task SetNotificationRead(string notificationId)
 		{
 			await _mongoUserProvider.SetNotificationRead(notificationId);
+		}
+
+		public async Task SetNotificationsRead(IEnumerable<string> notificationIds)
+		{
+			await _mongoUserProvider.SetNotificationsRead(notificationIds);
 		}
 
 		public async Task<string> CreateUserNotification(Notification notification)
