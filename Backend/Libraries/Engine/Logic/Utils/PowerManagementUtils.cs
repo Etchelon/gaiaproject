@@ -65,7 +65,9 @@ namespace GaiaProject.Engine.Logic.Utils
 
 					var stateAfterToken = player.State.Clone();
 					stateAfterToken.Resources.Power.Bowl1 += 1;
-					var chargeablePowerAfterToken = ChargeablePowerByPlayer(stateAfterToken, buildingValue, player.HasPassed);
+					// Since Taklons get a token before charging, always get chargeable power as if they haven't already passed to avoid
+					// having the earned token absorbed in the next round's power incomes
+					var chargeablePowerAfterToken = ChargeablePowerByPlayer(stateAfterToken, buildingValue, false);
 
 					PendingDecision decision = (chargeablePower != chargeablePowerAfterToken || player.State.Resources.Power.Brainstone == PowerPools.BrainstoneLocation.Removed)
 						// Ask Taklons how they want to charge power only when the outcome is different
