@@ -71,7 +71,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 
 			effects.Add(Player.RaceId == Race.Ivits && Player.State.Federations.Count == 1
 				? (Effect)new IvitsFederationExpandedEffect(_federatedHexes)
-				: new FederationCreatedEffect(_federatedHexes)
+				: new FederationCreatedEffect(_federatedHexes.Select(h => h.Id))
 			);
 
 			// Place satellites

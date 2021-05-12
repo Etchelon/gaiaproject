@@ -2,29 +2,29 @@
 using System.Linq;
 using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Model;
-using GaiaProject.Engine.Model.Board;
 using GaiaProject.Engine.Model.Players;
 
 namespace GaiaProject.Engine.Logic.Entities.Effects
 {
 	public class FederationCreatedEffect : Effect
 	{
-		public List<Hex> FederatedHexes { get; }
+		public List<string> FederatedHexesIds { get; }
 
-		public FederationCreatedEffect(List<Hex> federatedHexes)
+		public FederationCreatedEffect(IEnumerable<string> federatedHexesIds)
 		{
-			FederatedHexes = federatedHexes;
+			FederatedHexesIds = federatedHexesIds.ToList();
 		}
 
 		public override void ApplyTo(GaiaProjectGame game)
 		{
 			var player = game.GetPlayer(PlayerId);
 			var counter = player.State.Federations.Count() + 1;
-			var newFederation = Federation.FromBuildings(PlayerId, counter, FederatedHexes);
+			var federatedHexes = game.BoardState.Map.Hexes.Where(h => FederatedHexesIds.Contains(h.Id)).ToList();
+			var newFederation = Federation.FromBuildings(PlayerId, counter, federatedHexes);
 			player.State.Federations.Add(newFederation);
 
 			// If the federation has no satellites, mark one of the buildings with the Federation Marker
-			var buildings = FederatedHexes
+			var buildings = federatedHexes
 				.SelectMany(h => h.Buildings)
 				.Where(b => b.PlayerId == PlayerId)
 				.ToList();
