@@ -43,7 +43,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 						}
 						if (tokens.Count == 1 || tokens.DistinctBy(t => t.Type).Count() == 1)
 						{
-							var gain = FederationTokenUtils.GetFederationTokenGain(tokens.First().Type, game);
+							var gain = FederationTokenUtils.GetFederationTokenGain(tokens.First().Type, game, true);
 							effects.AddRange(gain.Gains);
 						}
 						else
