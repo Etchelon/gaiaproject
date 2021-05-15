@@ -8,9 +8,14 @@ namespace GaiaProject.Engine.Model.Actions
 	{
 		public override ActionType Type => ActionType.ItarsBurnPowerForTechnologyTile;
 
+		[BsonIgnoreIfDefault]
+		public bool Accepted { get; set; }
+
 		public override string ToString()
 		{
-			return $"takes a technology tile by burning power from Gaia area";
+			return Accepted
+				? "takes a technology tile by burning power from Gaia area"
+				: "declines to burn power for a technology tile";
 		}
 	}
 }

@@ -23,6 +23,7 @@ import { SortIncomesDecisionDto, SortIncomesWorkflow } from "./rounds-phase/sort
 import { StartGaiaProjectWorkflow } from "./rounds-phase/start-gaia-project.workflow";
 import { TaklonsLeechDecisionDto, TaklonsLeechWorkflow } from "./rounds-phase/taklons-leech.workflow";
 import { TerransDecideIncomeDecisionDto, TerransDecideIncomeWorkflow } from "./rounds-phase/terrans-decide-income.workflow";
+import { ItarsBurnPowerForTechnologyTileWorkflow } from "./rounds-phase/itars-burn-power-for-technology-tile.workflow";
 import { UpgradeExistingStructureWorkflow } from "./rounds-phase/upgrade-existing-structure.workflow";
 import { UseTechnologyTileWorkflow } from "./rounds-phase/use-technology-tile.workflow";
 import { AdjustSectorsWorkflow } from "./setup-phase/adjust-sectors.workflow";
@@ -48,7 +49,7 @@ export function fromDecision(playerId: string, game: GameStateDto, decision: Pen
 		case PendingDecisionType.FreeTechnologyStep:
 			return new ResearchTechnologyWorkflow(decision.interactionState!, false);
 		case PendingDecisionType.ItarsBurnPowerForTechnologyTile:
-			return new GenericActionWorkflow(ActionType.ItarsBurnPowerForTechnologyTile, Race.Itars);
+			return new ItarsBurnPowerForTechnologyTileWorkflow();
 		case PendingDecisionType.PerformConversionOrPassTurn:
 			return new PerformConversionsOrPassTurnWorkflow(null, false);
 		case PendingDecisionType.PlaceLostPlanet:

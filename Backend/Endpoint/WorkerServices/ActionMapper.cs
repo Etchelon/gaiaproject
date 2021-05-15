@@ -225,7 +225,11 @@ namespace GaiaProject.Endpoint.WorkerServices
 					}
 				case ActionType.ItarsBurnPowerForTechnologyTile:
 					{
-						return new ItarsBurnPowerForTechnologyTileAction();
+						var actionVm = action.ToObject<ItarsBurnPowerForTechnologyTileActionViewModel>();
+						return new ItarsBurnPowerForTechnologyTileAction
+						{
+							Accepted = actionVm.Accepted
+						};
 					}
 				case ActionType.TerransDecideIncome:
 					{
