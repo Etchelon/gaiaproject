@@ -14,6 +14,14 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 
 		protected override List<Effect> HandleImpl(GaiaProjectGame game, ItarsBurnPowerForTechnologyTileAction action)
 		{
+			if (!action.Accepted)
+			{
+				return new List<Effect>
+				{
+					new PowerReturnsFromGaiaAreaEffect(4)
+				};
+			}
+
 			return new List<Effect>
 			{
 				PowerTokensCost.RemoveFromGaiaArea(PowerTokensToBurn),

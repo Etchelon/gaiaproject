@@ -33,6 +33,7 @@ namespace GaiaProject.Engine.Logic
 			effectsOnPlayer.OfType<ConversionEffect>().SingleOrDefault()?.ApplyTo(newGameState);
 			effectsOnPlayer.OfType<Cost>().ToList().ForEach(cost => cost.ApplyTo(newGameState, action));
 			effectsOnPlayer.OfType<Gain>().ToList().ForEach(gain => gain.ApplyTo(newGameState, action));
+			effectsOnPlayer.OfType<PowerReturnsFromGaiaAreaEffect>().ToList().ForEach(gain => gain.ApplyTo(newGameState));
 			effectsOnPlayer.OfType<HexColonizedEffect>().SingleOrDefault()?.ApplyTo(newGameState);
 			effectsOnPlayer.OfType<BuildingDeployedEffect>().ToList().ForEach(eff => eff.ApplyTo(newGameState));
 			effectsOnPlayer.OfType<AmbasBuildingsSwappedEffect>().SingleOrDefault()?.ApplyTo(newGameState);

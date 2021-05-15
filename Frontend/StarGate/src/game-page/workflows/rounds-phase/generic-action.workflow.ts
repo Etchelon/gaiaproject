@@ -8,13 +8,14 @@ import { Command, CommonCommands, CommonWorkflowStates } from "../types";
 const WaitingForConfirmation = 0;
 
 const getMessage = (type: ActionType, race: Race): string => {
-	if (type === ActionType.BescodsResearchProgress) {
-		return "Advance in one of the least developed technologies?";
+	switch (type) {
+		case ActionType.BescodsResearchProgress:
+			return "Advance in one of the least developed technologies?";
+		case ActionType.UseRightAcademy:
+			return `Activate the academy to gain ${race === Race.BalTaks ? "4 Credits" : "1 Qic"}?`;
+		default:
+			throw new Error(`Action ${type} not supported.`);
 	}
-	if (type === ActionType.ItarsBurnPowerForTechnologyTile) {
-		return "Burn 4 power from the Gaia area for a technology tile?";
-	}
-	return `Activate the academy to gain ${race === Race.BalTaks ? "4 Credits" : "1 Qic"}?`;
 };
 
 export class GenericActionWorkflow extends ActionWorkflow {
