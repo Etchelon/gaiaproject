@@ -43,7 +43,7 @@ stages:
       inputs:
         command: buildAndPush
         containerRegistry: 'Public Docker Hub'
-        repository: 'gaia-project'
+        repository: 'etchelon/gaia-project'
         Dockerfile: $(dockerfilePath)
         tags: |
           $(tag)
