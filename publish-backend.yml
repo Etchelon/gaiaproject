@@ -38,12 +38,11 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: Docker@2
-      condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
       displayName: Build and push an image to container registry
       inputs:
         command: buildAndPush
         containerRegistry: 'Public Docker Hub'
-        repository: 'gaia-project'
+        repository: 'etchelon/gaia-project'
         Dockerfile: $(dockerfilePath)
         tags: |
           $(tag)
