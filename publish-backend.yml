@@ -22,10 +22,6 @@ resources:
 - repo: self
 
 variables:
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '1798d961-7b4d-45e7-a0df-e1cc0cc91e94'
-  imageRepository: 'gaiaproject_backend'
-  containerRegistry: 'etchelon.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
   
@@ -46,9 +42,9 @@ stages:
       displayName: Build and push an image to container registry
       inputs:
         command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
+        containerRegistry: 'Public Docker Hub'
+        repository: 'gaia-project'
+        Dockerfile: $(dockerfilePath)
         tags: |
           $(tag)
     - task: Docker@2
@@ -56,6 +52,6 @@ stages:
       displayName: Build the app to check everything is ok
       inputs:
         command: build
-        dockerfile: $(dockerfilePath)
+        Dockerfile: $(dockerfilePath)
         tags: |
           $(tag)
