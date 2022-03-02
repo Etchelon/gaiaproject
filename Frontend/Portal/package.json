@@ -1,0 +1,57 @@
+{
+	"name": "portal",
+	"private": true,
+	"version": "0.0.0",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@auth0/auth0-react": "^1.9.0",
+		"@material-ui/core": "^4.12.3",
+		"@material-ui/icons": "^4.11.2",
+		"@material-ui/lab": "^4.0.0-alpha.60",
+		"@microsoft/signalr": "^6.0.2",
+		"@reduxjs/toolkit": "^1.8.0",
+		"date-fns": "^2.28.0",
+		"lodash": "^4.17.21",
+		"notistack": "^1.0.10",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"react-redux": "^7.2.6",
+		"react-router-dom": "^5.3.0",
+		"rxjs": "^7.5.4"
+	},
+	"devDependencies": {
+		"@types/lodash": "^4.14.179",
+		"@types/node": "^14.18.0",
+		"@types/react": "^17.0.39",
+		"@types/react-dom": "^17.0.12",
+		"@types/react-redux": "^7.1.23",
+		"@types/react-router-dom": "^5.3.3",
+		"@vitejs/plugin-react": "^1.0.7",
+		"sass": "^1.49.9",
+		"typescript": "^4.6.2",
+		"vite": "^2.8.6",
+		"web-vitals": "^2.1.4"
+	},
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	}
+}
