@@ -1,4 +1,6 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Theme } from "@mui/material/styles";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { centeredFlexColumn, fillParent, fillParentAbs } from "../../utils/miscellanea";
 
 const TABS_HEIGHT = 48;
@@ -9,7 +11,7 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		activeViewContainer: {
 			width: "100%",
-			height: `calc(100% - ${TABS_HEIGHT}px - ${theme.spacing(1)}px)`,
+			height: `calc(100% - ${TABS_HEIGHT}px - ${theme.spacing(1)})`,
 			marginBottom: theme.spacing(1),
 			display: "flex",
 			justifyContent: "center",

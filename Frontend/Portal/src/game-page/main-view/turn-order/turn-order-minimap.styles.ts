@@ -1,4 +1,5 @@
-import { createStyles, makeStyles } from "@material-ui/core";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { centeredFlexColumn, flexRow } from "../../../utils/miscellanea";
 
 const RACE_AVATAR_WIDTH = 50;
@@ -13,10 +14,10 @@ const useStyles = makeStyles(theme =>
 			borderStyle: "solid",
 			borderColor: "lightgray",
 			borderRadius: 10,
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				borderWidth: 2,
 			},
-			[theme.breakpoints.down("xs")]: {
+			[theme.breakpoints.down('sm')]: {
 				borderWidth: 1,
 			},
 		},

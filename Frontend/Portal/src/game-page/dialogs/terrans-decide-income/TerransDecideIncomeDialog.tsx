@@ -1,6 +1,6 @@
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { useReducer, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -100,7 +100,7 @@ const TerransDecideIncome = ({ gameId, currentPlayer }: TerransDecideIncomeProps
 	};
 
 	return (
-		<div className={classes.root}>
+        <div className={classes.root}>
 			<Grid container spacing={2}>
 				<Grid item xs={12} md={6}>
 					<div className={classes.conversions}>
@@ -155,14 +155,12 @@ const TerransDecideIncome = ({ gameId, currentPlayer }: TerransDecideIncomeProps
 						</div>
 						<div className={classes.commands}>
 							<Button
-								variant="contained"
-								color="default"
-								className="command"
-								onClick={() => dispatch({ type: "reset", data: { resources: currentPlayer.state.resources, remainingPower: powerToConvert } })}
-							>
+                                variant="contained"
+                                className="command"
+                                onClick={() => dispatch({ type: "reset", data: { resources: currentPlayer.state.resources, remainingPower: powerToConvert } })}>
 								<span className="gaia-font">Reset</span>
 							</Button>
-							<Button variant="contained" color="default" className="command" onClick={closeDialog}>
+							<Button variant="contained" className="command" onClick={closeDialog}>
 								<span className="gaia-font">Close</span>
 							</Button>
 							<Button
@@ -179,7 +177,7 @@ const TerransDecideIncome = ({ gameId, currentPlayer }: TerransDecideIncomeProps
 				</Grid>
 			</Grid>
 		</div>
-	);
+    );
 };
 
 export default TerransDecideIncome;

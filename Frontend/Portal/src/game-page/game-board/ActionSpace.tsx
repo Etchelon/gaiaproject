@@ -1,6 +1,7 @@
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import Tooltip from "@material-ui/core/Tooltip";
-import WarningIcon from "@material-ui/icons/Warning";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Tooltip from "@mui/material/Tooltip";
+import WarningIcon from "@mui/icons-material/Warning";
 import _ from "lodash";
 import { useRef } from "react";
 import { useSelector } from "react-redux";

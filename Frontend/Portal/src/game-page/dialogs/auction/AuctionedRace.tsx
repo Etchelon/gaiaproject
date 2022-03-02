@@ -1,7 +1,7 @@
-import { useTheme } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
-import Typography from "@material-ui/core/Typography";
-import CheckBoxRounded from "@material-ui/icons/CheckBoxRounded";
+import { useTheme } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Typography from "@mui/material/Typography";
+import CheckBoxRounded from "@mui/icons-material/CheckBoxRounded";
 import { Race } from "../../../dto/enums";
 import { AuctionDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";

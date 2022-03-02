@@ -1,11 +1,13 @@
-import { useTheme } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
-import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Paper from "@material-ui/core/Paper";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import { useTheme } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Paper from "@mui/material/Paper";
+import { Theme } from "@mui/material/styles";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import Typography from "@mui/material/Typography";
 import { format, parseISO } from "date-fns";
 import _ from "lodash";
 import { MouseEvent, MouseEventHandler, useEffect, useState } from "react";
@@ -15,12 +17,12 @@ import ActivePlayerImg from "../assets/Resources/PlayerLoader.gif";
 import { getRaceColor } from "../utils/race-utils";
 import { selectDeleteGameProgress, selectGame } from "./store/games.slice";
 import { UserInfoDto } from "../dto/interfaces";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 import ButtonWithProgress from "../utils/ButtonWithProgress";
 
 const AVATAR_WIDTH = 40;
@@ -58,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			padding: theme.spacing(2),
 		},
 		playerInfo: {
-			width: `calc(100% - ${theme.spacing(1)}px - ${AVATAR_WIDTH}px)`,
+			width: `calc(100% - ${theme.spacing(1)} - ${AVATAR_WIDTH}px)`,
 			marginLeft: theme.spacing(2),
 		},
 	})
@@ -125,6 +127,7 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 							onClick={withStopPropagation(() => {
 								setIsPromptingForDeletion(true);
 							})}
+							size="large"
 						>
 							<DeleteIcon />
 							<Dialog
@@ -138,7 +141,7 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 									<DialogContentText id="alert-dialog-description">You can delete this game. Other players will be notified of this action.</DialogContentText>
 								</DialogContent>
 								<DialogActions>
-									<Button onClick={withStopPropagation(() => setIsPromptingForDeletion(false))} color="default" disabled={deleteProgress === "loading"}>
+									<Button onClick={withStopPropagation(() => setIsPromptingForDeletion(false))} disabled={deleteProgress === "loading"}>
 										Cancel
 									</Button>
 									<ButtonWithProgress
@@ -147,7 +150,6 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 										onClick={withStopPropagation(() => {
 											doDeleteGame(game.id);
 										})}
-										color="default"
 										disabled={deleteProgress === "loading"}
 										autoFocus
 									/>

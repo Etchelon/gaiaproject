@@ -1,5 +1,5 @@
-import DoneAllIcon from "@material-ui/icons/DoneAll";
-import GamesIcon from "@material-ui/icons/Games";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import GamesIcon from "@mui/icons-material/Games";
 import _ from "lodash";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";

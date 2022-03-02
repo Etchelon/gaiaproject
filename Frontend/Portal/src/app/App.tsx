@@ -1,5 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { createStyles, makeStyles } from "@material-ui/core";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import _ from "lodash";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";

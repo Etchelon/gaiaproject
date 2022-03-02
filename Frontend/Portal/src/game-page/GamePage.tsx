@@ -1,6 +1,5 @@
-import { CircularProgress, useMediaQuery } from "@material-ui/core";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,6 +39,8 @@ import { fromAction, fromDecision } from "./workflows/utils";
 import DesktopView from "./desktop-view/DesktopView";
 import MobileView from "./mobile-view/MobileView";
 import { GameStateDto, PlayerInGameDto } from "../dto/interfaces";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const DIALOG_VIEWS = [ActiveView.RaceSelectionDialog, ActiveView.AuctionDialog, ActiveView.ConversionDialog, ActiveView.SortIncomesDialog, ActiveView.TerransConversionsDialog];
 const isDialogView = (view: ActiveView) => _.includes(DIALOG_VIEWS, view);
@@ -237,16 +238,7 @@ const GamePage = () => {
 				</div>
 			</div>
 			{!isSpectator && currentPlayer !== null && (
-				<Dialog
-					aria-labelledby="dialog-title"
-					fullScreen={isMobile}
-					style={isMobile ? undefined : { maxHeight: "95vh", top: "2.5vh" }}
-					open={showDialog}
-					maxWidth={"lg"}
-					fullWidth={false}
-					disableBackdropClick={true}
-					keepMounted={false}
-				>
+				<Dialog aria-labelledby="dialog-title" fullScreen={isMobile} style={isMobile ? undefined : { maxHeight: "95vh", top: "2.5vh" }} open={showDialog} maxWidth={"lg"}>
 					{activeViewName && (
 						<DialogTitle id="dialog-title">
 							<div className="gaia-font text-center">{activeViewName}</div>

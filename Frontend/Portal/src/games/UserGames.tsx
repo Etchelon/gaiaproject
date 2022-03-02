@@ -1,9 +1,9 @@
-import { CircularProgress } from "@material-ui/core";
-import Fab from "@material-ui/core/Fab";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import AddIcon from "@material-ui/icons/Add";
-import RefreshIcon from "@material-ui/icons/Refresh";
+import { CircularProgress } from "@mui/material";
+import Fab from "@mui/material/Fab";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import AddIcon from "@mui/icons-material/Add";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { differenceInMinutes } from "date-fns";
 import _ from "lodash";
 import { useEffect } from "react";
@@ -54,14 +54,18 @@ const UserGames = ({ kind }: UserGamesProps) => {
 	}
 
 	return (
-		<div className={classes.wrapper}>
+        <div className={classes.wrapper}>
 			<div className={classes.header}>
 				<Typography variant="h5" className="gaia-font">
 					{kind === "waiting" ? "Games waiting for you" : `Your ${kind} games`}
 				</Typography>
 				<div className={classes.spacer}></div>
 				<div className={classes.actions}>
-					<IconButton aria-label="refresh" color="default" onClick={() => dispatch(fetchGames(kind))}>
+					<IconButton
+                        aria-label="refresh"
+                        color="default"
+                        onClick={() => dispatch(fetchGames(kind))}
+                        size="large">
 						<RefreshIcon />
 					</IconButton>
 				</div>
@@ -79,7 +83,7 @@ const UserGames = ({ kind }: UserGamesProps) => {
 				</Fab>
 			</div>
 		</div>
-	);
+    );
 };
 
 export default UserGames;

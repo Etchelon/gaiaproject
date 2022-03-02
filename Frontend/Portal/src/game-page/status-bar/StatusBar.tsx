@@ -1,8 +1,10 @@
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { Theme } from "@mui/material/styles";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			flexDirection: ({ useVerticalLayout }: { useVerticalLayout: boolean }) => (useVerticalLayout ? "column" : "row"),
 			...fillParent,
 			padding: theme.spacing(1, 2),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				padding: theme.spacing(0.5, 1),
 			},
 			backgroundColor: "white",
@@ -32,23 +34,23 @@ const useStyles = makeStyles((theme: Theme) =>
 			color: "black",
 			fontSize: "0.9rem",
 			textAlign: "center",
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				fontSize: "0.7rem",
 			},
-			[theme.breakpoints.down("xs")]: {
+			[theme.breakpoints.down('sm')]: {
 				fontSize: "0.6rem",
 			},
 		},
 		actionSelector: {
 			flex: "0 0 auto",
 			marginLeft: theme.spacing(2),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				marginLeft: theme.spacing(1),
 			},
 		},
 		actionList: {
 			top: "113px !important",
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				top: "100px !important",
 			},
 			"& .MuiMenuItem-root": {
@@ -59,14 +61,14 @@ const useStyles = makeStyles((theme: Theme) =>
 			flex: "0 0 auto",
 			marginTop: ({ useVerticalLayout }: { useVerticalLayout: boolean }) => (useVerticalLayout ? theme.spacing(0.25) : 0),
 			marginLeft: ({ useVerticalLayout }: { useVerticalLayout: boolean }) => (useVerticalLayout ? 0 : theme.spacing(2)),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				marginLeft: theme.spacing(1),
 			},
 			...centeredFlexRow,
 		},
 		command: {
 			fontSize: "0.75rem",
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				padding: theme.spacing(0.5, 1),
 				fontSize: "0.6rem",
 			},

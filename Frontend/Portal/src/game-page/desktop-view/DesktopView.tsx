@@ -1,4 +1,4 @@
-import { Grid, Tab, Tabs } from "@material-ui/core";
+import { Grid, Tab, Tabs } from "@mui/material";
 import _ from "lodash";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";

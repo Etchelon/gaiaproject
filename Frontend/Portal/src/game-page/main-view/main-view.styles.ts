@@ -1,4 +1,5 @@
-import { createStyles, makeStyles } from "@material-ui/core";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { fillParent, fillParentAbs } from "../../utils/miscellanea";
 
 const BOOSTER_HEIGHT_TO_WIDTH_RATIO = 3;

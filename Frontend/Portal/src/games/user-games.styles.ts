@@ -1,4 +1,6 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Theme } from "@mui/material/styles";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { centeredFlexRow } from "../utils/miscellanea";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -13,7 +15,7 @@ const useStyles = makeStyles((theme: Theme) =>
 		wrapper: {
 			height: "100%",
 			padding: theme.spacing(2),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				padding: theme.spacing(1),
 			},
 			position: "relative",

@@ -1,7 +1,7 @@
-import { Theme, Typography, useTheme } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CheckBoxRounded from "@material-ui/icons/CheckBoxRounded";
+import { Theme, Typography, useTheme } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CheckBoxRounded from "@mui/icons-material/CheckBoxRounded";
 import _ from "lodash";
 import { Fragment, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -62,7 +62,7 @@ const SelectRaceDialog = ({ gameId }: SelectRaceDialogProps) => {
 	};
 
 	return (
-		<div className={classes.root}>
+        <div className={classes.root}>
 			<Typography variant="h6" className={classes.header + " gaia-font text-center"}>
 				Select a race
 			</Typography>
@@ -78,7 +78,7 @@ const SelectRaceDialog = ({ gameId }: SelectRaceDialogProps) => {
 				{_.isNull(selectedRace) ? <Typography variant="h5">Select a race to view its board</Typography> : <RaceBoard race={selectedRace} />}
 			</div>
 			<div className={classes.commands}>
-				<Button variant="contained" color="default" className="command" onClick={closeDialog}>
+				<Button variant="contained" className="command" onClick={closeDialog}>
 					<span className="gaia-font">Close</span>
 				</Button>
 				<Button variant="contained" color="primary" className="command" disabled={_.isNil(selectedRace) || isSelecting} onClick={confirmSelection}>
@@ -86,7 +86,7 @@ const SelectRaceDialog = ({ gameId }: SelectRaceDialogProps) => {
 				</Button>
 			</div>
 		</div>
-	);
+    );
 };
 
 export default SelectRaceDialog;

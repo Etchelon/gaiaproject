@@ -1,5 +1,5 @@
-import { useTheme } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import { useTheme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { useSelector } from "react-redux";
 import { GamePhase, Race } from "../../../dto/enums";

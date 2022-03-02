@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useTheme } from "@material-ui/core/styles";
+import { useTheme } from "@mui/material/styles";
 import AuthButton from "../frame/AuthButton";
 import UserGames from "../games/UserGames";
 

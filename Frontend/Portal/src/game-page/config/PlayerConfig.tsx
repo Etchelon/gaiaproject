@@ -1,9 +1,9 @@
-import Typography from "@material-ui/core/Typography";
-import TextareaAutosize from "@material-ui/core/TextareaAutosize";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import DoneIcon from "@material-ui/icons/Done";
-import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
-import Grid from "@material-ui/core/Grid";
+import Typography from "@mui/material/Typography";
+import TextareaAutosize from "@mui/material/TextareaAutosize";
+import CircularProgress from "@mui/material/CircularProgress";
+import DoneIcon from "@mui/icons-material/Done";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import Grid from "@mui/material/Grid";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchNotes, saveNotes, selectPlayerNotes, selectSaveNotesProgress } from "../store/notes-thunks";
@@ -48,7 +48,7 @@ const PlayerConfig = ({ gameId }: PlayerConfigProps) => {
 	}, []);
 
 	return (
-		<div className={classes.root}>
+        <div className={classes.root}>
 			<Grid container>
 				<Grid item xs={12} md={6}>
 					<div className={classes.notesHeader}>
@@ -62,7 +62,7 @@ const PlayerConfig = ({ gameId }: PlayerConfigProps) => {
 					</div>
 					<TextareaAutosize
 						className={classes.notes + " gaia-font"}
-						rowsMin={10}
+						minRows={10}
 						placeholder="Use this area to write down your notes about the game..."
 						value={tempNotes}
 						onChange={onNotesChanged}
@@ -70,7 +70,7 @@ const PlayerConfig = ({ gameId }: PlayerConfigProps) => {
 				</Grid>
 			</Grid>
 		</div>
-	);
+    );
 };
 
 export default PlayerConfig;

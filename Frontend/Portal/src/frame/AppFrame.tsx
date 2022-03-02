@@ -1,13 +1,13 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useMediaQuery } from "@material-ui/core";
-import AppBar from "@material-ui/core/AppBar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Drawer from "@material-ui/core/Drawer";
-import IconButton from "@material-ui/core/IconButton";
-import { useTheme } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import MenuIcon from "@material-ui/icons/Menu";
+import { useMediaQuery } from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import CssBaseline from "@mui/material/CssBaseline";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import { useTheme } from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import MenuIcon from "@mui/icons-material/Menu";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -49,11 +49,17 @@ const AppFrame = ({ children }: AppFrameProps) => {
 	const container = window !== undefined ? () => window.document.body : undefined;
 
 	return (
-		<div className={classes.root}>
+        <div className={classes.root}>
 			<CssBaseline />
 			<AppBar position="fixed" className={classes.appBar}>
 				<Toolbar variant="dense">
-					<IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} className={classes.menuButton}>
+					<IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        edge="start"
+                        onClick={handleDrawerToggle}
+                        className={classes.menuButton}
+                        size="large">
 						<MenuIcon />
 					</IconButton>
 					<img className={classes.appBarImg} src={AppBarImg} alt="" />
@@ -103,7 +109,7 @@ const AppFrame = ({ children }: AppFrameProps) => {
 				<div className={classes.content}>{children}</div>
 			</main>
 		</div>
-	);
+    );
 };
 
 export default AppFrame;

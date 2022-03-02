@@ -1,5 +1,6 @@
-import Grid from "@material-ui/core/Grid";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import Grid from "@mui/material/Grid";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import _ from "lodash";
 import { PlayerInGameDto } from "../../../dto/interfaces";
 import { fillParent } from "../../../utils/miscellanea";

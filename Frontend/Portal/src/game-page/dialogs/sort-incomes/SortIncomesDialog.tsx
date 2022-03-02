@@ -1,6 +1,6 @@
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { useReducer, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -152,7 +152,7 @@ const SortIncomesDialog = ({ gameId, currentPlayer }: SortIncomesDialogProps) =>
 	};
 
 	return (
-		<div className={classes.root}>
+        <div className={classes.root}>
 			<Grid container spacing={2}>
 				<Grid item xs={12} md={4}>
 					<div className={classes.incomes}>
@@ -161,13 +161,11 @@ const SortIncomesDialog = ({ gameId, currentPlayer }: SortIncomesDialogProps) =>
 						</Typography>
 						{_.map(incomes, (income, index) => (
 							<Button
-								key={index}
-								variant="contained"
-								color="default"
-								className={classes.income}
-								disabled={!_.isUndefined(_.find(sortedIncomes, si => si.id === income.id))}
-								onClick={() => dispatch({ type: "push", data: income })}
-							>
+                                key={index}
+                                variant="contained"
+                                className={classes.income}
+                                disabled={!_.isUndefined(_.find(sortedIncomes, si => si.id === income.id))}
+                                onClick={() => dispatch({ type: "push", data: income })}>
 								<span className="gaia-font">{income.description}</span>
 							</Button>
 						))}
@@ -220,11 +218,9 @@ const SortIncomesDialog = ({ gameId, currentPlayer }: SortIncomesDialogProps) =>
 						</div>
 						<div className={classes.commands}>
 							<Button
-								variant="contained"
-								color="default"
-								className="command"
-								onClick={() => dispatch({ type: "reset", data: { player: currentPlayer, allIncomes: unsortedIncomes } })}
-							>
+                                variant="contained"
+                                className="command"
+                                onClick={() => dispatch({ type: "reset", data: { player: currentPlayer, allIncomes: unsortedIncomes } })}>
 								<span className="gaia-font">Reset</span>
 							</Button>
 							<Button variant="contained" color="primary" className="command" disabled={isExecuting || _.size(incomes) !== _.size(sortedIncomes)} onClick={sort}>
@@ -235,7 +231,7 @@ const SortIncomesDialog = ({ gameId, currentPlayer }: SortIncomesDialogProps) =>
 				</Grid>
 			</Grid>
 		</div>
-	);
+    );
 };
 
 export default SortIncomesDialog;

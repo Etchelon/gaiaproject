@@ -1,17 +1,17 @@
-import { useTheme } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import IconButton from "@material-ui/core/IconButton";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import Typography from "@material-ui/core/Typography";
-import HistoryIcon from "@material-ui/icons/History";
+import { useTheme } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
+import HistoryIcon from "@mui/icons-material/History";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -83,7 +83,7 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 		</>
 	);
 	return (
-		<ListItem className={styles.playerLog} style={{ backgroundColor: background, color }}>
+        <ListItem className={styles.playerLog} style={{ backgroundColor: background, color }}>
 			<ListItemAvatar>
 				<Avatar src={imgUrl} />
 			</ListItemAvatar>
@@ -96,7 +96,10 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 			/>
 			{canRollback && (
 				<div className={styles.rollbackButton}>
-					<IconButton aria-label="Rollback to this action" onClick={() => setIsPromptingForRollback(true)}>
+					<IconButton
+                        aria-label="Rollback to this action"
+                        onClick={() => setIsPromptingForRollback(true)}
+                        size="large">
 						<HistoryIcon style={{ color }} />
 					</IconButton>
 					<Dialog
@@ -110,7 +113,9 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 							<DialogContentText id="alert-dialog-description">The game state will be rolled back to just after the selected action was performed</DialogContentText>
 						</DialogContent>
 						<DialogActions>
-							<Button onClick={() => setIsPromptingForRollback(false)} color="default" disabled={rollbackProgress === "loading"}>
+							<Button
+                                onClick={() => setIsPromptingForRollback(false)}
+                                disabled={rollbackProgress === "loading"}>
 								Cancel
 							</Button>
 							<ButtonWithProgress
@@ -126,7 +131,7 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 				</div>
 			)}
 		</ListItem>
-	);
+    );
 };
 
 interface GameLogProps {

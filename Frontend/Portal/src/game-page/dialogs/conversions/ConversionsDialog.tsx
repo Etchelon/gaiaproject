@@ -1,6 +1,6 @@
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { useReducer, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -234,7 +234,7 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 	};
 
 	return (
-		<div className={classes.root}>
+        <div className={classes.root}>
 			<Grid container spacing={2}>
 				<Grid item xs={12} md={6}>
 					<div className={classes.conversions}>
@@ -291,81 +291,71 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 							<Typography variant="body1" className="gaia-font text-center">
 								Other
 							</Typography>
-							<Button variant="contained" color="default" className={classes.conversion} disabled={!canBurn} onClick={() => dispatch({ type: Conversion.BurnPower })}>
+							<Button
+                                variant="contained"
+                                className={classes.conversion}
+                                disabled={!canBurn}
+                                onClick={() => dispatch({ type: Conversion.BurnPower })}>
 								<span className="gaia-font">Burn 1 Power</span>
 							</Button>
 							{isNevlas(player) && (
 								<Button
-									variant="contained"
-									color="default"
-									className={classes.conversion}
-									disabled={power3(playerState) <= 0}
-									onClick={() => dispatch({ type: Conversion.NevlasPower3ToKnowledge })}
-								>
+                                    variant="contained"
+                                    className={classes.conversion}
+                                    disabled={power3(playerState) <= 0}
+                                    onClick={() => dispatch({ type: Conversion.NevlasPower3ToKnowledge })}>
 									<span className="gaia-font">{"Bowl 3 -> Knowledge"}</span>
 								</Button>
 							)}
 							{isNevlasWithPlanetaryInstitute(player) && (
 								<Button
-									variant="contained"
-									color="default"
-									className={classes.conversion}
-									disabled={equivalentPower3(player) < 6}
-									onClick={() => dispatch({ type: Conversion.Nevlas3PowerTo2Ores })}
-								>
+                                    variant="contained"
+                                    className={classes.conversion}
+                                    disabled={equivalentPower3(player) < 6}
+                                    onClick={() => dispatch({ type: Conversion.Nevlas3PowerTo2Ores })}>
 									<span className="gaia-font">{"3 Power -> 2 Ores"}</span>
 								</Button>
 							)}
 							{isHadschHallasWithPlanetaryInstitute(player) && (
 								<>
 									<Button
-										variant="contained"
-										color="default"
-										className={classes.conversion}
-										disabled={credits(playerState) < 4}
-										onClick={() => dispatch({ type: Conversion.HadschHallas4CreditsToQic })}
-									>
+                                        variant="contained"
+                                        className={classes.conversion}
+                                        disabled={credits(playerState) < 4}
+                                        onClick={() => dispatch({ type: Conversion.HadschHallas4CreditsToQic })}>
 										<span className="gaia-font">{"4 Credits -> Qic"}</span>
 									</Button>
 									<Button
-										variant="contained"
-										color="default"
-										className={classes.conversion}
-										disabled={credits(playerState) < 4}
-										onClick={() => dispatch({ type: Conversion.HadschHallas4CreditsToKnowledge })}
-									>
+                                        variant="contained"
+                                        className={classes.conversion}
+                                        disabled={credits(playerState) < 4}
+                                        onClick={() => dispatch({ type: Conversion.HadschHallas4CreditsToKnowledge })}>
 										<span className="gaia-font">{"4 Credits -> Knowledge"}</span>
 									</Button>
 									<Button
-										variant="contained"
-										color="default"
-										className={classes.conversion}
-										disabled={credits(playerState) < 3}
-										onClick={() => dispatch({ type: Conversion.HadschHallas3CreditsToOre })}
-									>
+                                        variant="contained"
+                                        className={classes.conversion}
+                                        disabled={credits(playerState) < 3}
+                                        onClick={() => dispatch({ type: Conversion.HadschHallas3CreditsToOre })}>
 										<span className="gaia-font">{"3 Credits -> Ore"}</span>
 									</Button>
 								</>
 							)}
 							{playerIs(player, Race.BalTaks) && (
 								<Button
-									variant="contained"
-									color="default"
-									className={classes.conversion}
-									disabled={availableGaiaformersCount(playerState) === 0}
-									onClick={() => dispatch({ type: Conversion.BalTaksGaiaformerToQic })}
-								>
+                                    variant="contained"
+                                    className={classes.conversion}
+                                    disabled={availableGaiaformersCount(playerState) === 0}
+                                    onClick={() => dispatch({ type: Conversion.BalTaksGaiaformerToQic })}>
 									<span className="gaia-font">{"Gaiaformer -> Qic"}</span>
 								</Button>
 							)}
 							{playerIs(player, Race.Taklons) && (
 								<Button
-									variant="contained"
-									color="default"
-									className={classes.conversion}
-									disabled={brainstone(playerState) !== BrainstoneLocation.Bowl3}
-									onClick={() => dispatch({ type: Conversion.TaklonsBrainstoneToCredits })}
-								>
+                                    variant="contained"
+                                    className={classes.conversion}
+                                    disabled={brainstone(playerState) !== BrainstoneLocation.Bowl3}
+                                    onClick={() => dispatch({ type: Conversion.TaklonsBrainstoneToCredits })}>
 									<span className="gaia-font">{"Brainstone -> 3 Credits"}</span>
 								</Button>
 							)}
@@ -437,17 +427,20 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 									<Button variant="contained" color="secondary" className="command" onClick={cancel(true)}>
 										<span className="gaia-font">Pass</span>
 									</Button>
-									<Button variant="contained" color="default" className="command" onClick={cancel(false)}>
+									<Button variant="contained" className="command" onClick={cancel(false)}>
 										<span className="gaia-font">Cancel</span>
 									</Button>
 								</>
 							)}
 							{!isFinalConversions && (
-								<Button variant="contained" color="default" className="command" onClick={cancel(false)}>
+								<Button variant="contained" className="command" onClick={cancel(false)}>
 									<span className="gaia-font">Cancel</span>
 								</Button>
 							)}
-							<Button variant="contained" color="default" className="command" onClick={() => dispatch({ type: "reset", data: currentPlayer })}>
+							<Button
+                                variant="contained"
+                                className="command"
+                                onClick={() => dispatch({ type: "reset", data: currentPlayer })}>
 								<span className="gaia-font">Reset</span>
 							</Button>
 							<Button
@@ -464,7 +457,7 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 				</Grid>
 			</Grid>
 		</div>
-	);
+    );
 };
 
 export default ConversionsDialog;

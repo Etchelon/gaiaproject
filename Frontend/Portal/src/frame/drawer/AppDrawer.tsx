@@ -1,9 +1,9 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import Divider from "@material-ui/core/Divider";
-import List from "@material-ui/core/List";
-import GamesIcon from "@material-ui/icons/Games";
-import HistoryIcon from "@material-ui/icons/History";
-import HomeIcon from "@material-ui/icons/Home";
+import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import GamesIcon from "@mui/icons-material/Games";
+import HistoryIcon from "@mui/icons-material/History";
+import HomeIcon from "@mui/icons-material/Home";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

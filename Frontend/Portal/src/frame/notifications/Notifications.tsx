@@ -1,10 +1,10 @@
-import { Typography, useTheme } from "@material-ui/core";
-import Badge from "@material-ui/core/Badge";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import List from "@material-ui/core/List";
-import Popover from "@material-ui/core/Popover";
-import NotificationsActiveIcon from "@material-ui/icons/NotificationsActive";
-import NotificationsNoneIcon from "@material-ui/icons/NotificationsNone";
+import { Typography, useTheme } from "@mui/material";
+import Badge from "@mui/material/Badge";
+import CircularProgress from "@mui/material/CircularProgress";
+import List from "@mui/material/List";
+import Popover from "@mui/material/Popover";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { parseISO } from "date-fns";
 import _ from "lodash";
 import { MouseEvent, useRef, useState } from "react";

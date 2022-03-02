@@ -1,5 +1,5 @@
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { Fragment, useReducer, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -83,7 +83,7 @@ const AuctionDialog = ({ gameId }: AuctionDialogProps) => {
 	};
 
 	return (
-		<div className={classes.root}>
+        <div className={classes.root}>
 			<Typography variant="h6" className={classes.header + " gaia-font text-center"}>
 				Bid for a race
 			</Typography>
@@ -107,13 +107,17 @@ const AuctionDialog = ({ gameId }: AuctionDialogProps) => {
 					)}
 					{!canBid0Points && (
 						<>
-							<Button variant="contained" color="default" className="command" disabled={currentAuction.bid! === minimumBidForSelectedRace} onClick={() => bidLess(1)}>
+							<Button
+                                variant="contained"
+                                className="command"
+                                disabled={currentAuction.bid! === minimumBidForSelectedRace}
+                                onClick={() => bidLess(1)}>
 								<span className="gaia-font">-1</span>
 							</Button>
 							<Typography variant="h6" className={classes.marginH + " gaia-font"}>
 								Bid {currentAuction.bid} VP for {getRaceName(selectedRace)}
 							</Typography>
-							<Button variant="contained" color="default" className="command" onClick={() => bidMore(1)}>
+							<Button variant="contained" className="command" onClick={() => bidMore(1)}>
 								<span className="gaia-font">+1</span>
 							</Button>
 						</>
@@ -121,7 +125,7 @@ const AuctionDialog = ({ gameId }: AuctionDialogProps) => {
 				</div>
 			)}
 			<div className={classes.commands}>
-				<Button variant="contained" color="default" className="command" onClick={closeDialog}>
+				<Button variant="contained" className="command" onClick={closeDialog}>
 					<span className="gaia-font">Close</span>
 				</Button>
 				<Button variant="contained" color="primary" className="command" disabled={_.isNil(selectedRace) || isBidding} onClick={doBid}>
@@ -129,7 +133,7 @@ const AuctionDialog = ({ gameId }: AuctionDialogProps) => {
 				</Button>
 			</div>
 		</div>
-	);
+    );
 };
 
 export default AuctionDialog;

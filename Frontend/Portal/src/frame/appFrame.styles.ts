@@ -1,4 +1,6 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Theme } from "@mui/material/styles";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import { fillParent, fillWindow } from "../utils/miscellanea";
 
 const drawerWidth = 240;
@@ -29,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 				duration: theme.transitions.duration.leavingScreen,
 			}),
 			overflowX: "hidden",
-			width: theme.spacing(7) + 1,
+			width: theme.spacing(7),
 		},
 		sectionHeader: {
 			padding: theme.spacing(2, 2, 0),
@@ -49,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			padding: theme.spacing(1, 0),
 			objectFit: "contain",
 			marginRight: theme.spacing(2),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down("md")]: {
 				display: "none",
 			},
 		},

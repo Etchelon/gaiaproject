@@ -1,5 +1,5 @@
 import { Auth0Provider, Auth0ProviderOptions } from "@auth0/auth0-react";
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import { createTheme, ThemeProvider, Theme, StyledEngineProvider } from "@mui/material/styles";
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -7,6 +7,11 @@ import { Provider } from "react-redux";
 import App from "./app/App";
 import "./index.scss";
 import store from "./store/store";
+
+declare module "@mui/styles/defaultTheme" {
+	// eslint-disable-next-line @typescript-eslint/no-empty-interface
+	interface DefaultTheme extends Theme {}
+}
 
 const onRedirectCallback = (appState: any) => {
 	window.history.pushState({}, "", appState?.returnTo ?? window.location.pathname);
@@ -23,7 +28,7 @@ const auth0Config: Auth0ProviderOptions = {
 
 const theme = createTheme({
 	palette: {
-		type: "dark",
+		mode: "dark",
 	},
 });
 
@@ -32,9 +37,11 @@ ReactDOM.render(
 		<Auth0Provider {...auth0Config}>
 			<Provider store={store}>
 				<SnackbarProvider anchorOrigin={{ horizontal: "center", vertical: "bottom" }}>
-					<ThemeProvider theme={theme}>
-						<App />
-					</ThemeProvider>
+					<StyledEngineProvider injectFirst>
+						<ThemeProvider theme={theme}>
+							<App />
+						</ThemeProvider>
+					</StyledEngineProvider>
 				</SnackbarProvider>
 			</Provider>
 		</Auth0Provider>

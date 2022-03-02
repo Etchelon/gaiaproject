@@ -1,6 +1,9 @@
-import Button, { ButtonProps } from "@material-ui/core/Button";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { createStyles, makeStyles, Theme, useTheme } from "@material-ui/core/styles";
+import Button, { ButtonProps } from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Theme, useTheme } from "@mui/material/styles";
+
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({

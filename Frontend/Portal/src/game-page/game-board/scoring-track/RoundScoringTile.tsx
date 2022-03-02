@@ -1,4 +1,5 @@
-import { createStyles, makeStyles } from "@material-ui/core";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { RoundScoringTileType } from "../../../dto/enums";
 import { RoundScoringTileDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";

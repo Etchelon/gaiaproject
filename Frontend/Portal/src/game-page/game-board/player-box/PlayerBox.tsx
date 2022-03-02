@@ -1,5 +1,5 @@
-import { useTheme } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
+import { useTheme } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { useSelector } from "react-redux";
 import VpImg from "../../../assets/Resources/Markers/VP.png";

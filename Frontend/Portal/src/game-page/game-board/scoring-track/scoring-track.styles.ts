@@ -1,4 +1,6 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Theme } from "@mui/material/styles";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ElementSize } from "../../../utils/hooks";
 
 export const WIDTH_TO_HEIGHT_RATIO = 0.962;
@@ -10,10 +12,10 @@ const useStyles = makeStyles((theme: Theme) =>
 			width: "100%",
 			height: ({ height }: ElementSize) => height,
 			backgroundColor: "black",
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				borderWidth: 2,
 			},
-			[theme.breakpoints.down("xs")]: {
+			[theme.breakpoints.down('sm')]: {
 				borderWidth: 1,
 			},
 			borderWidth: 3,

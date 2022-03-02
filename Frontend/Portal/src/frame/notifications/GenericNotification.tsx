@@ -1,9 +1,11 @@
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import DoneAllIcon from "@material-ui/icons/DoneAll";
-import InfoIcon from "@material-ui/icons/Info";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import { Theme } from "@mui/material/styles";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import InfoIcon from "@mui/icons-material/Info";
 import _ from "lodash";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";

@@ -1,4 +1,4 @@
-import Tooltip from "@material-ui/core/Tooltip";
+import Tooltip from "@mui/material/Tooltip";
 import _ from "lodash";
 import { useSelector } from "react-redux";
 import FederationMarker from "../../../assets/Resources/Markers/RecordToken.png";
