@@ -1,26 +1,19 @@
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { Typography, useTheme } from "@mui/material";
 import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
 import List from "@mui/material/List";
 import Popover from "@mui/material/Popover";
-import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { parseISO } from "date-fns";
 import _ from "lodash";
+import { observer } from "mobx-react";
 import { MouseEvent, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { NotificationType } from "../../dto/enums";
 import { GameNotificationDto } from "../../dto/interfaces";
 import { usePageActivation } from "../../utils/hooks";
 import { Nullable } from "../../utils/miscellanea";
-import {
-	countUnreadNotifications,
-	fetchNotifications,
-	selectUnreadNotificationsCount,
-	selectUserNotifications,
-	selectUserNotificationsState,
-	setNotificationRead,
-} from "../store/active-user.slice";
+import { useAppFrameContext } from "../AppFrame.context";
 import GameNotification from "./GameNotification";
 import GenericNotification from "./GenericNotification";
 import useStyles from "./notifications.styles";
@@ -33,24 +26,22 @@ let fetchCountInterval: number | undefined;
 const Notifications = () => {
 	const theme = useTheme();
 	const classes = useStyles();
-	const dispatch = useDispatch();
+	const { vm } = useAppFrameContext();
 	const listRef = useRef<any>();
-	const unreadNotificationsCount = useSelector(selectUnreadNotificationsCount);
-	const hasUnreadNotifications = unreadNotificationsCount > 0;
-	const hasManyUnreadNotifications = unreadNotificationsCount > MANY_UNREAD_NOTIFICATIONS_THRESHOLD;
-	const userNotifications = useSelector(selectUserNotifications);
-	const userNotificationsState = useSelector(selectUserNotificationsState);
-	const isLoadingNotifications = userNotificationsState === "loading";
+	const hasUnreadNotifications = vm.unreadNotificationsCount > 0;
+	const hasManyUnreadNotifications = vm.unreadNotificationsCount > MANY_UNREAD_NOTIFICATIONS_THRESHOLD;
+	const userNotifications = vm.notifications;
+	const isLoadingNotifications = vm.notificationsState === "loading";
 	const [anchorEl, setAnchorEl] = useState<Nullable<HTMLElement>>(null);
 
-	const fetchCount = () => dispatch(countUnreadNotifications());
+	const fetchCount = () => vm.countUnreadNotifications();
 	const loadNotifications = () => {
-		dispatch(fetchNotifications({ earlierThan: new Date(), enqueue: false }));
+		vm.fetchNotifications(new Date(), false);
 	};
 	const loadMoreNotifications = () => {
 		const earliestLoadedNotificationIsoDate = _.last(userNotifications)!.timestamp;
 		const earliestNotificationDate = parseISO(earliestLoadedNotificationIsoDate);
-		dispatch(fetchNotifications({ earlierThan: earliestNotificationDate, enqueue: true }));
+		vm.fetchNotifications(earliestNotificationDate, true);
 	};
 
 	const isPopoverOpen = anchorEl !== null;
@@ -71,7 +62,7 @@ const Notifications = () => {
 
 	const onNotificationClicked = (id: string) => () => {
 		closePopover();
-		dispatch(setNotificationRead({ id }));
+		vm.setNotificationRead(id);
 	};
 
 	usePageActivation(
@@ -91,7 +82,7 @@ const Notifications = () => {
 	return (
 		<div className={classes.root}>
 			<Badge
-				badgeContent={unreadNotificationsCount}
+				badgeContent={vm.unreadNotificationsCount}
 				showZero={false}
 				color={hasManyUnreadNotifications ? "error" : "secondary"}
 				max={UNREAD_NOTIFICATIONS_MAX_COUNT}
@@ -155,4 +146,4 @@ const Notifications = () => {
 	);
 };
 
-export default Notifications;
+export default observer(Notifications);

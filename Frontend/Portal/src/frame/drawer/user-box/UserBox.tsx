@@ -4,18 +4,18 @@ import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useDispatch, useSelector } from "react-redux";
 import placeholder from "../../../assets/person.png";
 import { UserInfoDto } from "../../../dto/interfaces";
 import ListItemLink from "../../../utils/ListItemLink";
 import { Nullable } from "../../../utils/miscellanea";
 import AuthButton from "../../AuthButton";
-import { selectIsDrawerOpen, setDrawerState } from "../../store/active-user.slice";
+import { useAppFrameContext } from "../../AppFrame.context";
+import { observer } from "mobx-react";
 
 const useStyles = makeStyles(() => {
 	return createStyles({
@@ -36,9 +36,8 @@ interface UserBoxProps {
 
 const UserBox = ({ user }: UserBoxProps) => {
 	const classes = useStyles();
-	const dispatch = useDispatch();
 	const useMobileLayout = useMediaQuery("(max-width: 600px)");
-	const isDrawerOpen = useSelector(selectIsDrawerOpen);
+	const { vm } = useAppFrameContext();
 	const isAuthenticated = user !== null;
 
 	return (
@@ -54,11 +53,14 @@ const UserBox = ({ user }: UserBoxProps) => {
 				{isAuthenticated && <ListItemLink icon={<SettingsIcon />} primary="Manage profile" to="/profile" />}
 				{!useMobileLayout && (
 					<li>
-						<ListItem button onClick={() => dispatch(setDrawerState(isDrawerOpen ? "close" : "open"))}>
+						<ListItem button onClick={() => vm.toggleDrawer()}>
 							<ListItemIcon>
-								<DoubleArrowIcon style={{ transform: isDrawerOpen ? "rotateZ(180deg)" : "" }} />
+								<DoubleArrowIcon style={{ transform: vm.isDrawerOpen ? "rotateZ(180deg)" : "" }} />
 							</ListItemIcon>
-							<ListItemText primary={isDrawerOpen ? "Show less" : "Show more"} primaryTypographyProps={{ className: "gaia-font", style: { fontSize: "0.8rem" } }} />
+							<ListItemText
+								primary={vm.isDrawerOpen ? "Show less" : "Show more"}
+								primaryTypographyProps={{ className: "gaia-font", style: { fontSize: "0.8rem" } }}
+							/>
 						</ListItem>
 					</li>
 				)}
@@ -67,4 +69,4 @@ const UserBox = ({ user }: UserBoxProps) => {
 	);
 };
 
-export default UserBox;
+export default observer(UserBox);

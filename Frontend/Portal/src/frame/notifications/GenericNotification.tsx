@@ -2,17 +2,17 @@ import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { Theme } from "@mui/material/styles";
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import InfoIcon from "@mui/icons-material/Info";
-import _ from "lodash";
+import { delay } from "lodash";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { NotificationDto } from "../../dto/interfaces";
 import { ScrollableNode, useVisibility } from "../../utils/hooks";
 import { prettyTimestamp } from "../../utils/miscellanea";
-import { setNotificationRead } from "../store/active-user.slice";
+import { useAppFrameContext } from "../AppFrame.context";
+import { observer } from "mobx-react";
 
 export const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -42,9 +42,10 @@ export interface NotificationProps<T extends NotificationDto = NotificationDto> 
 
 const GenericNotification = ({ notification, parentScrollable, bordered, notificationClicked }: NotificationProps) => {
 	const classes = useStyles();
-	const dispatch = useDispatch();
 	const [isVisible, currentRef] = useVisibility<HTMLDivElement>(parentScrollable, 0);
+	const { vm } = useAppFrameContext();
 	const isRead = notification.isRead;
+
 	useEffect(() => {
 		if (!isVisible) {
 			return;
@@ -52,7 +53,8 @@ const GenericNotification = ({ notification, parentScrollable, bordered, notific
 		if (isRead) {
 			return;
 		}
-		_.delay(() => dispatch(setNotificationRead({ id: notification.id })), 1000);
+
+		delay(() => vm.setNotificationRead(notification.id), 1000);
 	}, [isRead, isVisible]);
 
 	return (
@@ -72,4 +74,4 @@ const GenericNotification = ({ notification, parentScrollable, bordered, notific
 	);
 };
 
-export default GenericNotification;
+export default observer(GenericNotification);

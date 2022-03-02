@@ -3,8 +3,9 @@ import { createTheme, ThemeProvider, Theme, StyledEngineProvider } from "@mui/ma
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom";
-import { Provider } from "react-redux";
+import { Provider as ReduxProvider } from "react-redux";
 import App from "./app/App";
+import { AppProvider } from "./global";
 import "./index.scss";
 import store from "./store/store";
 
@@ -34,17 +35,19 @@ const theme = createTheme({
 
 ReactDOM.render(
 	<React.StrictMode>
-		<Auth0Provider {...auth0Config}>
-			<Provider store={store}>
+		<StyledEngineProvider injectFirst>
+			<ThemeProvider theme={theme}>
 				<SnackbarProvider anchorOrigin={{ horizontal: "center", vertical: "bottom" }}>
-					<StyledEngineProvider injectFirst>
-						<ThemeProvider theme={theme}>
-							<App />
-						</ThemeProvider>
-					</StyledEngineProvider>
+					<Auth0Provider {...auth0Config}>
+						<ReduxProvider store={store}>
+							<AppProvider>
+								<App />
+							</AppProvider>
+						</ReduxProvider>
+					</Auth0Provider>
 				</SnackbarProvider>
-			</Provider>
-		</Auth0Provider>
+			</ThemeProvider>
+		</StyledEngineProvider>
 	</React.StrictMode>,
 	document.getElementById("gaia-project")
 );

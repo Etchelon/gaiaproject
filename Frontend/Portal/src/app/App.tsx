@@ -1,15 +1,16 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import _ from "lodash";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AuthenticatedRoute from "../auth/AuthenticatedRoute";
 import { UserInfoDto } from "../dto/interfaces";
-import AppFrame from "../frame/AppFrame";
+import AppFrameRoot from "../frame";
 import GamePage from "../game-page/GamePage";
 import UserGames from "../games/UserGames";
+import { useAppContext } from "../global";
 import Home from "../home/Home";
 import ManageProfile from "../manage-profile/ManageProfile";
 import NewGamePage from "../new-game/NewGamePage";
@@ -45,8 +46,11 @@ const onAuthenticated = async (auth0User: any): Promise<boolean> => {
 const App = () => {
 	const classes = useStyles();
 	const { getAccessTokenSilently, isAuthenticated, isLoading, user } = useAuth0();
+	const { httpClient: http, hubClient: hub } = useAppContext();
 	httpClient.setBearerTokenFactory(getAccessTokenSilently);
 	hubClient.setBearerTokenFactory(getAccessTokenSilently);
+	http.setBearerTokenFactory(getAccessTokenSilently);
+	hub.setBearerTokenFactory(getAccessTokenSilently);
 	const { enqueueSnackbar } = useSnackbar();
 	const [isReady, setIsReady] = useState(false);
 
@@ -77,7 +81,7 @@ const App = () => {
 	return (
 		<Router>
 			<div className={classes.root}>
-				<AppFrame>
+				<AppFrameRoot>
 					<Routes>
 						<Route
 							path="/profile"
@@ -116,7 +120,7 @@ const App = () => {
 						<Route path="/unauthorized" element={<Unauthorized />} />
 						<Route path="*" element={<NotFound />} />
 					</Routes>
-				</AppFrame>
+				</AppFrameRoot>
 			</div>
 		</Router>
 	);

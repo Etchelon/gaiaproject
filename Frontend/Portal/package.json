@@ -18,6 +18,8 @@
 		"@reduxjs/toolkit": "^1.8.0",
 		"date-fns": "^2.28.0",
 		"lodash": "^4.17.21",
+		"mobx": "6.4.2",
+		"mobx-react": "7.3.0",
 		"notistack": "^2.0.3",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",

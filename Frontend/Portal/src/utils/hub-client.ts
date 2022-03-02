@@ -17,7 +17,7 @@ const isConnected = (connection_: Nullable<HubConnection>) => {
 	return connection_.state === HubConnectionState.Connected;
 };
 
-class HubClient {
+export class HubClient {
 	private _hubConnection: Nullable<HubConnection> = null;
 
 	constructor(private readonly baseUrl: string) {}

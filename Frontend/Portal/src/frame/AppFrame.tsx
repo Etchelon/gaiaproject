@@ -1,4 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import MenuIcon from "@mui/icons-material/Menu";
 import { useMediaQuery } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -7,27 +8,22 @@ import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import MenuIcon from "@mui/icons-material/Menu";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { FC, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAppFrameContext } from "./AppFrame.context";
 import AppBarImg from "../assets/Resources/splash.jpg";
 import navigationService from "../utils/navigation.service";
 import useStyles from "./appFrame.styles";
 import AppDrawer from "./drawer/AppDrawer";
 import Notifications from "./notifications/Notifications";
-import { selectIsDrawerOpen } from "./store/active-user.slice";
+import { observer } from "mobx-react";
 
-interface AppFrameProps {
-	children: any;
-}
-
-const AppFrame = ({ children }: AppFrameProps) => {
+const AppFrame: FC = ({ children }) => {
 	const navigate = useNavigate();
 	const classes = useStyles();
 	const theme = useTheme();
 	const useMobileLayout = useMediaQuery("(max-width: 600px)");
-	const isDrawerOpen = useSelector(selectIsDrawerOpen);
+	const { vm } = useAppFrameContext();
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const { isAuthenticated } = useAuth0();
 
@@ -49,17 +45,11 @@ const AppFrame = ({ children }: AppFrameProps) => {
 	const container = window !== undefined ? () => window.document.body : undefined;
 
 	return (
-        <div className={classes.root}>
+		<div className={classes.root}>
 			<CssBaseline />
 			<AppBar position="fixed" className={classes.appBar}>
 				<Toolbar variant="dense">
-					<IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        onClick={handleDrawerToggle}
-                        className={classes.menuButton}
-                        size="large">
+					<IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} className={classes.menuButton} size="large">
 						<MenuIcon />
 					</IconButton>
 					<img className={classes.appBarImg} src={AppBarImg} alt="" />
@@ -95,9 +85,9 @@ const AppFrame = ({ children }: AppFrameProps) => {
 			)}
 			{!useMobileLayout && (
 				<Drawer
-					className={`${classes.drawer} ${isDrawerOpen ? classes.drawerOpen : classes.drawerClose}`}
+					className={`${classes.drawer} ${vm.isDrawerOpen ? classes.drawerOpen : classes.drawerClose}`}
 					classes={{
-						paper: isDrawerOpen ? classes.drawerOpen : classes.drawerClose,
+						paper: vm.isDrawerOpen ? classes.drawerOpen : classes.drawerClose,
 					}}
 					variant="permanent"
 				>
@@ -109,7 +99,7 @@ const AppFrame = ({ children }: AppFrameProps) => {
 				<div className={classes.content}>{children}</div>
 			</main>
 		</div>
-    );
+	);
 };
 
-export default AppFrame;
+export default observer(AppFrame);
