@@ -70,14 +70,19 @@ export const useContainerDimensions = (containerRef: RefObject<HTMLElement>, wat
 	return dimensions;
 };
 
+const ALL_RESOURCES = import.meta.glob("../assets/Resources/**/*.(png|jpg|wav)");
+
 export function useAssetUrl(relativeUrl: string): string {
-	const [imgUrl, setImgUrl] = useState("");
+	const [assetUrl, setAssetUrl] = useState("");
 
 	useEffect(() => {
-		import(`../assets/Resources/${relativeUrl}`).then(imgModule => setImgUrl(imgModule.default)).catch(err => setImgUrl(""));
+		const url = `../assets/Resources/${relativeUrl}`;
+		ALL_RESOURCES[url]()
+			.then(m => setAssetUrl(m.default))
+			.catch(() => setAssetUrl(""));
 	}, [relativeUrl]);
 
-	return imgUrl;
+	return assetUrl;
 }
 
 export function useCurrentUser(): Nullable<UserInfoDto> {
