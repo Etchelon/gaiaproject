@@ -29,7 +29,7 @@ const APP_SECTIONS: AppSection[] = [
 	{ label: "History", route: "/history", icon: <HistoryIcon />, protected: true },
 ];
 
-const storageKey = (userId: string) => `USER_PREFERENCES_${userId}`;
+const storageKey = (userId?: string) => `USER_PREFERENCES_${userId ?? "WTF"}`;
 
 const AppDrawer = () => {
 	const classes = useStyles();
@@ -41,6 +41,9 @@ const AppDrawer = () => {
 	useEffect(() => {
 		if (!isAuthenticated) {
 			return;
+		}
+		if (!auth0User) {
+			throw new Error("How can we be authenticated without an actual user instance?");
 		}
 
 		const userPreferencesStr = window.localStorage.getItem(storageKey(auth0User.sub));
@@ -58,13 +61,13 @@ const AppDrawer = () => {
 	}, []);
 
 	useEffect(() => {
-		if (!isAuthenticated) {
-			return;
+		if (!auth0User) {
+			throw new Error("How can we be authenticated without an actual user instance?");
 		}
 
 		const userPreferencesStr = JSON.stringify(userPreferences);
 		window.localStorage.setItem(storageKey(auth0User.sub), userPreferencesStr);
-	}, [isAuthenticated, userPreferences]);
+	}, [auth0User, userPreferences]);
 
 	return (
 		<div className={classes.appDrawer}>
