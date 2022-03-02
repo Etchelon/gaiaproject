@@ -62,7 +62,7 @@ const AppDrawer = () => {
 
 	useEffect(() => {
 		if (!auth0User) {
-			throw new Error("How can we be authenticated without an actual user instance?");
+			return;
 		}
 
 		const userPreferencesStr = JSON.stringify(userPreferences);
