@@ -1,6 +1,5 @@
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import Checkbox from "@material-ui/core/Checkbox";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -18,7 +17,7 @@ import { format } from "date-fns";
 import _ from "lodash";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MapShape, RaceSelectionMode, TurnOrderSelectionMode } from "../dto/enums";
 import { CreateGameCommand, UserInfoDto } from "../dto/interfaces";
 import httpClient from "../utils/http-client";
@@ -33,7 +32,7 @@ type BalancingMethod = "auction" | "sector-rotation";
 
 const NewGamePage = () => {
 	const classes = useStyles();
-	const history = useHistory();
+	const navigate = useNavigate();
 	const { enqueueSnackbar } = useSnackbar();
 	const [open, setOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -105,7 +104,7 @@ const NewGamePage = () => {
 		};
 
 		const gameId = await httpClient.post<string>("api/GaiaProject/CreateGame", command, { readAsString: true });
-		history.push(`/game/${gameId}`);
+		navigate(`/game/${gameId}`);
 	};
 
 	return (

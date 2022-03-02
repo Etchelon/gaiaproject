@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from "@material-ui/core";
 import _ from "lodash";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AuthenticatedRoute from "../auth/AuthenticatedRoute";
 import { UserInfoDto } from "../dto/interfaces";
 import AppFrame from "../frame/AppFrame";
@@ -77,30 +77,44 @@ const App = () => {
 		<Router>
 			<div className={classes.root}>
 				<AppFrame>
-					<Switch>
-						<AuthenticatedRoute path="/profile">
-							<ManageProfile />
-						</AuthenticatedRoute>
-						<AuthenticatedRoute path="/games">
-							<UserGames kind="active" />
-						</AuthenticatedRoute>
-						<AuthenticatedRoute path="/history">
-							<UserGames kind="finished" />
-						</AuthenticatedRoute>
-						<AuthenticatedRoute path="/new-game">
-							<NewGamePage />
-						</AuthenticatedRoute>
-						<Route path="/game/:id">{isReady && <GamePage />}</Route>
-						<Route exact path="/">
-							<Home />
-						</Route>
-						<Route exact path="/unauthorized">
-							<Unauthorized />
-						</Route>
-						<Route path="*">
-							<NotFound />
-						</Route>
-					</Switch>
+					<Routes>
+						<Route
+							path="/profile"
+							element={
+								<AuthenticatedRoute>
+									<ManageProfile />
+								</AuthenticatedRoute>
+							}
+						/>
+						<Route
+							path="/games"
+							element={
+								<AuthenticatedRoute>
+									<UserGames kind="active" />
+								</AuthenticatedRoute>
+							}
+						/>
+						<Route
+							path="/history"
+							element={
+								<AuthenticatedRoute>
+									<UserGames kind="finished" />
+								</AuthenticatedRoute>
+							}
+						/>
+						<Route
+							path="/new-game"
+							element={
+								<AuthenticatedRoute>
+									<NewGamePage />
+								</AuthenticatedRoute>
+							}
+						/>
+						<Route path="/game/:id" element={isReady && <GamePage />} />
+						<Route path="/" element={<Home />} />
+						<Route path="/unauthorized" element={<Unauthorized />} />
+						<Route path="*" element={<NotFound />} />
+					</Routes>
 				</AppFrame>
 			</div>
 		</Router>

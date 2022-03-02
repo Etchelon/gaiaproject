@@ -10,7 +10,7 @@ import { format, parseISO } from "date-fns";
 import _ from "lodash";
 import { MouseEvent, MouseEventHandler, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ActivePlayerImg from "../assets/Resources/PlayerLoader.gif";
 import { getRaceColor } from "../utils/race-utils";
 import { selectDeleteGameProgress, selectGame } from "./store/games.slice";
@@ -73,7 +73,7 @@ interface UserGameProps {
 const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	const theme = useTheme();
 	const classes = useStyles();
-	const history = useHistory();
+	const navigate = useNavigate();
 	const game = useSelector(_.partialRight(selectGame, id))!;
 	const [isPromptingForDeletion, setIsPromptingForDeletion] = useState(false);
 	const deleteProgress = useSelector(selectDeleteGameProgress);
@@ -87,7 +87,7 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	}, [deleteProgress]);
 
 	const navigateToGamePage = () => {
-		history.push(`/game/${game.id}`);
+		navigate(`/game/${game.id}`);
 	};
 	const creationDate = parseISO(game.created);
 	const finishDate = game.ended ? parseISO(game.ended) : null;

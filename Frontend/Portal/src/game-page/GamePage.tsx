@@ -4,7 +4,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Subscription } from "rxjs";
 import { useAssetUrl, useCurrentUser, usePageActivation } from "../utils/hooks";
 import { localizeEnum } from "../utils/localization";
@@ -61,8 +61,8 @@ interface GamePageRouteParams {
 const GamePage = () => {
 	const classes = useStyles();
 	const isMobile = useMediaQuery("(max-width: 600px)");
-	const { id } = useParams<GamePageRouteParams>();
-	const { push } = useHistory();
+	const { id } = useParams<keyof GamePageRouteParams>() as GamePageRouteParams;
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const playersTurnAudioUrl = useAssetUrl("Sounds/PlayersTurn.wav");
 	const { connectToHub, disconnectFromHub } = useGamePageSignalRConnection(id, closeWorkflow);
@@ -137,7 +137,7 @@ const GamePage = () => {
 	useEffect(() => {
 		if (status === "failure") {
 			console.error(`Failed to initialize Active Game ${id}.`);
-			push("/not-found");
+			navigate("/not-found");
 			return;
 		}
 

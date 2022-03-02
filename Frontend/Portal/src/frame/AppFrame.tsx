@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AppBarImg from "../assets/Resources/splash.jpg";
 import navigationService from "../utils/navigation.service";
 import useStyles from "./appFrame.styles";
@@ -23,7 +23,7 @@ interface AppFrameProps {
 }
 
 const AppFrame = ({ children }: AppFrameProps) => {
-	const history = useHistory();
+	const navigate = useNavigate();
 	const classes = useStyles();
 	const theme = useTheme();
 	const useMobileLayout = useMediaQuery("(max-width: 600px)");
@@ -40,7 +40,7 @@ const AppFrame = ({ children }: AppFrameProps) => {
 	}, [isAuthenticated]);
 
 	useEffect(() => {
-		const sub = navigationService.navigate$.subscribe(path => history.push(path));
+		const sub = navigationService.navigate$.subscribe({ next: navigate });
 		return () => {
 			sub.unsubscribe();
 		};

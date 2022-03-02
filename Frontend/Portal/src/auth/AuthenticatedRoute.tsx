@@ -1,8 +1,14 @@
-import { withAuthenticationRequired } from "@auth0/auth0-react";
-import { Route } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+import { FC } from "react";
 
-const AuthenticatedRoute = ({ children: Component, ...rest }: any) => {
-	return <Route {...rest}>{Component}</Route>;
+const AuthenticatedRoute: FC = ({ children }) => {
+	const { isAuthenticated, isLoading } = useAuth0();
+
+	if (isLoading) {
+		return <p>Loading...</p>;
+	}
+
+	return isAuthenticated ? <>{children}</> : null;
 };
 
-export default withAuthenticationRequired(AuthenticatedRoute);
+export default AuthenticatedRoute;
