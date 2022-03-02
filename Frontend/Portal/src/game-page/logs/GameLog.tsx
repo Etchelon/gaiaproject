@@ -83,7 +83,7 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 		</>
 	);
 	return (
-        <ListItem className={styles.playerLog} style={{ backgroundColor: background, color }}>
+		<ListItem className={styles.playerLog} style={{ backgroundColor: background, color }}>
 			<ListItemAvatar>
 				<Avatar src={imgUrl} />
 			</ListItemAvatar>
@@ -96,10 +96,7 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 			/>
 			{canRollback && (
 				<div className={styles.rollbackButton}>
-					<IconButton
-                        aria-label="Rollback to this action"
-                        onClick={() => setIsPromptingForRollback(true)}
-                        size="large">
+					<IconButton aria-label="Rollback to this action" onClick={() => setIsPromptingForRollback(true)} size="large">
 						<HistoryIcon style={{ color }} />
 					</IconButton>
 					<Dialog
@@ -113,16 +110,13 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 							<DialogContentText id="alert-dialog-description">The game state will be rolled back to just after the selected action was performed</DialogContentText>
 						</DialogContent>
 						<DialogActions>
-							<Button
-                                onClick={() => setIsPromptingForRollback(false)}
-                                disabled={rollbackProgress === "loading"}>
+							<Button onClick={() => setIsPromptingForRollback(false)} disabled={rollbackProgress === "loading"}>
 								Cancel
 							</Button>
 							<ButtonWithProgress
 								label={"Yes"}
 								loading={rollbackProgress === "loading"}
 								onClick={() => doRollback(log.actionId!)}
-								color="default"
 								disabled={rollbackProgress === "loading"}
 								autoFocus
 							/>
@@ -131,7 +125,7 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 				</div>
 			)}
 		</ListItem>
-    );
+	);
 };
 
 interface GameLogProps {
