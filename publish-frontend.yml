@@ -30,33 +30,33 @@ steps:
 
 - task: Cache@2
   inputs:
-    key: $(Build.SourcesDirectory)/Frontend/StarGate/package-lock.json
-    path: $(Build.SourcesDirectory)/Frontend/StarGate/node_modules
+    key: $(Build.SourcesDirectory)/Frontend/Portal/package-lock.json
+    path: $(Build.SourcesDirectory)/Frontend/Portal/node_modules
     cacheHitVar: CACHE_RESTORED
   displayName: Cache npm
 
 - script: |
     npm install
-  workingDirectory: 'Frontend/StarGate'
+  workingDirectory: 'Frontend/Portal'
   displayName: 'npm install'
   condition: ne(variables.CACHE_RESTORED, 'true')
 
 - script: |
     npm run build
-  workingDirectory: 'Frontend/StarGate'
+  workingDirectory: 'Frontend/Portal'
   env:
     GENERATE_SOURCEMAP: false
-    REACT_APP_API_BASE_URL: 'https://gaiaproject.azurewebsites.net'
-    REACT_APP_AUTH0_DOMAIN: $(REACT_APP_AUTH0_DOMAIN)
-    REACT_APP_AUTH0_CLIENT_ID: $(REACT_APP_AUTH0_CLIENT_ID)
-    REACT_APP_AUTH0_AUDIENCE: $(REACT_APP_AUTH0_AUDIENCE)
-    REACT_APP_AUTH0_SCOPE: $(REACT_APP_AUTH0_SCOPE)
+    VITE_API_BASE_URL: 'https://gaiaproject.azurewebsites.net'
+    VITE_AUTH0_DOMAIN: $(REACT_APP_AUTH0_DOMAIN)
+    VITE_AUTH0_CLIENT_ID: $(REACT_APP_AUTH0_CLIENT_ID)
+    VITE_AUTH0_AUDIENCE: $(REACT_APP_AUTH0_AUDIENCE)
+    VITE_AUTH0_SCOPE: $(REACT_APP_AUTH0_SCOPE)
   displayName: 'Production build'
 
 - task: AzureFileCopy@3
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
   inputs:
-    SourcePath: 'Frontend/StarGate/build'
+    SourcePath: 'Frontend/Portal/dist'
     azureSubscription: 'Andrea Bertoldo 45€/month (27352222-c6c7-4fed-8669-6cdcd1f93dcf)'
     Destination: 'AzureBlob'
     storage: 'gaiaproject'

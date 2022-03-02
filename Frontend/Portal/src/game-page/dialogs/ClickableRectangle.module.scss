@@ -1,0 +1,11 @@
+.root {
+	border: 2px solid transparent;
+	border-radius: 5px;
+	pointer-events: none;
+
+	&.active {
+		border-color: dodgerblue;
+		cursor: pointer;
+		pointer-events: all;
+	}
+}
