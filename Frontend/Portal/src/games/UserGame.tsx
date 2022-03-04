@@ -1,29 +1,29 @@
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useTheme } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
-import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Paper from "@mui/material/Paper";
-import { Theme } from "@mui/material/styles";
-import createStyles from "@mui/styles/createStyles";
-import makeStyles from "@mui/styles/makeStyles";
-import Typography from "@mui/material/Typography";
-import { format, parseISO } from "date-fns";
-import _ from "lodash";
-import { MouseEvent, MouseEventHandler, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import ActivePlayerImg from "../assets/Resources/PlayerLoader.gif";
-import { getRaceColor } from "../utils/race-utils";
-import { selectDeleteGameProgress, selectGame } from "./store/games.slice";
-import { UserInfoDto } from "../dto/interfaces";
+import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
+import DialogTitle from "@mui/material/DialogTitle";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import { Theme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import { format, parseISO } from "date-fns";
+import { chain, isNil } from "lodash";
+import { observer } from "mobx-react";
+import { MouseEvent, MouseEventHandler, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ActivePlayerImg from "../assets/Resources/PlayerLoader.gif";
+import { UserInfoDto } from "../dto/interfaces";
 import ButtonWithProgress from "../utils/ButtonWithProgress";
+import { getRaceColor } from "../utils/race-utils";
+import { useGamesContext } from "./UserGames.context";
 
 const AVATAR_WIDTH = 40;
 
@@ -76,9 +76,10 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	const theme = useTheme();
 	const classes = useStyles();
 	const navigate = useNavigate();
-	const game = useSelector(_.partialRight(selectGame, id))!;
+	const { vm } = useGamesContext();
 	const [isPromptingForDeletion, setIsPromptingForDeletion] = useState(false);
-	const deleteProgress = useSelector(selectDeleteGameProgress);
+	const deleteProgress = vm.deleteGameProgress;
+	const game = vm.games.find(g => g.id === id)!;
 	const isGameCreator = user?.id === game.createdBy.id;
 	const canDelete = isGameCreator && !game.ended;
 
@@ -94,7 +95,7 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	const creationDate = parseISO(game.created);
 	const finishDate = game.ended ? parseISO(game.ended) : null;
 	const winnersNames = finishDate
-		? _.chain(game.players)
+		? chain(game.players)
 				.filter(p => p.placement === 1)
 				.map(p => p.username)
 				.value()
@@ -161,8 +162,8 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 			</div>
 			<div className={classes.players}>
 				<Grid container spacing={2}>
-					{_.chain(game.players)
-						.map(p => ({ p, index: !_.isNil(p.placement) ? 4 - p.placement : p.points }))
+					{chain(game.players)
+						.map(p => ({ p, index: !isNil(p.placement) ? 4 - p.placement : p.points }))
 						.orderBy(o => o.index, "desc")
 						.map(o => o.p)
 						.map((player, index) => {
@@ -197,4 +198,4 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	);
 };
 
-export default UserGame;
+export default observer(UserGame);

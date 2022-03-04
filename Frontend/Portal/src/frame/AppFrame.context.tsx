@@ -1,6 +1,6 @@
 import { createContext, FC, useContext, useState } from "react";
 import { useAppContext } from "../global";
-import { AppFrameViewModel } from "./store/active-user.vm";
+import { AppFrameViewModel } from "./store/app-frame.vm";
 
 interface IAppFrameContext {
 	vm: AppFrameViewModel;

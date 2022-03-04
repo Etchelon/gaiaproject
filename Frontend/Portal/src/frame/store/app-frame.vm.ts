@@ -2,10 +2,10 @@ import { makeAutoObservable } from "mobx";
 import { NotificationDto } from "../../dto/interfaces";
 import { LoadingStatus } from "../../games/store/types";
 import { HttpClient } from "../../utils/http-client";
-import { ActiveUserState } from "./types";
+import { ActiveUserState, DrawerState } from "./types";
 
 export class AppFrameViewModel {
-	drawerState: "open" | "close" = "open";
+	drawerState: DrawerState = "open";
 	get isDrawerOpen() {
 		return this.drawerState === "open";
 	}

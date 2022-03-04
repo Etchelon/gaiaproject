@@ -9,7 +9,7 @@ import AuthenticatedRoute from "../auth/AuthenticatedRoute";
 import { UserInfoDto } from "../dto/interfaces";
 import AppFrameRoot from "../frame";
 import GamePage from "../game-page/GamePage";
-import UserGames from "../games/UserGames";
+import UserGames from "../games";
 import { useAppContext } from "../global";
 import Home from "../home/Home";
 import ManageProfile from "../manage-profile/ManageProfile";
