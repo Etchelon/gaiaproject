@@ -9,7 +9,6 @@ using GaiaProject.Common.Utils;
 using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Model;
 using GaiaProject.Engine.Model.Board;
-using MoreLinq.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -176,8 +175,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 		{
 			var firstHexInSector = Map.Hexes
 				.Where(h => h.SectorId == sectorId)
-				.MinBy(h => h.Index)
-				.First();
+				.MinBy(h => h.Index);
 			var sectorNumber = firstHexInSector.SectorNumber;
 			var currentRotation = firstHexInSector.SectorRotation;
 			var newRotationTmp = (currentRotation + (clockwise ? -1 : 1) * steps) % MaxRotationSteps;
@@ -290,7 +288,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 			var hexesInRangeWithoutBoost = playerHexesWithStructure
 				.SelectMany(h => FindHexesWithinDistance(h, playersRange))
 				.Colonizable(isLantids)
-				.ExceptBy(playerHexesWithStructure, h => h.Id)
+				.ExceptBy(playerHexesWithStructure.Select(h => h.Id), h => h.Id)
 				.Concat(playerHexesWithGaiaformer)
 				.DistinctBy(h => h.Id)
 				.ToList();
@@ -305,7 +303,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 				var additionalHexes = playerHexesWithStructure
 					.SelectMany(h => FindHexesWithinDistance(h, actualRange))
 					.Colonizable(isLantids)
-					.ExceptBy(playerHexesWithStructure, h => h.Id)
+					.ExceptBy(playerHexesWithStructure.Select(h => h.Id), h => h.Id)
 					.DistinctBy(h => h.Id)
 					.ToList();
 				ret.AddRange(
@@ -325,7 +323,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 			var hexesReachableWithoutBoost = playerHexes
 				.SelectMany(h => FindHexesWithinDistance(h, playersRange))
 				.Except(playerHexes.WithSatellites())
-				.ExceptBy(playerHexes, h => h.Id)
+				.ExceptBy(playerHexes.Select(h => h.Id), h => h.Id)
 				.DistinctBy(h => h.Id)
 				.ToList();
 
@@ -338,7 +336,7 @@ namespace GaiaProject.Engine.Logic.Board.Map
 				--availableQics;
 				var additionalHexes = playerHexes
 					.SelectMany(h => FindHexesWithinDistance(h, actualRange))
-					.ExceptBy(playerHexes, h => h.Id)
+					.ExceptBy(playerHexes.Select(h => h.Id), h => h.Id)
 					.DistinctBy(h => h.Id)
 					.ToList();
 				ret.AddRange(

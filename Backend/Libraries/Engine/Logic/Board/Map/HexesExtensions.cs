@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GaiaProject.Engine.Enums;
 using GaiaProject.Engine.Model.Board;
-using MoreLinq.Extensions;
 
 namespace GaiaProject.Engine.Logic.Board.Map
 {
@@ -144,38 +143,6 @@ namespace GaiaProject.Engine.Logic.Board.Map
 				.DistinctBy(o => o.Id)
 				.Select(o => o.Cluster)
 				.ToList();
-			//var processedClusters = new List<List<Hex>>();
-			//var duplicateClusters = new List<List<Hex>>();
-			//ret.AddRange(clusters
-			//	.Where(cluster =>
-			//	{
-			//		if (duplicateClusters.Contains(cluster))
-			//		{
-			//			return false;
-			//		}
-			//		var otherClusters = clusters.Except(processedClusters).ToList();
-			//		otherClusters.Remove(cluster);
-			//		foreach (var otherCluster in otherClusters)
-			//		{
-			//			var otherClusterSize = otherCluster.Count;
-			//			var nIntersected = otherCluster.Select(h => h.Id).Intersect(cluster.Select(h => h.Id)).Count();
-			//			if (otherClusterSize == nIntersected)
-			//			{
-			//				// Found a duplicate; add this one and exclude the other
-			//				duplicateClusters.Add(otherCluster);
-			//				processedClusters.Add(cluster);
-			//				return true;
-			//			}
-			//			if (0 < nIntersected && nIntersected < otherClusterSize)
-			//			{
-			//				throw new Exception("Clusters cannot overlap");
-			//			}
-			//		}
-			//		processedClusters.Add(cluster);
-			//		return true;
-			//	})
-			//);
-			//return ret;
 		}
 	}
 }

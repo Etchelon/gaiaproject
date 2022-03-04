@@ -1,6 +1,5 @@
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import { timer } from "rxjs";
-import { BASE_URL } from "../config";
 import { BearerTokenFactoryFn } from "./http-client";
 import { Nullable } from "./miscellanea";
 
