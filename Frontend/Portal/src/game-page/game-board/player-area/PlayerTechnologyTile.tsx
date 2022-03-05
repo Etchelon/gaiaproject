@@ -1,11 +1,12 @@
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import _ from "lodash";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import { isNil, partialRight } from "lodash";
+import { observer } from "mobx-react";
 import { MouseEvent } from "react";
-import { useSelector } from "react-redux";
 import { TechnologyTileDto } from "../../../dto/interfaces";
 import { interactiveElementClass } from "../../../utils/miscellanea";
-import { selectOwnAdvancedTileInteractionState, selectOwnStandardTileInteractionState } from "../../store/active-game.slice";
+import { useGamePageContext } from "../../GamePage.context";
+import { selectOwnAdvancedTileInteractionState, selectOwnStandardTileInteractionState } from "../../store/selectors";
 import { useWorkflow } from "../../WorkflowContext";
 import { InteractiveElementType } from "../../workflows/enums";
 import ActionToken from "../ActionToken";
@@ -49,10 +50,11 @@ const useStyles = makeStyles(() =>
 
 const PlayerTechnologyTile = ({ tile, playerId }: PlayerTechnologyTileProps) => {
 	const classes = useStyles();
-	const covered = !_.isNil(tile.coveredByAdvancedTile);
+	const { vm } = useGamePageContext();
+	const covered = !isNil(tile.coveredByAdvancedTile);
 	const tileId = covered ? tile.coveredByAdvancedTile! : tile.id;
 	const selector = covered ? selectOwnAdvancedTileInteractionState(tile.coveredByAdvancedTile!) : selectOwnStandardTileInteractionState(tile.id);
-	const { isClickable, isSelected } = useSelector(_.partialRight(selector, playerId));
+	const { isClickable, isSelected } = partialRight(selector, playerId)(vm);
 	const { activeWorkflow } = useWorkflow();
 	const tileClicked = (evt: MouseEvent) => {
 		evt.stopPropagation();
@@ -77,4 +79,4 @@ const PlayerTechnologyTile = ({ tile, playerId }: PlayerTechnologyTileProps) => 
 	);
 };
 
-export default PlayerTechnologyTile;
+export default observer(PlayerTechnologyTile);

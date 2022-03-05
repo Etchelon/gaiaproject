@@ -12,7 +12,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
-import _ from "lodash";
+import { some } from "lodash";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { GameLogDto, GameSubLogDto } from "../../dto/interfaces";
@@ -78,7 +78,7 @@ const PlayerLog = observer(({ log, canRollback, doRollback }: PlayerLogProps) =>
 
 	const subLogs = () => (
 		<>
-			{_.map(log?.subLogs, (sl, index) => (
+			{log?.subLogs?.map((sl, index) => (
 				<PlayerSubLog key={index} subLog={sl} isAnotherPlayer={sl.player !== log.player}></PlayerSubLog>
 			))}
 		</>
@@ -92,7 +92,7 @@ const PlayerLog = observer(({ log, canRollback, doRollback }: PlayerLogProps) =>
 				style={{ margin: theme.spacing(0) }}
 				primary={log.message}
 				primaryTypographyProps={{ className: `${styles.mainLog} ${"gaia-font"}` }}
-				secondary={_.some(log.subLogs) && subLogs()}
+				secondary={some(log.subLogs) && subLogs()}
 				secondaryTypographyProps={{ component: "div" }}
 			/>
 			{canRollback && (

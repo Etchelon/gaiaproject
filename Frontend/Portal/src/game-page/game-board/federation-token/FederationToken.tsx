@@ -1,11 +1,12 @@
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import _ from "lodash";
-import { useSelector } from "react-redux";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import { isUndefined, partialRight, noop } from "lodash";
+import { observer } from "mobx-react";
 import { FederationTokenType } from "../../../dto/enums";
 import { useAssetUrl } from "../../../utils/hooks";
 import { fillParentAbs, interactiveElementClass, withAspectRatioW } from "../../../utils/miscellanea";
-import { selectOwnFederationTokenInteractionState } from "../../store/active-game.slice";
+import { useGamePageContext } from "../../GamePage.context";
+import { selectOwnFederationTokenInteractionState } from "../../store/selectors";
 import { useWorkflow } from "../../WorkflowContext";
 import { InteractiveElementType } from "../../workflows/enums";
 
@@ -44,14 +45,15 @@ const useStyles = makeStyles(() =>
 const FederationToken = ({ type, used, playerId }: FederationTokenProps) => {
 	const classes = useStyles();
 	const imgUrl = useAssetUrl(`Boards/Federations/${federationTokenImages.get(type)}.png`);
-	const inPlayerArea = !_.isUndefined(playerId);
-	const { isClickable, isSelected } = useSelector(_.partialRight(selectOwnFederationTokenInteractionState(type), playerId));
+	const { vm } = useGamePageContext();
+	const inPlayerArea = !isUndefined(playerId);
+	const { isClickable, isSelected } = partialRight(selectOwnFederationTokenInteractionState(type), playerId)(vm);
 	const { activeWorkflow } = useWorkflow();
 	const tokenClicked = isClickable
 		? () => {
 				activeWorkflow?.elementSelected(type, InteractiveElementType.OwnFederationToken);
 		  }
-		: _.noop;
+		: noop;
 
 	return (
 		<div className={classes.root + (used ? " used" : "")}>
@@ -61,4 +63,4 @@ const FederationToken = ({ type, used, playerId }: FederationTokenProps) => {
 	);
 };
 
-export default FederationToken;
+export default observer(FederationToken);

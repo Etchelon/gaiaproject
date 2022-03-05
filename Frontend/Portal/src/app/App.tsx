@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import createStyles from "@mui/styles/createStyles";
 import makeStyles from "@mui/styles/makeStyles";
-import _ from "lodash";
+import { isNil } from "lodash";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -36,7 +36,7 @@ const useStyles = makeStyles(() =>
 
 const onAuthenticated = async (auth0User: any): Promise<boolean> => {
 	const result = await httpClient.put<{ user: UserInfoDto; isFirstLogin: boolean }>(`api/Users/LoggedIn/${auth0User.sub}`, auth0User);
-	if (_.isNil(result)) {
+	if (isNil(result)) {
 		throw new Error("Login failed");
 	}
 	userInfoService.store(auth0User.sub, result!.user);

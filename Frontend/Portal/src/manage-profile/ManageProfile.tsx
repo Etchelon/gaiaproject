@@ -2,7 +2,7 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import _ from "lodash";
+import { cloneDeep, isNil } from "lodash";
 import { useSnackbar } from "notistack";
 import { useEffect, useReducer } from "react";
 import placeholder from "../assets/person.png";
@@ -14,9 +14,9 @@ import styles from "./ManageProfile.module.scss";
 
 const reducer = (state: UserInfoDto, action: { property: keyof UserInfoDto | "set"; value: any }): UserInfoDto => {
 	if (action.property === "set") {
-		return _.cloneDeep(action.value as UserInfoDto);
+		return cloneDeep(action.value as UserInfoDto);
 	}
-	const ret = _.cloneDeep(state);
+	const ret = cloneDeep(state);
 	ret[action.property] = action.value;
 	return ret;
 };
@@ -24,13 +24,13 @@ const reducer = (state: UserInfoDto, action: { property: keyof UserInfoDto | "se
 const ManageProfile = () => {
 	const { enqueueSnackbar } = useSnackbar();
 	const user = useCurrentUser()!;
-	const [userInfo, dispatch] = useReducer(reducer, _.cloneDeep(user));
+	const [userInfo, dispatch] = useReducer(reducer, cloneDeep(user));
 
 	useEffect(() => {
 		user && dispatch({ property: "set", value: user });
 	}, [user]);
 
-	if (_.isNil(userInfo)) {
+	if (isNil(userInfo)) {
 		return <div></div>;
 	}
 

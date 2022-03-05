@@ -1,14 +1,14 @@
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import Tooltip from "@mui/material/Tooltip";
 import WarningIcon from "@mui/icons-material/Warning";
-import _ from "lodash";
+import Tooltip from "@mui/material/Tooltip";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import { noop } from "lodash";
 import { useRef } from "react";
-import { useSelector } from "react-redux";
 import { ActionSpaceDto } from "../../dto/interfaces";
 import { useContainerDimensions } from "../../utils/hooks";
 import { interactiveElementClass } from "../../utils/miscellanea";
-import { selectActionSpaceInteractionState } from "../store/active-game.slice";
+import { useGamePageContext } from "../GamePage.context";
+import { selectActionSpaceInteractionState } from "../store/selectors";
 import { useWorkflow } from "../WorkflowContext";
 import { InteractiveElementType } from "../workflows/enums";
 import ActionToken from "./ActionToken";
@@ -42,6 +42,7 @@ const useStyles = makeStyles(() =>
 
 const ActionSpace = ({ space }: ActionSpaceProps) => {
 	const ref = useRef<HTMLDivElement>(null);
+	const { vm } = useGamePageContext();
 	const { width } = useContainerDimensions(ref);
 	const classes = useStyles({ width, height: 0 });
 	const elementType =
@@ -54,13 +55,13 @@ const ActionSpace = ({ space }: ActionSpaceProps) => {
 			: space.kind === "right-academy"
 			? InteractiveElementType.RightAcademy
 			: InteractiveElementType.RaceAction;
-	const { isClickable, isSelected, notes } = useSelector(selectActionSpaceInteractionState(elementType)(space.type));
+	const { isClickable, isSelected, notes } = selectActionSpaceInteractionState(elementType)(space.type)(vm);
 	const { activeWorkflow } = useWorkflow();
 	const actionSpaceClicked = isClickable
 		? () => {
 				activeWorkflow?.elementSelected(space.type, elementType);
 		  }
-		: _.noop;
+		: noop;
 
 	return (
 		<div ref={ref} className={classes.root}>

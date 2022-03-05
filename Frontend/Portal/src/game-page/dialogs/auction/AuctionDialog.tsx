@@ -1,12 +1,11 @@
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import _ from "lodash";
+import { chain, isNil, isNull } from "lodash";
 import { Fragment, useReducer, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Race } from "../../../dto/enums";
 import { useAssetUrl } from "../../../utils/hooks";
 import { getRaceBoard, getRaceName } from "../../../utils/race-utils";
-import { executePlayerAction } from "../../store/actions-thunks";
+import { useGamePageContext } from "../../GamePage.context";
 import { useWorkflow } from "../../WorkflowContext";
 import { BidForRaceWorkflow, CurrentAuction } from "../../workflows/setup-phase/bid-for-race.workflow";
 import { CommonWorkflowStates } from "../../workflows/types";
@@ -44,19 +43,19 @@ interface AuctionDialogProps {
 
 const AuctionDialog = ({ gameId }: AuctionDialogProps) => {
 	const classes = useStyles();
-	const storeDispatch = useDispatch();
+	const { vm } = useGamePageContext();
 	const { activeWorkflow } = useWorkflow();
 	const [isBidding, setIsBidding] = useState(false);
 	const [currentAuction, dispatch] = useReducer(reducer, { race: null, bid: null });
 	const auctionState = (activeWorkflow as BidForRaceWorkflow)?.auctionState;
 	const auctions = auctionState?.auctionedRaces ?? [];
 	const selectedRace = currentAuction.race;
-	const ongoingAuctionForSelectedRace = _.find(auctions, o => o.race === selectedRace);
+	const ongoingAuctionForSelectedRace = auctions.find(o => o.race === selectedRace);
 	const isOngoingAuction = ongoingAuctionForSelectedRace && ongoingAuctionForSelectedRace?.points !== null;
 	const minimumBidForSelectedRace = ongoingAuctionForSelectedRace && ongoingAuctionForSelectedRace !== null ? ongoingAuctionForSelectedRace.points! + 1 : 0;
 	const isLastRace =
 		selectedRace !== null &&
-		_.chain(auctions)
+		chain(auctions)
 			.filter(o => o.race !== selectedRace)
 			.every(o => o.points !== null)
 			.value();
@@ -68,7 +67,7 @@ const AuctionDialog = ({ gameId }: AuctionDialogProps) => {
 	const bidMore = (amount: number) => bid("increase", amount);
 	const bidLess = (amount: number) => bid("decrease", amount);
 	const select = (race: Race) => {
-		const auctionForSelectedRace = _.find(auctions, o => o.race === race)!;
+		const auctionForSelectedRace = auctions.find(o => o.race === race)!;
 		const minimumBid = auctionForSelectedRace.points !== null ? auctionForSelectedRace.points + 1 : 0;
 		dispatch({ type: "select", selection: { race, bid: minimumBid } });
 	};
@@ -79,16 +78,16 @@ const AuctionDialog = ({ gameId }: AuctionDialogProps) => {
 	const doBid = () => {
 		const action = activeWorkflow!.handleCommand({ nextState: CommonWorkflowStates.PERFORM_ACTION, data: currentAuction })!;
 		setIsBidding(true);
-		storeDispatch(executePlayerAction({ gameId, action }));
+		vm.executePlayerAction(gameId, action);
 	};
 
 	return (
-        <div className={classes.root}>
+		<div className={classes.root}>
 			<Typography variant="h6" className={classes.header + " gaia-font text-center"}>
 				Bid for a race
 			</Typography>
 			<div className={classes.raceList}>
-				{_.map(auctions, auction => (
+				{auctions.map(auction => (
 					<Fragment key={auction.race}>
 						<AuctionedRace auction={auction} selected={auction.race === selectedRace} onSelected={select} />
 						<div className={classes.spacer}></div>
@@ -96,7 +95,7 @@ const AuctionDialog = ({ gameId }: AuctionDialogProps) => {
 				))}
 			</div>
 			<div className={classes.raceBoard}>
-				{_.isNull(selectedRace) ? <Typography variant="h5">Select a race to view its board</Typography> : <RaceBoard race={selectedRace} />}
+				{isNull(selectedRace) ? <Typography variant="h5">Select a race to view its board</Typography> : <RaceBoard race={selectedRace} />}
 			</div>
 			{currentAuction && selectedRace && (
 				<div className={classes.bidCommands}>
@@ -107,11 +106,7 @@ const AuctionDialog = ({ gameId }: AuctionDialogProps) => {
 					)}
 					{!canBid0Points && (
 						<>
-							<Button
-                                variant="contained"
-                                className="command"
-                                disabled={currentAuction.bid! === minimumBidForSelectedRace}
-                                onClick={() => bidLess(1)}>
+							<Button variant="contained" className="command" disabled={currentAuction.bid! === minimumBidForSelectedRace} onClick={() => bidLess(1)}>
 								<span className="gaia-font">-1</span>
 							</Button>
 							<Typography variant="h6" className={classes.marginH + " gaia-font"}>
@@ -128,12 +123,12 @@ const AuctionDialog = ({ gameId }: AuctionDialogProps) => {
 				<Button variant="contained" className="command" onClick={closeDialog}>
 					<span className="gaia-font">Close</span>
 				</Button>
-				<Button variant="contained" color="primary" className="command" disabled={_.isNil(selectedRace) || isBidding} onClick={doBid}>
+				<Button variant="contained" color="primary" className="command" disabled={isNil(selectedRace) || isBidding} onClick={doBid}>
 					<span className="gaia-font">Confirm</span>
 				</Button>
 			</div>
 		</div>
-    );
+	);
 };
 
 export default AuctionDialog;

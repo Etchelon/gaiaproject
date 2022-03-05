@@ -1,3 +1,5 @@
+import DeleteIcon from "@mui/icons-material/Delete";
+import Autocomplete from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -11,10 +13,8 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography/Typography";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Autocomplete from '@mui/material/Autocomplete';
 import { format } from "date-fns";
-import _ from "lodash";
+import { debounce, reject, size, some } from "lodash";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -45,11 +45,11 @@ const NewGamePage = () => {
 	const [gameName, setGameName] = useState<Nullable<string>>(null);
 	const [isCreating, setIsCreating] = useState(false);
 
-	const searchUsersImpl = _.debounce(async (filter: string) => {
+	const searchUsersImpl = debounce(async (filter: string) => {
 		setIsLoading(true);
 		try {
 			const users_ = await httpClient.get<UserInfoDto[]>(`api/Users/Search/${filter}`);
-			const selectableUsers = _.reject(users_, u => _.some(selectedUsers, su => su.id === u.id));
+			const selectableUsers = reject(users_, u => some(selectedUsers, su => su.id === u.id));
 			setSearchedUsers(selectableUsers);
 			setIsLoading(false);
 		} catch (err) {
@@ -58,7 +58,7 @@ const NewGamePage = () => {
 		}
 	}, 500);
 	const searchUsers = (filter: string) => {
-		if (_.size(filter) < 2) {
+		if (size(filter) < 2) {
 			return;
 		}
 		searchUsersImpl(filter);
@@ -72,7 +72,7 @@ const NewGamePage = () => {
 		setSelectedUsers([...selectedUsers, user]);
 	};
 	const unselectUser = (user: UserInfoDto) => {
-		const remainingUsers = _.reject(selectedUsers, u => u.id === user.id);
+		const remainingUsers = reject(selectedUsers, u => u.id === user.id);
 		setSelectedUsers(remainingUsers);
 	};
 
@@ -91,7 +91,7 @@ const NewGamePage = () => {
 		setIsCreating(true);
 
 		const command: CreateGameCommand = {
-			playerIds: _.map(selectedUsers, u => u.id),
+			playerIds: selectedUsers.map(u => u.id),
 			options: {
 				factionSelectionMode: raceSelectionMode,
 				turnOrderSelectionMode: TurnOrderSelectionMode.Random,
@@ -108,7 +108,7 @@ const NewGamePage = () => {
 	};
 
 	return (
-        <div className={classes.wrapper}>
+		<div className={classes.wrapper}>
 			<div className={classes.header}>
 				<Typography variant="h5" className="gaia-font">
 					Create new game
@@ -158,18 +158,13 @@ const NewGamePage = () => {
 						)}
 					/>
 					<div className={classes.marginTop}>
-						{_.map(selectedUsers, user => (
+						{selectedUsers.map(user => (
 							<Paper key={user.id} className={classes.selectedUser}>
 								<Avatar src={user.avatar} alt={user.username} />
 								<Typography variant="body1" className="username gaia-font">
 									{user.username}
 								</Typography>
-								<IconButton
-                                    aria-label="remove"
-                                    color="secondary"
-                                    className="removeBtn"
-                                    onClick={() => unselectUser(user)}
-                                    size="large">
+								<IconButton aria-label="remove" color="secondary" className="removeBtn" onClick={() => unselectUser(user)} size="large">
 									<DeleteIcon />
 								</IconButton>
 							</Paper>
@@ -252,7 +247,7 @@ const NewGamePage = () => {
 				</Grid>
 			</Grid>
 		</div>
-    );
+	);
 };
 
 export default NewGamePage;

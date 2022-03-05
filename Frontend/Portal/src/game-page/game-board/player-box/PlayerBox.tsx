@@ -1,7 +1,7 @@
 import { useTheme } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import _ from "lodash";
-import { useSelector } from "react-redux";
+import { isNil, memoize } from "lodash";
+import { observer } from "mobx-react";
 import VpImg from "../../../assets/Resources/Markers/VP.png";
 import ActivePlayerImg from "../../../assets/Resources/PlayerLoader.gif";
 import { BuildingType, Race } from "../../../dto/enums";
@@ -9,7 +9,8 @@ import { PlayerInGameDto, PowerPoolsDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";
 import { countActivatableActions } from "../../../utils/miscellanea";
 import { getRaceColor, getRaceImage, getRaceName } from "../../../utils/race-utils";
-import { selectIsOnline } from "../../store/active-game.slice";
+import { useGamePageContext } from "../../GamePage.context";
+import { selectIsOnline } from "../../store/selectors";
 import Building from "../hex/Building";
 import ResourceToken from "../ResourceToken";
 import styles from "./PlayerBox.module.scss";
@@ -26,7 +27,7 @@ interface PlayerBoxProps {
 	index: number;
 }
 
-const getPowerPoolsSummary = _.memoize((powerPools: PowerPoolsDto): string => {
+const getPowerPoolsSummary = memoize((powerPools: PowerPoolsDto): string => {
 	const bowl1 = powerPools.bowl1 + (powerPools.brainstone === 1 ? " (B)" : "");
 	const bowl2 = powerPools.bowl2 + (powerPools.brainstone === 2 ? " (B)" : "");
 	const bowl3 = powerPools.bowl3 + (powerPools.brainstone === 3 ? " (B)" : "");
@@ -37,8 +38,9 @@ const getPowerPoolsSummary = _.memoize((powerPools: PowerPoolsDto): string => {
 const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 	const theme = useTheme();
 	const imgUrl = useAssetUrl(`Races/${getRaceImage(player.raceId)}`);
-	const isInitialized = !_.isNil(player.raceId) && !_.isNil(player.state);
-	const isOnline = useSelector(selectIsOnline(player.id));
+	const { vm } = useGamePageContext();
+	const isInitialized = !isNil(player.raceId) && !isNil(player.state);
+	const isOnline = selectIsOnline(player.id)(vm);
 
 	if (!isInitialized) {
 		return (
@@ -244,4 +246,4 @@ const PlayerBox = ({ player, index }: PlayerBoxProps) => {
 	);
 };
 
-export default PlayerBox;
+export default observer(PlayerBox);

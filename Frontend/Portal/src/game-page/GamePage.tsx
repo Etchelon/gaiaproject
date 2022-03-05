@@ -2,7 +2,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import _ from "lodash";
+import { chain, isNil, isNull, noop, size } from "lodash";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -29,7 +29,7 @@ import { ActiveView } from "./workflows/types";
 import { fromAction, fromDecision } from "./workflows/utils";
 
 const DIALOG_VIEWS = [ActiveView.RaceSelectionDialog, ActiveView.AuctionDialog, ActiveView.ConversionDialog, ActiveView.SortIncomesDialog, ActiveView.TerransConversionsDialog];
-const isDialogView = (view: ActiveView) => _.includes(DIALOG_VIEWS, view);
+const isDialogView = (view: ActiveView) => DIALOG_VIEWS.includes(view);
 export const STATUSBAR_ID = "statusBar";
 export const GAMEVIEW_WRAPPER_ID = "gameViewWrapper";
 
@@ -85,12 +85,12 @@ const GamePage = () => {
 			workflow.switchToAction$.subscribe(actionType => {
 				closeWorkflow();
 
-				if (_.isNil(actionType)) {
+				if (isNil(actionType)) {
 					vm.setWaitingForAction();
 					return;
 				}
 
-				const action = _.find(availableActions, act => act.type === actionType)!;
+				const action = availableActions.find(act => act.type === actionType)!;
 				const newWorkflow = fromAction(currentPlayer!.id, game!, action, vm);
 				startWorkflow(newWorkflow);
 			})
@@ -140,7 +140,7 @@ const GamePage = () => {
 	//#region When game has loaded check for the player's state
 
 	useEffect(() => {
-		if (_.isNull(game)) {
+		if (isNull(game)) {
 			return;
 		}
 
@@ -148,13 +148,13 @@ const GamePage = () => {
 		// changes to the store. This causes game to be updated, which triggers this effect
 		// but in this case all changes are temporary and client side so the workflow will manage
 		// everything, we don't need to run the effect
-		if (!_.isNil(activeWorkflow)) {
+		if (!isNil(activeWorkflow)) {
 			return;
 		}
 
-		const gameIsOver = !_.isNil(game.ended);
+		const gameIsOver = !isNil(game.ended);
 		if (gameIsOver) {
-			const winnersNames = _.chain(game.players)
+			const winnersNames = chain(game.players)
 				.filter(p => p.placement === 1)
 				.map(p => p.username)
 				.value();
@@ -179,12 +179,12 @@ const GamePage = () => {
 		if (!isMobile && isActivePlayer) {
 			const audio = new Audio(playersTurnAudioUrl);
 			audio.volume = 0.5;
-			audio.play().catch(_.noop);
+			audio.play().catch(noop);
 		}
 		let workflow: ActionWorkflow | null = null;
 		if (activePlayer.pendingDecision) {
 			workflow = fromDecision(currentPlayer!.id, game, activePlayer.pendingDecision);
-		} else if (_.size(activePlayer.availableActions) === 1) {
+		} else if (size(activePlayer.availableActions) === 1) {
 			workflow = fromAction(currentPlayer!.id, game, activePlayer.availableActions[0], vm);
 		}
 

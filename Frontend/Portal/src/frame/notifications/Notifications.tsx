@@ -6,7 +6,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import List from "@mui/material/List";
 import Popover from "@mui/material/Popover";
 import { parseISO } from "date-fns";
-import _ from "lodash";
+import { last, isEmpty } from "lodash";
 import { observer } from "mobx-react";
 import { MouseEvent, useRef, useState } from "react";
 import { NotificationType } from "../../dto/enums";
@@ -39,7 +39,7 @@ const Notifications = () => {
 		vm.fetchNotifications(new Date(), false);
 	};
 	const loadMoreNotifications = () => {
-		const earliestLoadedNotificationIsoDate = _.last(userNotifications)!.timestamp;
+		const earliestLoadedNotificationIsoDate = last(userNotifications)!.timestamp;
 		const earliestNotificationDate = parseISO(earliestLoadedNotificationIsoDate);
 		vm.fetchNotifications(earliestNotificationDate, true);
 	};
@@ -100,8 +100,8 @@ const Notifications = () => {
 				PaperProps={{ style: { width: 300 } }}
 			>
 				<List ref={listRef} dense={true} disablePadding={true}>
-					{_.map(userNotifications, n => {
-						const isLast = _.last(userNotifications) === n;
+					{userNotifications.map(n => {
+						const isLast = last(userNotifications) === n;
 						switch (n.type) {
 							default:
 							case NotificationType.Generic:
@@ -127,12 +127,12 @@ const Notifications = () => {
 								);
 						}
 					})}
-					{_.isEmpty(userNotifications) && (
+					{isEmpty(userNotifications) && (
 						<Typography variant="h6" className={classes.noUnreadNotifications}>
 							Nothing to read!
 						</Typography>
 					)}
-					{!isLoadingNotifications && !_.isEmpty(userNotifications) && (
+					{!isLoadingNotifications && !isEmpty(userNotifications) && (
 						<div className={classes.loadMoreNotifications} onClick={loadMoreNotifications}>
 							<Typography variant="caption" className="gaia-font">
 								Load more...

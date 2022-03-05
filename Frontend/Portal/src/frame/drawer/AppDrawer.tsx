@@ -4,7 +4,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import HomeIcon from "@mui/icons-material/Home";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
-import _ from "lodash";
+import { chain } from "lodash";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { useAppFrameContext } from "../AppFrame.context";
@@ -72,7 +72,7 @@ const AppDrawer = () => {
 		<div className={classes.appDrawer}>
 			<div className={classes.toolbar} />
 			<List>
-				{_.chain(APP_SECTIONS)
+				{chain(APP_SECTIONS)
 					.filter(section => isAuthenticated || !section.protected)
 					.map(section => <ListItemLink button key={section.label} primary={section.label} icon={section.icon} to={section.route} />)
 					.value()}

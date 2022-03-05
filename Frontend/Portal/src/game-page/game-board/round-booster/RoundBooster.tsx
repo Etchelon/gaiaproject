@@ -1,12 +1,13 @@
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import _ from "lodash";
-import { useSelector } from "react-redux";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import { noop } from "lodash";
+import { observer } from "mobx-react";
 import { RoundBoosterType } from "../../../dto/enums";
 import { RoundBoosterDto, RoundBoosterTileDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";
 import { fillParentAbs, interactiveBorder, interactiveElementClass, withAspectRatioW } from "../../../utils/miscellanea";
-import { selectRoundBoosterInteractionState } from "../../store/active-game.slice";
+import { useGamePageContext } from "../../GamePage.context";
+import { selectRoundBoosterInteractionState } from "../../store/selectors";
 import { useWorkflow } from "../../WorkflowContext";
 import { InteractiveElementType } from "../../workflows/enums";
 import ActionToken from "../ActionToken";
@@ -59,9 +60,10 @@ const useStyles = makeStyles(() =>
 const RoundBooster = ({ booster, withPlayerInfo, nonInteractive }: RoundBoosterProps) => {
 	const classes = useStyles();
 	const imgUrl = useAssetUrl(`Boards/RoundBoosters/${roundBoosterNames.get(booster.id)!}.png`);
+	const { vm } = useGamePageContext();
 	const availableBooster = booster as RoundBoosterTileDto;
 	const actualType = withPlayerInfo ? InteractiveElementType.OwnRoundBooster : InteractiveElementType.RoundBooster;
-	const { isClickable: isClickable_, isSelected: isSelected_ } = useSelector(selectRoundBoosterInteractionState(actualType)(booster.id));
+	const { isClickable: isClickable_, isSelected: isSelected_ } = selectRoundBoosterInteractionState(actualType)(booster.id)(vm);
 	const isClickable = isClickable_ && !nonInteractive;
 	const isSelected = isSelected_ && !nonInteractive;
 	const { activeWorkflow } = useWorkflow();
@@ -69,7 +71,7 @@ const RoundBooster = ({ booster, withPlayerInfo, nonInteractive }: RoundBoosterP
 		? () => {
 				activeWorkflow?.elementSelected(booster.id, actualType);
 		  }
-		: _.noop;
+		: noop;
 
 	return (
 		<div className={classes.root}>
@@ -89,4 +91,4 @@ const RoundBooster = ({ booster, withPlayerInfo, nonInteractive }: RoundBoosterP
 	);
 };
 
-export default RoundBooster;
+export default observer(RoundBooster);

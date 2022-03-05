@@ -1,6 +1,5 @@
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import _ from "lodash";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import { useRef } from "react";
 import { FinalScoringTileType } from "../../../dto/enums";
 import { FinalScoringStateDto } from "../../../dto/interfaces";
@@ -65,7 +64,7 @@ const FinalScoringTrack = ({ scoring }: FinalScoringTrackProps) => {
 		<div ref={ref} className={classes.finalScoringTrack}>
 			<div className={classes.wrapper}>
 				<div className={classes.playerScorings}>
-					{_.map(scoring.players, playerAdvancement => (
+					{scoring.players.map(playerAdvancement => (
 						<div key={playerAdvancement.player.id} className="player-scoring">
 							<PlayerFinalScoringAdvancement playerStatus={playerAdvancement} />
 						</div>

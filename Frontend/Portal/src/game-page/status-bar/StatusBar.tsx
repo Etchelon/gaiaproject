@@ -5,7 +5,6 @@ import { Theme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import createStyles from "@mui/styles/createStyles";
 import makeStyles from "@mui/styles/makeStyles";
-import _ from "lodash";
 import { observer } from "mobx-react";
 import { useState } from "react";
 import { AvailableActionDto, GameStateDto } from "../../dto/interfaces";
@@ -130,7 +129,7 @@ const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) =>
 				<>
 					{isIdle && (
 						<div className={classes.commands}>
-							{_.map(commands, cmd => (
+							{commands.map(cmd => (
 								<Button
 									key={`${cmd.nextState}§${cmd.text}`}
 									className={classes.command}
@@ -157,7 +156,7 @@ const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) =>
 									className: classes.actionList,
 								}}
 							>
-								{_.map(availableActions, action => (
+								{availableActions.map(action => (
 									<MenuItem key={action.type} onClick={() => onActionSelected(action)}>
 										<span className="gaia-font">{action.description}</span>
 									</MenuItem>

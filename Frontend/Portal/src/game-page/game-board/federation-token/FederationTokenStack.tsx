@@ -1,10 +1,11 @@
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import _ from "lodash";
-import { useSelector } from "react-redux";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import { noop, range } from "lodash";
+import { observer } from "mobx-react";
 import { FederationTokenStackDto } from "../../../dto/interfaces";
 import { fillParentAbs, interactiveBorder, interactiveElementClass, withAspectRatioW } from "../../../utils/miscellanea";
-import { selectFederationTokenStackInteractionState } from "../../store/active-game.slice";
+import { useGamePageContext } from "../../GamePage.context";
+import { selectFederationTokenStackInteractionState } from "../../store/selectors";
 import { useWorkflow } from "../../WorkflowContext";
 import { InteractiveElementType } from "../../workflows/enums";
 import FederationToken from "./FederationToken";
@@ -33,18 +34,19 @@ const useStyles = makeStyles(() =>
 
 const FederationTokenStack = ({ stack }: FederationTokenStackProps) => {
 	const classes = useStyles();
-	const { isClickable, isSelected } = useSelector(selectFederationTokenStackInteractionState(stack.type));
+	const { vm } = useGamePageContext();
+	const { isClickable, isSelected } = selectFederationTokenStackInteractionState(stack.type)(vm);
 	const { activeWorkflow } = useWorkflow();
 	const tokenClicked = isClickable
 		? () => {
 				activeWorkflow?.elementSelected(stack.type, InteractiveElementType.FederationToken);
 		  }
-		: _.noop;
+		: noop;
 
 	return (
 		<div className={classes.root}>
 			<div className={classes.wrapper}>
-				{_.map(_.range(0, stack.remaining), n => (
+				{range(0, stack.remaining).map(n => (
 					<div key={n} className={classes.token} style={{ width: "70%", top: `${n * 12}%`, left: `${n * 15}%` }}>
 						<FederationToken type={stack.type} />
 					</div>
@@ -55,4 +57,4 @@ const FederationTokenStack = ({ stack }: FederationTokenStackProps) => {
 	);
 };
 
-export default FederationTokenStack;
+export default observer(FederationTokenStack);

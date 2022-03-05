@@ -3,11 +3,9 @@ import { createTheme, ThemeProvider, Theme, StyledEngineProvider } from "@mui/ma
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import ReactDOM from "react-dom";
-import { Provider as ReduxProvider } from "react-redux";
 import App from "./app/App";
 import { AppProvider } from "./global";
 import "./index.scss";
-import store from "./store/store";
 
 declare module "@mui/styles/defaultTheme" {
 	// eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -39,11 +37,9 @@ ReactDOM.render(
 			<ThemeProvider theme={theme}>
 				<SnackbarProvider anchorOrigin={{ horizontal: "center", vertical: "bottom" }}>
 					<Auth0Provider {...auth0Config}>
-						<ReduxProvider store={store}>
-							<AppProvider>
-								<App />
-							</AppProvider>
-						</ReduxProvider>
+						<AppProvider>
+							<App />
+						</AppProvider>
 					</Auth0Provider>
 				</SnackbarProvider>
 			</ThemeProvider>
