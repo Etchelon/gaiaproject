@@ -1,15 +1,12 @@
 import { HubConnectionState } from "@microsoft/signalr";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { AdvancedTechnologyTileType, FederationTokenType, ResearchTrackType, RoundBoosterType, StandardTechnologyTileType } from "../../dto/enums";
 import { AvailableActionDto, GameStateDto, MapDto } from "../../dto/interfaces";
 import { AppStore } from "../../store/types";
-import httpClient from "../../utils/http-client";
 import { Identifier, isLastRound } from "../../utils/miscellanea";
 import { InteractiveElementState, InteractiveElementType } from "../workflows/enums";
 import { ActiveView, WorkflowState } from "../workflows/types";
-import { executePlayerAction, rollbackGameAtAction } from "./actions-thunks";
-import { fetchNotes, saveNotes } from "./notes-thunks";
 import { ActiveGameSliceState } from "./types";
 
 const initialState: ActiveGameSliceState = {
@@ -31,14 +28,6 @@ const initialState: ActiveGameSliceState = {
 	playerNotes: null,
 	saveNotesProgress: "idle",
 };
-
-export const fetchActiveGame = createAsyncThunk("activeGame/fetch", async (id: string, { rejectWithValue }) => {
-	const gameState = await httpClient.get<GameStateDto>(`api/GaiaProject/GetGame/${id}`);
-	if (_.isNil(gameState)) {
-		return rejectWithValue("Not found!!");
-	}
-	return gameState;
-});
 
 const activeGameSlice = createSlice({
 	name: "activeGame",
@@ -134,52 +123,6 @@ const activeGameSlice = createSlice({
 		},
 		resetSectors: (state, action: PayloadAction<MapDto>) => {
 			state.gameState!.boardState.map = action.payload;
-		},
-	},
-	extraReducers: {
-		[fetchActiveGame.pending.type]: state => {
-			state.status = "loading";
-		},
-		[fetchActiveGame.fulfilled.type]: (state, action: PayloadAction<GameStateDto>) => {
-			state.status = "success";
-			state.gameState = action.payload;
-		},
-		[fetchActiveGame.rejected.type]: state => {
-			state.status = "failure";
-			state.gameState = null;
-		},
-		[executePlayerAction.pending.type]: state => {
-			state.actionProgress = "loading";
-		},
-		// [executePlayerAction.fulfilled.type]: state => {
-		// 	state.actionProgress = "success";
-		// },
-		[executePlayerAction.rejected.type]: (state, action: PayloadAction<string>) => {
-			state.actionProgress = "idle";
-			state.statusMessage = action.payload;
-		},
-		[rollbackGameAtAction.pending.type]: state => {
-			state.rollbackProgress = "loading";
-		},
-		[rollbackGameAtAction.fulfilled.type]: state => {
-			state.rollbackProgress = "success";
-		},
-		[rollbackGameAtAction.rejected.type]: state => {
-			state.rollbackProgress = "failure";
-			state.statusMessage = "Rollback failed";
-		},
-		[fetchNotes.fulfilled.type]: (state, action: PayloadAction<string>) => {
-			state.playerNotes = action.payload ?? "";
-		},
-		[saveNotes.pending.type]: state => {
-			state.saveNotesProgress = "loading";
-		},
-		[saveNotes.fulfilled.type]: (state, action: PayloadAction<string>) => {
-			state.saveNotesProgress = "success";
-			state.playerNotes = action.payload;
-		},
-		[saveNotes.rejected.type]: state => {
-			state.saveNotesProgress = "failure";
 		},
 	},
 });

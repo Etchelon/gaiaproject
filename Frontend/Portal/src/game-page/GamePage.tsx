@@ -1,13 +1,17 @@
+import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import _ from "lodash";
+import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { Subscription } from "rxjs";
+import { GameStateDto, PlayerInGameDto } from "../dto/interfaces";
 import { useAssetUrl, useCurrentUser, usePageActivation } from "../utils/hooks";
 import { localizeEnum } from "../utils/localization";
 import { isMobileOrTablet, Nullable } from "../utils/miscellanea";
+import DesktopView from "./desktop-view/DesktopView";
 import AuctionDialog from "./dialogs/auction/AuctionDialog";
 import ConversionsDialog from "./dialogs/conversions/ConversionsDialog";
 import SelectRaceDialog from "./dialogs/select-race/SelectRaceDialog";
@@ -15,32 +19,14 @@ import SortIncomesDialog from "./dialogs/sort-incomes/SortIncomesDialog";
 import TerransDecideIncomeDialog from "./dialogs/terrans-decide-income/TerransDecideIncomeDialog";
 import { useGamePageSignalRConnection } from "./game-page-signalr-hook";
 import useStyles from "./game-page.styles";
+import { useGamePageContext } from "./GamePage.context";
+import MobileView from "./mobile-view/MobileView";
 import StatusBar from "./status-bar/StatusBar";
-import {
-	clearStatus,
-	fetchActiveGame,
-	selectActiveGame,
-	selectActiveGameStatus,
-	selectActiveView,
-	selectAvailableActions,
-	selectCurrentPlayer,
-	selectIsSpectator,
-	selectPlayers,
-	setCurrentUser,
-	setStatusFromWorkflow,
-	setStatusMessage,
-	setWaitingForAction,
-	unloadActiveGame,
-} from "./store/active-game.slice";
+import { selectActiveGameStatus, selectActiveView, selectAvailableActions, selectCurrentPlayer, selectIsSpectator, selectPlayers } from "./store/selectors";
 import { WorkflowContext } from "./WorkflowContext";
 import { ActionWorkflow } from "./workflows/action-workflow.base";
 import { ActiveView } from "./workflows/types";
 import { fromAction, fromDecision } from "./workflows/utils";
-import DesktopView from "./desktop-view/DesktopView";
-import MobileView from "./mobile-view/MobileView";
-import { GameStateDto, PlayerInGameDto } from "../dto/interfaces";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import CircularProgress from "@mui/material/CircularProgress";
 
 const DIALOG_VIEWS = [ActiveView.RaceSelectionDialog, ActiveView.AuctionDialog, ActiveView.ConversionDialog, ActiveView.SortIncomesDialog, ActiveView.TerransConversionsDialog];
 const isDialogView = (view: ActiveView) => _.includes(DIALOG_VIEWS, view);
@@ -64,19 +50,19 @@ const GamePage = () => {
 	const isMobile = useMediaQuery("(max-width: 600px)");
 	const { id } = useParams<keyof GamePageRouteParams>() as GamePageRouteParams;
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
+	const { vm } = useGamePageContext();
 	const playersTurnAudioUrl = useAssetUrl("Sounds/PlayersTurn.wav");
 	const { connectToHub, disconnectFromHub } = useGamePageSignalRConnection(id, closeWorkflow);
 
 	const user = useCurrentUser();
-	const game = useSelector(selectActiveGame);
-	const players = useSelector(selectPlayers);
-	const currentPlayer = useSelector(selectCurrentPlayer);
-	const isSpectator = useSelector(selectIsSpectator);
-	const status = useSelector(selectActiveGameStatus);
-	const availableActions = useSelector(selectAvailableActions);
+	const game = vm.gameState;
+	const players = selectPlayers(vm);
+	const currentPlayer = selectCurrentPlayer(vm);
+	const isSpectator = selectIsSpectator(vm);
+	const status = selectActiveGameStatus(vm);
+	const availableActions = selectAvailableActions(vm);
 	const isLoading = status === "loading";
-	const activeView = useSelector(selectActiveView);
+	const activeView = selectActiveView(vm);
 
 	const [activeWorkflow, setActiveWorkflow] = useState<Nullable<ActionWorkflow>>(null);
 	const [activeWorkflowSub, setActiveWorkflowSub] = useState<Nullable<Subscription>>(null);
@@ -93,19 +79,19 @@ const GamePage = () => {
 
 	const startWorkflow = (workflow: ActionWorkflow): void => {
 		const sub = workflow.currentState$.subscribe(state => {
-			dispatch(setStatusFromWorkflow(state));
+			vm.setStatusFromWorkflow(state);
 		});
 		sub.add(
 			workflow.switchToAction$.subscribe(actionType => {
 				closeWorkflow();
 
 				if (_.isNil(actionType)) {
-					dispatch(setWaitingForAction());
+					vm.setWaitingForAction();
 					return;
 				}
 
 				const action = _.find(availableActions, act => act.type === actionType)!;
-				const newWorkflow = fromAction(currentPlayer!.id, game!, action, dispatch);
+				const newWorkflow = fromAction(currentPlayer!.id, game!, action, vm);
 				startWorkflow(newWorkflow);
 			})
 		);
@@ -118,11 +104,11 @@ const GamePage = () => {
 	//#region onInit: load the game
 
 	useEffect(() => {
-		dispatch(fetchActiveGame(id));
+		vm.fetchActiveGame(id);
 
 		return () => {
 			closeWorkflow();
-			dispatch(unloadActiveGame());
+			vm.unloadActiveGame();
 			disconnectFromHub();
 		};
 	}, []);
@@ -130,7 +116,7 @@ const GamePage = () => {
 	//#endregion
 
 	useEffect(() => {
-		user && dispatch(setCurrentUser(user.id));
+		user && vm.setCurrentUser(user.id);
 	}, [user]);
 
 	//#region When the game has loaded connect to SignalR hub
@@ -173,20 +159,20 @@ const GamePage = () => {
 				.map(p => p.username)
 				.value();
 			const message = `Game over. ${winnersNames.join(", ")} won!`;
-			dispatch(setStatusMessage(message));
+			vm.setStatusMessage(message);
 			return;
 		}
 
 		const activePlayer = game.activePlayer;
 		if (!activePlayer) {
-			dispatch(clearStatus());
+			vm.clearStatus();
 			return;
 		}
 
 		const isActivePlayer = activePlayer.id === currentPlayer?.id;
 		if (isSpectator || !isActivePlayer) {
 			setActiveWorkflow(null);
-			dispatch(setStatusMessage(activePlayer.reason));
+			vm.setStatusMessage(activePlayer.reason);
 			return;
 		}
 
@@ -199,11 +185,11 @@ const GamePage = () => {
 		if (activePlayer.pendingDecision) {
 			workflow = fromDecision(currentPlayer!.id, game, activePlayer.pendingDecision);
 		} else if (_.size(activePlayer.availableActions) === 1) {
-			workflow = fromAction(currentPlayer!.id, game, activePlayer.availableActions[0], dispatch);
+			workflow = fromAction(currentPlayer!.id, game, activePlayer.availableActions[0], vm);
 		}
 
 		if (!workflow) {
-			dispatch(setWaitingForAction(activePlayer.availableActions));
+			vm.setWaitingForAction(activePlayer.availableActions);
 			return;
 		}
 
@@ -255,4 +241,4 @@ const GamePage = () => {
 	);
 };
 
-export default GamePage;
+export default observer(GamePage);

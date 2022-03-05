@@ -1,12 +1,12 @@
-import _ from "lodash";
-import { useSelector } from "react-redux";
+import { observer } from "mobx-react";
 import { GameStateDto } from "../../dto/interfaces";
 import FederationTokenStack from "../game-board/federation-token/FederationTokenStack";
 import Map from "../game-board/map/Map";
 import ResearchBoard from "../game-board/research-board/ResearchBoard";
 import RoundBooster from "../game-board/round-booster/RoundBooster";
 import ScoringTrack from "../game-board/scoring-track/ScoringTrack";
-import { selectAllRoundBoosters } from "../store/active-game.slice";
+import { useGamePageContext } from "../GamePage.context";
+import { selectAllRoundBoosters } from "../store/selectors";
 import { ActiveView } from "../workflows/types";
 import useStyles, { BOOSTER_AND_FEDERATION_WIDTH, BOOSTER_SPACING, FEDERATION_SPACING, FEDERATION_WIDTH } from "./main-view.styles";
 import TurnOrderMinimap from "./turn-order/TurnOrderMinimap";
@@ -20,10 +20,12 @@ interface MainViewProps {
 }
 
 const MainView = ({ game, width, height, showMinimaps, minimapClicked }: MainViewProps) => {
+	const { vm } = useGamePageContext();
 	const map = game.boardState.map;
-	const boosters = useSelector(selectAllRoundBoosters);
-	const federations = _.filter(game.boardState.availableFederations, stack => stack.remaining > 0);
+	const boosters = selectAllRoundBoosters(vm);
+	const federations = game.boardState.availableFederations.filter(stack => stack.remaining > 0);
 	const classes = useStyles({ nBoosters: boosters.length, nFederations: federations.length });
+
 	return (
 		<div className={classes.root}>
 			{showMinimaps && (
@@ -38,7 +40,7 @@ const MainView = ({ game, width, height, showMinimaps, minimapClicked }: MainVie
 					</div>
 					<div className={`${classes.miniMap} ${classes.boostersAndFederations}`}>
 						<div className={classes.roundBoosters}>
-							{_.map(boosters, (booster, index) => (
+							{boosters.map((booster, index) => (
 								<div key={booster.id} className={classes.roundBooster} style={{ right: (BOOSTER_AND_FEDERATION_WIDTH + BOOSTER_SPACING) * index }}>
 									<RoundBooster booster={booster} withPlayerInfo={true} nonInteractive={true} />
 								</div>
@@ -46,7 +48,7 @@ const MainView = ({ game, width, height, showMinimaps, minimapClicked }: MainVie
 							<div className="click-trap" onClick={() => minimapClicked(ActiveView.ScoringBoard)}></div>
 						</div>
 						<div className={classes.federations}>
-							{_.map(federations, (stack, index) => (
+							{federations.map((stack, index) => (
 								<div key={stack.type} className={classes.federation} style={{ right: (FEDERATION_WIDTH + FEDERATION_SPACING) * index }}>
 									<FederationTokenStack stack={stack} />
 								</div>
@@ -64,4 +66,4 @@ const MainView = ({ game, width, height, showMinimaps, minimapClicked }: MainVie
 	);
 };
 
-export default MainView;
+export default observer(MainView);

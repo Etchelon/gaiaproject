@@ -98,7 +98,7 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 				this._selectedSectorId = null;
 				this._adjustments = [];
 				this.advanceState(WaitingForSector);
-				this.dispatch!(resetSectors(this._initialMap));
+				this.vm!.resetSectors(this._initialMap);
 				return null;
 			case CommonWorkflowStates.CANCEL:
 				this._selectedSectorId = null;
@@ -120,7 +120,7 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 					adjustment.Rotation += rotationAdjustment;
 				}
 				const actualRotation = this.getActualRotation(sectorId, adjustment.Rotation);
-				this.dispatch!(rotateSector({ id: sectorId, rotation: actualRotation }));
+				this.vm!.rotateSector({ id: sectorId, rotation: actualRotation });
 				return null;
 			case CommonWorkflowStates.PERFORM_ACTION:
 				const action: AdjustSectorsActionDto = {

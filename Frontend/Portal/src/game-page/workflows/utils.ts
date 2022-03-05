@@ -1,9 +1,9 @@
 import _ from "lodash";
-import { Dispatch } from "redux";
-import { ActionType, GamePhase, PendingDecisionType, Race } from "../../dto/enums";
+import { ActionType, GamePhase, PendingDecisionType } from "../../dto/enums";
 import { AvailableActionDto, GameStateDto, PendingDecisionDto } from "../../dto/interfaces";
 import { localizeRoundBooster } from "../../utils/localization";
 import { countActivatableActions } from "../../utils/miscellanea";
+import { GamePageViewModel } from "../store/game-page.vm";
 import { ActionWorkflow } from "./action-workflow.base";
 import { AcceptOrDeclineLastStepDecisionDto, AcceptOrDeclineLastStepWorkflow } from "./rounds-phase/accept-last-step.workflow";
 import { ChargePowerDecisionDto, ChargePowerWorkflow } from "./rounds-phase/charge-power.workflow";
@@ -12,6 +12,7 @@ import { ColonizePlanetWorkflow } from "./rounds-phase/colonize-planet.workflow"
 import { ConversionsWorkflow } from "./rounds-phase/conversions.workflow";
 import { FormFederationWorkflow } from "./rounds-phase/form-federation.workflow";
 import { GenericActionWorkflow } from "./rounds-phase/generic-action.workflow";
+import { ItarsBurnPowerForTechnologyTileWorkflow } from "./rounds-phase/itars-burn-power-for-technology-tile.workflow";
 import { PassWorkflow } from "./rounds-phase/pass.workflow";
 import { PerformConversionsOrPassTurnWorkflow } from "./rounds-phase/perform-conversions-or-pass.workflow";
 import { PlaceLostPlanetWorkflow } from "./rounds-phase/place-lost-planet.workflow";
@@ -23,7 +24,6 @@ import { SortIncomesDecisionDto, SortIncomesWorkflow } from "./rounds-phase/sort
 import { StartGaiaProjectWorkflow } from "./rounds-phase/start-gaia-project.workflow";
 import { TaklonsLeechDecisionDto, TaklonsLeechWorkflow } from "./rounds-phase/taklons-leech.workflow";
 import { TerransDecideIncomeDecisionDto, TerransDecideIncomeWorkflow } from "./rounds-phase/terrans-decide-income.workflow";
-import { ItarsBurnPowerForTechnologyTileWorkflow } from "./rounds-phase/itars-burn-power-for-technology-tile.workflow";
 import { UpgradeExistingStructureWorkflow } from "./rounds-phase/upgrade-existing-structure.workflow";
 import { UseTechnologyTileWorkflow } from "./rounds-phase/use-technology-tile.workflow";
 import { AdjustSectorsWorkflow } from "./setup-phase/adjust-sectors.workflow";
@@ -32,10 +32,10 @@ import { PlaceInitialStructureWorkflow } from "./setup-phase/place-initial-struc
 import { SelectRaceWorkflow } from "./setup-phase/select-race.workflow";
 import { SelectStartingRoundBoosterWorkflow } from "./setup-phase/select-starting-round-booster.workflow";
 
-export function fromAction(playerId: string, game: GameStateDto, action: AvailableActionDto, dispatch: Dispatch): ActionWorkflow {
+export function fromAction(playerId: string, game: GameStateDto, action: AvailableActionDto, vm: GamePageViewModel): ActionWorkflow {
 	const isSetup = game.currentPhase === GamePhase.Setup;
 	const workflow = isSetup ? fromSetupAction(game, action) : fromRoundsAction(playerId, game, action);
-	workflow.setDispatch(dispatch);
+	workflow.setStore(vm);
 	return workflow;
 }
 

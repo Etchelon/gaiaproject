@@ -8,8 +8,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AuthenticatedRoute from "../auth/AuthenticatedRoute";
 import { UserInfoDto } from "../dto/interfaces";
 import AppFrameRoot from "../frame";
-import GamePage from "../game-page/GamePage";
-import UserGames from "../games";
+import GamePageRoot from "../game-page";
+import UserGamesRoot from "../games";
 import { useAppContext } from "../global";
 import Home from "../home/Home";
 import ManageProfile from "../manage-profile/ManageProfile";
@@ -95,7 +95,7 @@ const App = () => {
 							path="/games"
 							element={
 								<AuthenticatedRoute>
-									<UserGames kind="active" />
+									<UserGamesRoot kind="active" />
 								</AuthenticatedRoute>
 							}
 						/>
@@ -103,7 +103,7 @@ const App = () => {
 							path="/history"
 							element={
 								<AuthenticatedRoute>
-									<UserGames kind="finished" />
+									<UserGamesRoot kind="finished" />
 								</AuthenticatedRoute>
 							}
 						/>
@@ -115,7 +115,7 @@ const App = () => {
 								</AuthenticatedRoute>
 							}
 						/>
-						<Route path="/game/:id" element={isReady && <GamePage />} />
+						<Route path="/game/:id" element={isReady && <GamePageRoot />} />
 						<Route path="/" element={<Home />} />
 						<Route path="/unauthorized" element={<Unauthorized />} />
 						<Route path="*" element={<NotFound />} />

@@ -2,16 +2,16 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Theme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 import createStyles from "@mui/styles/createStyles";
 import makeStyles from "@mui/styles/makeStyles";
-import Typography from "@mui/material/Typography";
 import _ from "lodash";
+import { observer } from "mobx-react";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { AvailableActionDto, GameStateDto } from "../../dto/interfaces";
 import { centeredFlexRow, fillParent, Nullable } from "../../utils/miscellanea";
-import { selectAvailableActions, selectAvailableCommands, selectStatusMessage } from "../store/active-game.slice";
-import { executePlayerAction, selectIsExecutingAction } from "../store/actions-thunks";
+import { useGamePageContext } from "../GamePage.context";
+import { selectAvailableActions, selectAvailableCommands, selectStatusMessage } from "../store/selectors";
 import { useWorkflow } from "../WorkflowContext";
 import { Command } from "../workflows/types";
 import { fromAction } from "../workflows/utils";
@@ -87,11 +87,11 @@ interface StatusBarProps {
 }
 
 const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) => {
-	const dispatch = useDispatch();
-	const statusMessage = useSelector(selectStatusMessage);
-	const commands = useSelector(selectAvailableCommands);
-	const availableActions = useSelector(selectAvailableActions);
-	const isExecutingAction = useSelector(selectIsExecutingAction);
+	const { vm } = useGamePageContext();
+	const statusMessage = selectStatusMessage(vm);
+	const commands = selectAvailableCommands(vm);
+	const availableActions = selectAvailableActions(vm);
+	const isExecutingAction = vm.isExecutingAction;
 	const isIdle = !isExecutingAction;
 	const statusBarMessage = isExecutingAction ? "Executing..." : statusMessage;
 	const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
@@ -109,14 +109,14 @@ const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) =>
 		if (!action) {
 			return;
 		}
-		dispatch(executePlayerAction({ gameId: game.id, action }));
+		vm.executePlayerAction(game.id, action);
 	};
 
 	const onActionSelected = (action: AvailableActionDto) => {
 		if (isSpectator) {
 			return;
 		}
-		const workflow = fromAction(playerId!, game, action, dispatch);
+		const workflow = fromAction(playerId!, game, action, vm);
 		startWorkflow(workflow);
 		setMenuAnchor(null);
 	};
@@ -171,4 +171,4 @@ const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) =>
 	);
 };
 
-export default StatusBar;
+export default observer(StatusBar);

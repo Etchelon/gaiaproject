@@ -4,6 +4,7 @@ import { BehaviorSubject, Subject } from "rxjs";
 import { ActionType } from "../../dto/enums";
 import { ActionDto, InteractionStateDto } from "../../dto/interfaces";
 import { Identifier, Nullable } from "../../utils/miscellanea";
+import { GamePageViewModel } from "../store/game-page.vm";
 import { InteractiveElementState, InteractiveElementType } from "./enums";
 import { Command, InteractiveElement, WorkflowState } from "./types";
 
@@ -23,7 +24,7 @@ export abstract class ActionWorkflow {
 	protected get stateId(): number {
 		return this.currentState.id;
 	}
-	protected dispatch: Nullable<Dispatch> = null;
+	protected vm: Nullable<GamePageViewModel> = null;
 
 	constructor(protected interactionState: Nullable<InteractionStateDto> = null, skipInit = true) {
 		if (skipInit) {
@@ -118,8 +119,8 @@ export abstract class ActionWorkflow {
 		return ret;
 	}
 
-	setDispatch(dispatch: Dispatch): void {
-		this.dispatch = dispatch;
+	setStore(vm: GamePageViewModel): void {
+		this.vm = vm;
 	}
 }
 

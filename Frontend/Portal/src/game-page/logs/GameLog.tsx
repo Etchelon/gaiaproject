@@ -1,3 +1,4 @@
+import HistoryIcon from "@mui/icons-material/History";
 import { useTheme } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -11,15 +12,14 @@ import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
-import HistoryIcon from "@mui/icons-material/History";
 import _ from "lodash";
+import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { GameLogDto, GameSubLogDto } from "../../dto/interfaces";
 import ButtonWithProgress from "../../utils/ButtonWithProgress";
 import { useAssetUrl } from "../../utils/hooks";
 import { getRaceColor, getRaceImage } from "../../utils/race-utils";
-import { selectRollbackProgress } from "../store/actions-thunks";
+import { useGamePageContext } from "../GamePage.context";
 import styles from "./GameLog.module.scss";
 
 interface SystemLogProps {
@@ -61,11 +61,12 @@ interface PlayerLogProps {
 	doRollback(actionId: number): void;
 }
 
-const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
+const PlayerLog = observer(({ log, canRollback, doRollback }: PlayerLogProps) => {
 	const theme = useTheme();
 	const imgUrl = useAssetUrl(`Races/${getRaceImage(log.race)}`);
+	const { vm } = useGamePageContext();
 	const [isPromptingForRollback, setIsPromptingForRollback] = useState(false);
-	const rollbackProgress = useSelector(selectRollbackProgress);
+	const rollbackProgress = vm.rollbackProgress;
 	const background = getRaceColor(log.race);
 	const color = theme.palette.getContrastText(background);
 
@@ -126,7 +127,7 @@ const PlayerLog = ({ log, canRollback, doRollback }: PlayerLogProps) => {
 			)}
 		</ListItem>
 	);
-};
+});
 
 interface GameLogProps {
 	log: GameLogDto;
@@ -134,8 +135,6 @@ interface GameLogProps {
 	doRollback(actionId: number): void;
 }
 
-const GameLog = ({ log, canRollback, doRollback }: GameLogProps) => {
-	return log.isSystem ? SystemLog({ message: log.message }) : PlayerLog({ log, canRollback, doRollback });
-};
+const GameLog = ({ log, canRollback, doRollback }: GameLogProps) => (log.isSystem ? SystemLog({ message: log.message }) : PlayerLog({ log, canRollback, doRollback }));
 
 export default GameLog;
