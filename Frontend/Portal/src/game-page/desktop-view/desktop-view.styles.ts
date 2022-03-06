@@ -1,6 +1,6 @@
 import { Theme } from "@mui/material/styles";
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import { centeredFlexColumn, fillParent, fillParentAbs } from "../../utils/miscellanea";
 
 const TABS_HEIGHT = 48;
@@ -57,8 +57,6 @@ const useStyles = makeStyles((theme: Theme) =>
 		tabs: {
 			width: "100%",
 			height: TABS_HEIGHT,
-			backgroundColor: "white",
-			color: "black",
 			fontSize: "1.5em",
 			"& > .MuiBottomNavigationAction-root": {
 				maxWidth: "unset",

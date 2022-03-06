@@ -1,5 +1,5 @@
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import { fillParent, fillParentAbs } from "../../utils/miscellanea";
 
 const BOOSTER_HEIGHT_TO_WIDTH_RATIO = 3;
@@ -79,7 +79,7 @@ const useStyles = makeStyles(theme =>
 			},
 			position: "absolute",
 			right: 0,
-			top: BOOSTER_HEIGHT_TO_WIDTH_RATIO * BOOSTER_AND_FEDERATION_WIDTH + theme.spacing(2),
+			top: `calc(${BOOSTER_HEIGHT_TO_WIDTH_RATIO * BOOSTER_AND_FEDERATION_WIDTH}px + ${theme.spacing(2)})`,
 		},
 		federation: {
 			bottom: 0,

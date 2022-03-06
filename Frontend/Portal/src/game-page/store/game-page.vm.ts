@@ -1,6 +1,6 @@
 import { HubConnectionState } from "@microsoft/signalr";
 import { assign, chain, find, isNil, pull } from "lodash";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import { ActionDto, AvailableActionDto, GameStateDto, MapDto } from "../../dto/interfaces";
 import { LoadingStatus } from "../../games/store/types";
 import { HttpClient } from "../../utils/http-client";
@@ -187,11 +187,15 @@ export class GamePageViewModel {
 				throw new Error("Not found!!");
 			}
 
-			this.gameState = gameState;
-			this.status = "success";
+			runInAction(() => {
+				this.gameState = gameState;
+				this.status = "success";
+			});
 		} catch (err) {
-			this.gameState = null;
-			this.status = "failure";
+			runInAction(() => {
+				this.gameState = null;
+				this.status = "failure";
+			});
 		}
 	}
 
@@ -211,19 +215,27 @@ export class GamePageViewModel {
 		this.rollbackProgress = "loading";
 		try {
 			await this.httpClient.get(`api/GaiaProject/RollbackGameAtAction/${gameId}?actionId=${actionId}`);
-			this.rollbackProgress = "success";
+			runInAction(() => {
+				this.rollbackProgress = "success";
+			});
 		} catch (err: any) {
-			this.rollbackProgress = "failure";
-			this.statusMessage = "Rollback failed";
+			runInAction(() => {
+				this.rollbackProgress = "failure";
+				this.statusMessage = "Rollback failed";
+			});
 		}
 	}
 
 	async fetchNotes(gameId: string) {
 		try {
 			const notes = await this.httpClient.get<string>(`api/GaiaProject/GetNotes/${gameId}`, { readAsString: true });
-			this.playerNotes = notes;
+			runInAction(() => {
+				this.playerNotes = notes;
+			});
 		} catch (err) {
-			this.playerNotes = "";
+			runInAction(() => {
+				this.playerNotes = "";
+			});
 		}
 	}
 
@@ -231,9 +243,13 @@ export class GamePageViewModel {
 		this.saveNotesProgress = "loading";
 		try {
 			await this.httpClient.put(`api/GaiaProject/SaveNotes/${gameId}`, { notes });
-			this.saveNotesProgress = "success";
+			runInAction(() => {
+				this.saveNotesProgress = "success";
+			});
 		} catch (err) {
-			this.saveNotesProgress = "failure";
+			runInAction(() => {
+				this.saveNotesProgress = "failure";
+			});
 		}
 	}
 
