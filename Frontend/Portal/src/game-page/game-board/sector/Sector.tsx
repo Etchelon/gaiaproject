@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import Sector1 from "../../../assets/Resources/Sectors/1.png";
 import Sector10 from "../../../assets/Resources/Sectors/10.png";
 import Sector2 from "../../../assets/Resources/Sectors/2.png";
@@ -60,4 +61,4 @@ const Sector = ({ sector, hexWidth, hexHeight, xOffset, yOffset }: SectorProps) 
 	);
 };
 
-export default Sector;
+export default observer(Sector);

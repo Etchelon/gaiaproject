@@ -3,6 +3,7 @@ import Tooltip from "@mui/material/Tooltip";
 import createStyles from "@mui/styles/createStyles";
 import makeStyles from "@mui/styles/makeStyles";
 import { noop } from "lodash";
+import { observer } from "mobx-react";
 import { useRef } from "react";
 import { ActionSpaceDto } from "../../dto/interfaces";
 import { useContainerDimensions } from "../../utils/hooks";
@@ -82,4 +83,4 @@ const ActionSpace = ({ space }: ActionSpaceProps) => {
 	);
 };
 
-export default ActionSpace;
+export default observer(ActionSpace);

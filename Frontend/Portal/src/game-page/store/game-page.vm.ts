@@ -1,5 +1,5 @@
 import { HubConnectionState } from "@microsoft/signalr";
-import { assign, chain, find, isNil, pull } from "lodash";
+import { assign, chain, isNil, without } from "lodash";
 import { makeAutoObservable, runInAction } from "mobx";
 import { ActionDto, AvailableActionDto, GameStateDto, MapDto } from "../../dto/interfaces";
 import { LoadingStatus } from "../../games/store/types";
@@ -149,7 +149,7 @@ export class GamePageViewModel {
 	}
 
 	userLeft(userId: string) {
-		pull(this.hubState.onlineUsers, userId);
+		this.hubState.onlineUsers = without(this.hubState.onlineUsers, userId);
 	}
 
 	setOnlineUsers(userIds: string[]) {
@@ -160,12 +160,12 @@ export class GamePageViewModel {
 		this.saveNotesProgress = "idle";
 	}
 
-	rotateSector({ id, rotation }: { id: string; rotation: number }) {
+	rotateSector(id: string, rotation: number) {
 		if (!this.gameState) {
 			throw new Error("Can't rotate sector when there's not game...");
 		}
 
-		const sector = find(this.gameState.boardState.map.sectors, s => s.id === id)!;
+		const sector = this.gameState.boardState.map.sectors.find(s => s.id === id)!;
 		sector.rotation = rotation;
 	}
 

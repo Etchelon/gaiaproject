@@ -26,10 +26,12 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 	private readonly _centralHexesBySector: { sectorId: string; hexId: string }[];
 	private _selectedSectorId: Nullable<string> = null;
 	private _adjustments: SectorAdjustmentDto[] = [];
+	private readonly _initialRotations: Map<string, number>;
 
 	constructor(private readonly _initialMap: MapDto) {
 		super(null);
 		this._centralHexesBySector = this._initialMap.sectors.map(s => ({ sectorId: s.id, hexId: s.hexes.find(h => h.index === CENTRAL_HEX_INDEX)!.id }));
+		this._initialRotations = new Map(this._initialMap.sectors.map(s => [s.id, s.rotation]));
 		this.init();
 	}
 
@@ -119,7 +121,7 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 					adjustment.Rotation += rotationAdjustment;
 				}
 				const actualRotation = this.getActualRotation(sectorId, adjustment.Rotation);
-				this.vm!.rotateSector({ id: sectorId, rotation: actualRotation });
+				this.vm!.rotateSector(sectorId, actualRotation);
 				return null;
 			case CommonWorkflowStates.PERFORM_ACTION:
 				const action: AdjustSectorsActionDto = {
@@ -153,7 +155,7 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 	}
 
 	private getActualRotation(sectorId: string, adjustment: number): number {
-		const initialRotation = this._initialMap.sectors.find(s => s.id === sectorId)!.rotation;
+		const initialRotation = this._initialRotations.get(sectorId)!;
 		const currentRotation = (initialRotation + adjustment) % ONE_FULL_ROTATION;
 		const actualRotation = currentRotation >= 0 ? currentRotation : ONE_FULL_ROTATION + currentRotation;
 		return actualRotation;
