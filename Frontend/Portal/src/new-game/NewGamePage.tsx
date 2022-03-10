@@ -1,24 +1,23 @@
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import Checkbox from "@material-ui/core/Checkbox";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormLabel from "@material-ui/core/FormLabel";
-import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
-import Paper from "@material-ui/core/Paper";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography/Typography";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Autocomplete from "@mui/material/Autocomplete";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography/Typography";
 import { format } from "date-fns";
-import _ from "lodash";
+import { debounce, reject, size, some } from "lodash";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MapShape, RaceSelectionMode, TurnOrderSelectionMode } from "../dto/enums";
 import { CreateGameCommand, UserInfoDto } from "../dto/interfaces";
 import httpClient from "../utils/http-client";
@@ -33,7 +32,7 @@ type BalancingMethod = "auction" | "sector-rotation";
 
 const NewGamePage = () => {
 	const classes = useStyles();
-	const history = useHistory();
+	const navigate = useNavigate();
 	const { enqueueSnackbar } = useSnackbar();
 	const [open, setOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -46,11 +45,11 @@ const NewGamePage = () => {
 	const [gameName, setGameName] = useState<Nullable<string>>(null);
 	const [isCreating, setIsCreating] = useState(false);
 
-	const searchUsersImpl = _.debounce(async (filter: string) => {
+	const searchUsersImpl = debounce(async (filter: string) => {
 		setIsLoading(true);
 		try {
 			const users_ = await httpClient.get<UserInfoDto[]>(`api/Users/Search/${filter}`);
-			const selectableUsers = _.reject(users_, u => _.some(selectedUsers, su => su.id === u.id));
+			const selectableUsers = reject(users_, u => some(selectedUsers, su => su.id === u.id));
 			setSearchedUsers(selectableUsers);
 			setIsLoading(false);
 		} catch (err) {
@@ -59,7 +58,7 @@ const NewGamePage = () => {
 		}
 	}, 500);
 	const searchUsers = (filter: string) => {
-		if (_.size(filter) < 2) {
+		if (size(filter) < 2) {
 			return;
 		}
 		searchUsersImpl(filter);
@@ -73,7 +72,7 @@ const NewGamePage = () => {
 		setSelectedUsers([...selectedUsers, user]);
 	};
 	const unselectUser = (user: UserInfoDto) => {
-		const remainingUsers = _.reject(selectedUsers, u => u.id === user.id);
+		const remainingUsers = reject(selectedUsers, u => u.id === user.id);
 		setSelectedUsers(remainingUsers);
 	};
 
@@ -92,7 +91,7 @@ const NewGamePage = () => {
 		setIsCreating(true);
 
 		const command: CreateGameCommand = {
-			playerIds: _.map(selectedUsers, u => u.id),
+			playerIds: selectedUsers.map(u => u.id),
 			options: {
 				factionSelectionMode: raceSelectionMode,
 				turnOrderSelectionMode: TurnOrderSelectionMode.Random,
@@ -105,7 +104,7 @@ const NewGamePage = () => {
 		};
 
 		const gameId = await httpClient.post<string>("api/GaiaProject/CreateGame", command, { readAsString: true });
-		history.push(`/game/${gameId}`);
+		navigate(`/game/${gameId}`);
 	};
 
 	return (
@@ -132,7 +131,7 @@ const NewGamePage = () => {
 							setOpen(false);
 						}}
 						onChange={(__, val, reason) => selectUser(val as Nullable<UserInfoDto>, reason)}
-						getOptionSelected={(option, value) => option.id === value.id}
+						isOptionEqualToValue={(option, value) => option.id === value.id}
 						getOptionLabel={option => option.username}
 						options={searchedUsers}
 						loading={isLoading}
@@ -159,13 +158,13 @@ const NewGamePage = () => {
 						)}
 					/>
 					<div className={classes.marginTop}>
-						{_.map(selectedUsers, user => (
+						{selectedUsers.map(user => (
 							<Paper key={user.id} className={classes.selectedUser}>
 								<Avatar src={user.avatar} alt={user.username} />
 								<Typography variant="body1" className="username gaia-font">
 									{user.username}
 								</Typography>
-								<IconButton aria-label="remove" color="secondary" className="removeBtn" onClick={() => unselectUser(user)}>
+								<IconButton aria-label="remove" color="secondary" className="removeBtn" onClick={() => unselectUser(user)} size="large">
 									<DeleteIcon />
 								</IconButton>
 							</Paper>
@@ -238,7 +237,7 @@ const NewGamePage = () => {
 				</Grid>
 				<Grid item xs={12}>
 					<div className={classes.actions}>
-						<Button variant="contained" color="default" disabled={isCreating} onClick={reset}>
+						<Button variant="contained" disabled={isCreating} onClick={reset}>
 							<span className="gaia-font">Cancel</span>
 						</Button>
 						<Button variant="contained" color="primary" disabled={isCreating || selectedUsers.length < MIN_OTHER_PLAYERS || !gameName} onClick={startGame}>

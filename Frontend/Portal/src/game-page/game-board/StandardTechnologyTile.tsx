@@ -1,10 +1,11 @@
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import _ from "lodash";
-import { useSelector } from "react-redux";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import { noop } from "lodash";
 import { StandardTechnologyTileType } from "../../dto/enums";
 import { useAssetUrl } from "../../utils/hooks";
 import { fillParentAbs, interactiveElementClass, withAspectRatioW } from "../../utils/miscellanea";
-import { selectStandardTileInteractionState } from "../store/active-game.slice";
+import { useGamePageContext } from "../GamePage.context";
+import { selectStandardTileInteractionState } from "../store/selectors";
 import { useWorkflow } from "../WorkflowContext";
 import { InteractiveElementType } from "../workflows/enums";
 
@@ -39,13 +40,14 @@ const useStyles = makeStyles(() =>
 const StandardTechnologyTile = ({ type }: StandardTechnologyTileProps) => {
 	const classes = useStyles();
 	const imgUrl = useAssetUrl(`Boards/TechTiles/${standardTileImages.get(type)}.png`);
-	const { isClickable, isSelected } = useSelector(selectStandardTileInteractionState(type));
+	const { vm } = useGamePageContext();
+	const { isClickable, isSelected } = selectStandardTileInteractionState(type)(vm);
 	const { activeWorkflow } = useWorkflow();
 	const tileClicked = isClickable
 		? () => {
 				activeWorkflow?.elementSelected(type, InteractiveElementType.StandardTile);
 		  }
-		: _.noop;
+		: noop;
 
 	return (
 		<div className={classes.root}>

@@ -6,7 +6,6 @@ using GaiaProject.Engine.Logic.Entities.Effects;
 using GaiaProject.Engine.Model;
 using GaiaProject.Engine.Model.Actions;
 using GaiaProject.Engine.Model.Decisions;
-using MoreLinq;
 
 namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 {
@@ -14,8 +13,7 @@ namespace GaiaProject.Engine.Logic.ActionHandlers.Rounds
 	{
 		protected override List<Effect> HandleImpl(GaiaProjectGame game, BescodsResearchProgressAction action)
 		{
-			var researchableTechnologies = Player.State.ResearchAdvancements
-				.MinBy(adv => adv.Steps)
+			var researchableTechnologies = MoreLinq.MoreEnumerable.MinBy(Player.State.ResearchAdvancements, adv => adv.Steps)
 				.Select(adv => adv.Track)
 				.ToList();
 			return new List<Effect>

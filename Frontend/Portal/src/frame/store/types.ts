@@ -1,9 +1,5 @@
-import { NotificationDto } from "../../dto/interfaces";
-import { LoadingStatus } from "../../games/store/types";
+export type DrawerState = "open" | "close";
 
 export interface ActiveUserState {
-	drawerState: "open" | "close";
-	unreadNotificationsCount: number;
-	notifications: NotificationDto[];
-	notificationsState: LoadingStatus;
+	drawerState: DrawerState;
 }

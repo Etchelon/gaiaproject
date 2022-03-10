@@ -1,33 +1,29 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useMediaQuery } from "@material-ui/core";
-import AppBar from "@material-ui/core/AppBar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Drawer from "@material-ui/core/Drawer";
-import IconButton from "@material-ui/core/IconButton";
-import { useTheme } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import MenuIcon from "@material-ui/icons/Menu";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
+import { useMediaQuery } from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import CssBaseline from "@mui/material/CssBaseline";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import { useTheme } from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { FC, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppFrameContext } from "./AppFrame.context";
 import AppBarImg from "../assets/Resources/splash.jpg";
 import navigationService from "../utils/navigation.service";
 import useStyles from "./appFrame.styles";
 import AppDrawer from "./drawer/AppDrawer";
 import Notifications from "./notifications/Notifications";
-import { selectIsDrawerOpen } from "./store/active-user.slice";
+import { observer } from "mobx-react";
 
-interface AppFrameProps {
-	children: any;
-}
-
-const AppFrame = ({ children }: AppFrameProps) => {
-	const history = useHistory();
+const AppFrame: FC = ({ children }) => {
+	const navigate = useNavigate();
 	const classes = useStyles();
 	const theme = useTheme();
 	const useMobileLayout = useMediaQuery("(max-width: 600px)");
-	const isDrawerOpen = useSelector(selectIsDrawerOpen);
+	const { vm } = useAppFrameContext();
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const { isAuthenticated } = useAuth0();
 
@@ -40,7 +36,7 @@ const AppFrame = ({ children }: AppFrameProps) => {
 	}, [isAuthenticated]);
 
 	useEffect(() => {
-		const sub = navigationService.navigate$.subscribe(path => history.push(path));
+		const sub = navigationService.navigate$.subscribe({ next: navigate });
 		return () => {
 			sub.unsubscribe();
 		};
@@ -53,7 +49,7 @@ const AppFrame = ({ children }: AppFrameProps) => {
 			<CssBaseline />
 			<AppBar position="fixed" className={classes.appBar}>
 				<Toolbar variant="dense">
-					<IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} className={classes.menuButton}>
+					<IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} className={classes.menuButton} size="large">
 						<MenuIcon />
 					</IconButton>
 					<img className={classes.appBarImg} src={AppBarImg} alt="" />
@@ -89,9 +85,9 @@ const AppFrame = ({ children }: AppFrameProps) => {
 			)}
 			{!useMobileLayout && (
 				<Drawer
-					className={`${classes.drawer} ${isDrawerOpen ? classes.drawerOpen : classes.drawerClose}`}
+					className={`${classes.drawer} ${vm.isDrawerOpen ? classes.drawerOpen : classes.drawerClose}`}
 					classes={{
-						paper: isDrawerOpen ? classes.drawerOpen : classes.drawerClose,
+						paper: vm.isDrawerOpen ? classes.drawerOpen : classes.drawerClose,
 					}}
 					variant="permanent"
 				>
@@ -106,4 +102,4 @@ const AppFrame = ({ children }: AppFrameProps) => {
 	);
 };
 
-export default AppFrame;
+export default observer(AppFrame);

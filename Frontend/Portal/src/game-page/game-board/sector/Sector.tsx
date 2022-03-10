@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { observer } from "mobx-react";
 import Sector1 from "../../../assets/Resources/Sectors/1.png";
 import Sector10 from "../../../assets/Resources/Sectors/10.png";
 import Sector2 from "../../../assets/Resources/Sectors/2.png";
@@ -54,11 +54,11 @@ const Sector = ({ sector, hexWidth, hexHeight, xOffset, yOffset }: SectorProps) 
 	return (
 		<div className={classes.sector}>
 			<img className={classes.image} src={sectorBackgrounds.get(sector.id)} alt="" />
-			{_.map(sector.hexes, hex => (
+			{sector.hexes.map(hex => (
 				<Hex key={hex.id} hex={hex} width={hexWidth} />
 			))}
 		</div>
 	);
 };
 
-export default Sector;
+export default observer(Sector);

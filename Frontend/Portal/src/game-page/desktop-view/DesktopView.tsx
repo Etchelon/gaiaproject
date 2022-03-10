@@ -1,8 +1,9 @@
-import { Grid, Tab, Tabs } from "@material-ui/core";
-import _ from "lodash";
+import { Grid, Tab, Tabs } from "@mui/material";
+import { isNil } from "lodash";
+import { observer } from "mobx-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import { GamePhase } from "../../dto/enums";
+import { PlayerInGameDto } from "../../dto/interfaces";
 import { ElementSize } from "../../utils/hooks";
 import { Nullable } from "../../utils/miscellanea";
 import PlayerConfig from "../config/PlayerConfig";
@@ -11,19 +12,17 @@ import PlayerBox from "../game-board/player-box/PlayerBox";
 import ResearchBoard from "../game-board/research-board/ResearchBoard";
 import ScoringBoard from "../game-board/scoring-board/ScoringBoard";
 import { GameViewProps } from "../GamePage";
+import { useGamePageContext } from "../GamePage.context";
 import GameLog from "../logs/GameLog";
 import MainView from "../main-view/MainView";
-import { setActiveView } from "../store/active-game.slice";
-import { rollbackGameAtAction } from "../store/actions-thunks";
 import { ActiveView } from "../workflows/types";
 import useStyles from "./desktop-view.styles";
-import { PlayerInGameDto } from "../../dto/interfaces";
 
 const PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO = 1.439;
 
 const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }: GameViewProps) => {
 	const classes = useStyles();
-	const dispatch = useDispatch();
+	const { vm } = useGamePageContext();
 	const activeViewContainerRef = useRef<HTMLDivElement>(null);
 	const [activeViewDimensions, setActiveViewDimensions] = useState<Nullable<ElementSize>>(null);
 	const isGameCreator = game.createdBy.id === currentPlayerId;
@@ -35,7 +34,7 @@ const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }
 			hidePlayerArea();
 			return;
 		}
-		const player = _.find(players, p => p.id === playerId)!;
+		const player = players.find(p => p.id === playerId)!;
 		setPlayerAreaToShow(player);
 	};
 	const hidePlayerArea = () => {
@@ -50,7 +49,7 @@ const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }
 	}, [activeView]);
 
 	useLayoutEffect(() => {
-		if (_.isNil(activeViewContainerRef.current)) {
+		if (isNil(activeViewContainerRef.current)) {
 			return;
 		}
 
@@ -66,7 +65,7 @@ const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }
 		top: 0,
 		left: 0,
 	};
-	if (!_.isNil(activeViewDimensions)) {
+	if (!isNil(activeViewDimensions)) {
 		let dpaHeight = activeViewDimensions.height * 0.95;
 		let dpaWidth = dpaHeight * PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO;
 		if (dpaWidth > activeViewDimensions.width) {
@@ -81,14 +80,14 @@ const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }
 
 	const PlayerBoxesAndLogs = (
 		<div className={classes.playerBoxesAndLogs}>
-			{_.map(players, (p, index) => (
+			{players.map((p, index) => (
 				<div key={p.id} className={classes.playerBox} onClick={() => showPlayerArea(p.id)}>
 					<PlayerBox player={p} index={index + 1} />
 				</div>
 			))}
-			{_.map([...game.gameLogs].reverse(), (log, index) => (
+			{[...game.gameLogs].reverse().map((log, index) => (
 				<div key={index} className={classes.gameLog}>
-					<GameLog log={log} canRollback={canRollback} doRollback={actionId => dispatch(rollbackGameAtAction({ gameId: game.id, actionId }))} />
+					<GameLog log={log} canRollback={canRollback} doRollback={actionId => vm.rollbackGameAtAction(game.id, actionId)} />
 				</div>
 			))}
 		</div>
@@ -106,7 +105,7 @@ const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }
 							width={activeViewDimensions.width}
 							height={activeViewDimensions.height}
 							showMinimaps={true}
-							minimapClicked={view => dispatch(setActiveView(view))}
+							minimapClicked={view => vm.setActiveView(view)}
 						/>
 					)}
 					{actualView === ActiveView.ResearchBoard && activeViewDimensions && (
@@ -121,7 +120,7 @@ const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }
 						/>
 					)}
 					{actualView === ActiveView.NotesAndSettings && <PlayerConfig gameId={game.id} />}
-					{!_.isNil(playerAreaToShow) && (
+					{!isNil(playerAreaToShow) && (
 						<div
 							className={classes.hoveredPlayerArea}
 							style={{
@@ -135,14 +134,7 @@ const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }
 						</div>
 					)}
 				</div>
-				<Tabs
-					className={classes.tabs}
-					value={actualView}
-					onChange={(__, val: ActiveView) => dispatch(setActiveView(val))}
-					indicatorColor="primary"
-					variant={"standard"}
-					centered
-				>
+				<Tabs className={classes.tabs} value={actualView} onChange={(__, val: ActiveView) => vm.setActiveView(val)} indicatorColor="primary" variant={"standard"} centered>
 					<Tab className="gaia-font" label="Map" value={ActiveView.Map} />
 					<Tab className="gaia-font" label="Research" value={ActiveView.ResearchBoard} />
 					<Tab className="gaia-font" label="Scoring" value={ActiveView.ScoringBoard} />
@@ -156,4 +148,4 @@ const DesktopView = ({ game, players, activeView, currentPlayerId, isSpectator }
 	);
 };
 
-export default DesktopView;
+export default observer(DesktopView);

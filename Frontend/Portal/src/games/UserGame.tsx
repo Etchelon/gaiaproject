@@ -1,27 +1,29 @@
-import { useTheme } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
-import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Paper from "@material-ui/core/Paper";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useTheme } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import { Theme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import { format, parseISO } from "date-fns";
-import _ from "lodash";
+import { chain, isNil } from "lodash";
+import { observer } from "mobx-react";
 import { MouseEvent, MouseEventHandler, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ActivePlayerImg from "../assets/Resources/PlayerLoader.gif";
-import { getRaceColor } from "../utils/race-utils";
-import { selectDeleteGameProgress, selectGame } from "./store/games.slice";
 import { UserInfoDto } from "../dto/interfaces";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
 import ButtonWithProgress from "../utils/ButtonWithProgress";
+import { getRaceColor } from "../utils/race-utils";
+import { useGamesContext } from "./UserGames.context";
 
 const AVATAR_WIDTH = 40;
 
@@ -58,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			padding: theme.spacing(2),
 		},
 		playerInfo: {
-			width: `calc(100% - ${theme.spacing(1)}px - ${AVATAR_WIDTH}px)`,
+			width: `calc(100% - ${theme.spacing(1)} - ${AVATAR_WIDTH}px)`,
 			marginLeft: theme.spacing(2),
 		},
 	})
@@ -73,10 +75,11 @@ interface UserGameProps {
 const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	const theme = useTheme();
 	const classes = useStyles();
-	const history = useHistory();
-	const game = useSelector(_.partialRight(selectGame, id))!;
+	const navigate = useNavigate();
+	const { vm } = useGamesContext();
 	const [isPromptingForDeletion, setIsPromptingForDeletion] = useState(false);
-	const deleteProgress = useSelector(selectDeleteGameProgress);
+	const deleteProgress = vm.deleteGameProgress;
+	const game = vm.games.find(g => g.id === id)!;
 	const isGameCreator = user?.id === game.createdBy.id;
 	const canDelete = isGameCreator && !game.ended;
 
@@ -87,12 +90,12 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	}, [deleteProgress]);
 
 	const navigateToGamePage = () => {
-		history.push(`/game/${game.id}`);
+		navigate(`/game/${game.id}`);
 	};
 	const creationDate = parseISO(game.created);
 	const finishDate = game.ended ? parseISO(game.ended) : null;
 	const winnersNames = finishDate
-		? _.chain(game.players)
+		? chain(game.players)
 				.filter(p => p.placement === 1)
 				.map(p => p.username)
 				.value()
@@ -125,6 +128,7 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 							onClick={withStopPropagation(() => {
 								setIsPromptingForDeletion(true);
 							})}
+							size="large"
 						>
 							<DeleteIcon />
 							<Dialog
@@ -138,7 +142,7 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 									<DialogContentText id="alert-dialog-description">You can delete this game. Other players will be notified of this action.</DialogContentText>
 								</DialogContent>
 								<DialogActions>
-									<Button onClick={withStopPropagation(() => setIsPromptingForDeletion(false))} color="default" disabled={deleteProgress === "loading"}>
+									<Button onClick={withStopPropagation(() => setIsPromptingForDeletion(false))} disabled={deleteProgress === "loading"}>
 										Cancel
 									</Button>
 									<ButtonWithProgress
@@ -147,7 +151,6 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 										onClick={withStopPropagation(() => {
 											doDeleteGame(game.id);
 										})}
-										color="default"
 										disabled={deleteProgress === "loading"}
 										autoFocus
 									/>
@@ -159,8 +162,8 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 			</div>
 			<div className={classes.players}>
 				<Grid container spacing={2}>
-					{_.chain(game.players)
-						.map(p => ({ p, index: !_.isNil(p.placement) ? 4 - p.placement : p.points }))
+					{chain(game.players)
+						.map(p => ({ p, index: !isNil(p.placement) ? 4 - p.placement : p.points }))
 						.orderBy(o => o.index, "desc")
 						.map(o => o.p)
 						.map((player, index) => {
@@ -195,4 +198,4 @@ const UserGame = ({ id, user, doDeleteGame }: UserGameProps) => {
 	);
 };
 
-export default UserGame;
+export default observer(UserGame);

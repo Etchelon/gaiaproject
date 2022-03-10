@@ -1,15 +1,14 @@
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import _ from "lodash";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { cloneDeep, isUndefined, size } from "lodash";
 import { useReducer, useState } from "react";
-import { useDispatch } from "react-redux";
 import { BrainstoneLocation, Race, SortableIncomeType } from "../../../dto/enums";
 import { PlayerInGameDto, PlayerStateDto, SortableIncomeDto } from "../../../dto/interfaces";
 import { Nullable } from "../../../utils/miscellanea";
 import styles from "../../game-board/player-box/PlayerBox.module.scss";
 import ResourceToken from "../../game-board/ResourceToken";
-import { executePlayerAction } from "../../store/actions-thunks";
+import { useGamePageContext } from "../../GamePage.context";
 import { useWorkflow } from "../../WorkflowContext";
 import { SortIncomesWorkflow } from "../../workflows/rounds-phase/sort-incomes.workflow";
 import { CommonWorkflowStates } from "../../workflows/types";
@@ -95,12 +94,12 @@ interface SortingState {
 }
 
 const reducer = (state: SortingState, action: { type: "push" | "reset"; data?: any }): SortingState => {
-	const newState = _.cloneDeep(state);
+	const newState = cloneDeep(state);
 	const player = newState.player;
 
 	switch (action.type) {
 		case "reset":
-			return { player: _.cloneDeep(action.data.player), allIncomes: _.cloneDeep(action.data.allIncomes), sortedIncomes: [] };
+			return { player: cloneDeep(action.data.player), allIncomes: cloneDeep(action.data.allIncomes), sortedIncomes: [] };
 		case "push":
 			const income = action.data as SortableIncomeDto;
 			newState.sortedIncomes.push(income);
@@ -134,20 +133,20 @@ interface SortIncomesDialogProps {
 const SortIncomesDialog = ({ gameId, currentPlayer }: SortIncomesDialogProps) => {
 	const classes = useStyles();
 	const { activeWorkflow } = useWorkflow();
-	const storeDispatch = useDispatch();
+	const { vm } = useGamePageContext();
 
 	// TODO: temporarily nullable, until I figure out how to destroy the dialog before closing the workflow
 	const sortIncomesWorkflow = activeWorkflow as Nullable<SortIncomesWorkflow>;
 	const unsortedIncomes = sortIncomesWorkflow?.unsortedIncomes ?? [];
-	const [sortingState, dispatch] = useReducer(reducer, { player: _.cloneDeep(currentPlayer), allIncomes: _.cloneDeep(unsortedIncomes), sortedIncomes: [] });
+	const [sortingState, dispatch] = useReducer(reducer, { player: cloneDeep(currentPlayer), allIncomes: cloneDeep(unsortedIncomes), sortedIncomes: [] });
 	const playerState = sortingState.player.state;
 	const incomes = sortingState.allIncomes;
 	const sortedIncomes = sortingState.sortedIncomes;
 	const [isExecuting, setIsExecuting] = useState(false);
 
 	const sort = () => {
-		const action = activeWorkflow!.handleCommand({ nextState: CommonWorkflowStates.PERFORM_ACTION, data: _.map(sortingState.sortedIncomes, si => si.id) })!;
-		storeDispatch(executePlayerAction({ gameId, action }));
+		const action = activeWorkflow!.handleCommand({ nextState: CommonWorkflowStates.PERFORM_ACTION, data: sortingState.sortedIncomes.map(si => si.id) })!;
+		vm.executePlayerAction(gameId, action);
 		setIsExecuting(true);
 	};
 
@@ -159,13 +158,12 @@ const SortIncomesDialog = ({ gameId, currentPlayer }: SortIncomesDialogProps) =>
 						<Typography variant="body1" className="gaia-font text-center">
 							Incomes to sort
 						</Typography>
-						{_.map(incomes, (income, index) => (
+						{incomes.map((income, index) => (
 							<Button
 								key={index}
 								variant="contained"
-								color="default"
 								className={classes.income}
-								disabled={!_.isUndefined(_.find(sortedIncomes, si => si.id === income.id))}
+								disabled={!isUndefined(sortedIncomes.find(si => si.id === income.id))}
 								onClick={() => dispatch({ type: "push", data: income })}
 							>
 								<span className="gaia-font">{income.description}</span>
@@ -221,13 +219,12 @@ const SortIncomesDialog = ({ gameId, currentPlayer }: SortIncomesDialogProps) =>
 						<div className={classes.commands}>
 							<Button
 								variant="contained"
-								color="default"
 								className="command"
 								onClick={() => dispatch({ type: "reset", data: { player: currentPlayer, allIncomes: unsortedIncomes } })}
 							>
 								<span className="gaia-font">Reset</span>
 							</Button>
-							<Button variant="contained" color="primary" className="command" disabled={isExecuting || _.size(incomes) !== _.size(sortedIncomes)} onClick={sort}>
+							<Button variant="contained" color="primary" className="command" disabled={isExecuting || size(incomes) !== size(sortedIncomes)} onClick={sort}>
 								<span className="gaia-font">Confirm</span>
 							</Button>
 						</div>

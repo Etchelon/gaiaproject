@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { chain, isNil, range, uniqueId } from "lodash";
 import { BrainstoneLocation, BuildingType, Race } from "../../../dto/enums";
 import { PlayerInGameDto, PowerPoolsDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";
@@ -59,7 +59,7 @@ function renderPowerTokens(powerPools: PowerPoolsDto, race: Race | null) {
 // Returns object instances for each token created
 function createPowerTokens(bowl: number, qty: number) {
 	const poolData = powerPoolsGeometry[bowl];
-	return _.map(_.range(0, qty), () => createPowerTokenAt(poolData.center, poolData.radius, bowl));
+	return range(0, qty).map(() => createPowerTokenAt(poolData.center, poolData.radius, bowl));
 }
 
 function createPowerTokenAt({ x, y }: Point, radius: number, bowl: number) {
@@ -70,7 +70,7 @@ function createPowerTokenAt({ x, y }: Point, radius: number, bowl: number) {
 	const ySign = Math.random() < 0.5 ? -1 : 1;
 	const actualY = `${y + ySign * Math.random() * radius * yStretching}%`;
 	return (
-		<div key={`${_.uniqueId(String(bowl))}`} className="powerToken" style={{ top: actualY, left: actualX }}>
+		<div key={`${uniqueId(String(bowl))}`} className="powerToken" style={{ top: actualY, left: actualX }}>
 			<ResourceToken type="Power" />
 		</div>
 	);
@@ -86,7 +86,7 @@ function createBrainstone(location: BrainstoneLocation) {
 	const actualX = `${x + xSign * radius * xStretching}%`;
 	const actualY = `${y}%`;
 	return (
-		<div key={_.uniqueId("Brainstone")} className="powerToken" style={{ top: actualY, left: actualX, zIndex: 1 }}>
+		<div key={uniqueId("Brainstone")} className="powerToken" style={{ top: actualY, left: actualX, zIndex: 1 }}>
 			<ResourceToken type="Brainstone" scale={1.5} />
 		</div>
 	);
@@ -103,7 +103,7 @@ const PlayerBoard = ({ player }: PlayerBoardProps) => {
 	const imgUrl = useAssetUrl(`Races/Boards_${boardVersion}/${getRaceBoard(player.raceId)}`);
 	const isBescods = player?.raceId === Race.Bescods;
 
-	if (_.isNil(player.state)) {
+	if (isNil(player.state)) {
 		return <div></div>;
 	}
 
@@ -157,22 +157,22 @@ const PlayerBoard = ({ player }: PlayerBoardProps) => {
 						<ActionSpace space={player.state.rightAcademyActionSpace} />
 					</div>
 				)}
-				{_.map(_.range(0, 4 - player.state.buildings.tradingStations), n => (
+				{range(0, 4 - player.state.buildings.tradingStations).map(n => (
 					<div key={n} className={classes.ts + " building"} style={{ left: `${(buildingGeometries.ts.x + buildingGeometries.ts.spacing! * (3 - n)) * 100}%` }}>
 						<Building type={BuildingType.TradingStation} raceId={player.raceId!} />
 					</div>
 				))}
-				{_.map(_.range(0, 3 - player.state.buildings.researchLabs), n => (
+				{range(0, 3 - player.state.buildings.researchLabs).map(n => (
 					<div key={n} className={classes.rl + " building"} style={{ left: `${(buildingGeometries.rl.x + buildingGeometries.rl.spacing! * (2 - n)) * 100}%` }}>
 						<Building type={BuildingType.ResearchLab} raceId={player.raceId!} />
 					</div>
 				))}
-				{_.map(_.range(0, 8 - player.state.buildings.mines), n => (
+				{range(0, 8 - player.state.buildings.mines).map(n => (
 					<div key={n} className={classes.mine + " building"} style={{ left: `${(buildingGeometries.mine.x + buildingGeometries.mine.spacing! * (7 - n)) * 100}%` }}>
 						<Building type={BuildingType.Mine} raceId={player.raceId!} />
 					</div>
 				))}
-				{_.chain(player.state.availableGaiaformers)
+				{chain(player.state.availableGaiaformers)
 					.filter(gf => gf.available || gf.spentInGaiaArea)
 					.map((gf, index) => (
 						<div

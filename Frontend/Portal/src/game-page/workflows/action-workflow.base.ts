@@ -1,9 +1,9 @@
-import _ from "lodash";
-import { Dispatch } from "redux";
+import { isNil, map } from "lodash";
 import { BehaviorSubject, Subject } from "rxjs";
 import { ActionType } from "../../dto/enums";
 import { ActionDto, InteractionStateDto } from "../../dto/interfaces";
 import { Identifier, Nullable } from "../../utils/miscellanea";
+import { GamePageViewModel } from "../store/game-page.vm";
 import { InteractiveElementState, InteractiveElementType } from "./enums";
 import { Command, InteractiveElement, WorkflowState } from "./types";
 
@@ -23,7 +23,7 @@ export abstract class ActionWorkflow {
 	protected get stateId(): number {
 		return this.currentState.id;
 	}
-	protected dispatch: Nullable<Dispatch> = null;
+	protected vm: Nullable<GamePageViewModel> = null;
 
 	constructor(protected interactionState: Nullable<InteractionStateDto> = null, skipInit = true) {
 		if (skipInit) {
@@ -50,15 +50,15 @@ export abstract class ActionWorkflow {
 
 	advanceState(next: Nullable<number> = null, message: Nullable<string> = null, commands: Nullable<Command[]> = null): void {
 		next = next ?? this.currentState.id + 1;
-		const state = _.find(this.states, s => s.id === next);
+		const state = this.states.find(s => s.id === next);
 		if (!state) {
 			throw new Error(`Cannot advance to state with id ${next}`);
 		}
 
-		if (!_.isNil(message)) {
+		if (!isNil(message)) {
 			state.message = message;
 		}
-		if (!_.isNil(commands)) {
+		if (!isNil(commands)) {
 			state.commands = commands;
 		}
 		this.currentState = state;
@@ -74,14 +74,14 @@ export abstract class ActionWorkflow {
 
 		const addElements = (propSelector: () => Identifier[] | undefined, type: InteractiveElementType) => {
 			const mapper = mapSelectableElement(type);
-			ret.push(..._.map(propSelector(), hexId => mapper(hexId)));
+			ret.push(...map(propSelector(), hexId => mapper(hexId)));
 		};
 
 		addElements(() => this.interactionState?.clickableAdvancedTiles, InteractiveElementType.AdvancedTile);
 		addElements(() => this.interactionState?.clickableFederations, InteractiveElementType.FederationToken);
 
 		ret.push(
-			..._.map(this.interactionState?.clickableHexes, h => {
+			...map(this.interactionState?.clickableHexes, h => {
 				const el: InteractiveElement = {
 					id: h.id,
 					type: InteractiveElementType.Hex,
@@ -96,7 +96,7 @@ export abstract class ActionWorkflow {
 		addElements(() => this.interactionState?.clickableOwnStandardTiles, InteractiveElementType.OwnStandardTile);
 
 		ret.push(
-			..._.map(this.interactionState?.clickablePowerActions, pa => {
+			...map(this.interactionState?.clickablePowerActions, pa => {
 				const el: InteractiveElement = {
 					id: pa.type,
 					type: InteractiveElementType.PowerAction,
@@ -107,7 +107,7 @@ export abstract class ActionWorkflow {
 			})
 		);
 		addElements(() => this.interactionState?.clickableQicActions, InteractiveElementType.QicAction);
-		addElements(() => _.map(this.interactionState?.clickableResearchTracks, rt => rt.track), InteractiveElementType.ResearchStep);
+		addElements(() => map(this.interactionState?.clickableResearchTracks, rt => rt.track), InteractiveElementType.ResearchStep);
 		addElements(() => this.interactionState?.clickableRoundBoosters, InteractiveElementType.RoundBooster);
 		addElements(() => this.interactionState?.clickableStandardTiles, InteractiveElementType.StandardTile);
 		this.interactionState?.canUseOwnRoundBooster && ret.push({ type: InteractiveElementType.OwnRoundBooster, state: InteractiveElementState.Enabled });
@@ -118,8 +118,8 @@ export abstract class ActionWorkflow {
 		return ret;
 	}
 
-	setDispatch(dispatch: Dispatch): void {
-		this.dispatch = dispatch;
+	setStore(vm: GamePageViewModel): void {
+		this.vm = vm;
 	}
 }
 

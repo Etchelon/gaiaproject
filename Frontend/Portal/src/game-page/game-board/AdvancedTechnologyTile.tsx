@@ -1,10 +1,11 @@
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import _ from "lodash";
-import { useSelector } from "react-redux";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import { noop } from "lodash";
 import { AdvancedTechnologyTileType } from "../../dto/enums";
 import { useAssetUrl } from "../../utils/hooks";
 import { fillParentAbs, interactiveElementClass, withAspectRatioW } from "../../utils/miscellanea";
-import { selectAdvancedTileInteractionState } from "../store/active-game.slice";
+import { useGamePageContext } from "../GamePage.context";
+import { selectAdvancedTileInteractionState } from "../store/selectors";
 import { useWorkflow } from "../WorkflowContext";
 import { InteractiveElementType } from "../workflows/enums";
 
@@ -45,13 +46,14 @@ const useStyles = makeStyles(() =>
 const AdvancedTechnologyTile = ({ type }: AdvancedTechnologyTileProps) => {
 	const classes = useStyles();
 	const imgUrl = useAssetUrl(`Boards/TechTiles/${advancedTileImages.get(type)}.png`);
-	const { isClickable, isSelected } = useSelector(selectAdvancedTileInteractionState(type));
+	const { vm } = useGamePageContext();
+	const { isClickable, isSelected } = selectAdvancedTileInteractionState(type)(vm);
 	const { activeWorkflow } = useWorkflow();
 	const tileClicked = isClickable
 		? () => {
 				activeWorkflow?.elementSelected(type, InteractiveElementType.AdvancedTile);
 		  }
-		: _.noop;
+		: noop;
 
 	return (
 		<div className={classes.root}>

@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { isEmpty, isNil } from "lodash";
 import { PlayerInGameDto } from "../../../dto/interfaces";
 import FederationToken from "../federation-token/FederationToken";
 import PlayerBoard from "../player-board/PlayerBoard";
@@ -14,7 +14,7 @@ interface PlayerAreaProps {
 const PlayerArea = ({ player, framed }: PlayerAreaProps) => {
 	const classes = useStyles();
 
-	if (_.isNil(player.state)) {
+	if (isNil(player.state)) {
 		return <div></div>;
 	}
 
@@ -32,7 +32,7 @@ const PlayerArea = ({ player, framed }: PlayerAreaProps) => {
 						</div>
 					)}
 					<div className={classes.federations}>
-						{_.map(player.state.federationTokens, (token, index) => (
+						{player.state.federationTokens.map((token, index) => (
 							<div key={index} className={classes.federation}>
 								<FederationToken type={token.id} playerId={player.id} used={token.usedForTechOrAdvancedTile} />
 							</div>
@@ -40,9 +40,9 @@ const PlayerArea = ({ player, framed }: PlayerAreaProps) => {
 					</div>
 				</div>
 			</div>
-			{!_.isEmpty(player.state.technologyTiles) && (
+			{!isEmpty(player.state.technologyTiles) && (
 				<div className={classes.techTiles}>
-					{_.map(player.state.technologyTiles, tile => (
+					{player.state.technologyTiles.map(tile => (
 						<div key={tile.id} className={classes.techTile}>
 							<PlayerTechnologyTile tile={tile} playerId={player.id} />
 						</div>

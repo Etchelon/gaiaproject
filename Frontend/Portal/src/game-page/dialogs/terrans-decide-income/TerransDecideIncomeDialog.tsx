@@ -1,15 +1,14 @@
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import _ from "lodash";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { cloneDeep, isEmpty } from "lodash";
 import { useReducer, useState } from "react";
-import { useDispatch } from "react-redux";
 import ConversionsPanelImg from "../../../assets/Resources/TerransConversions.png";
 import { Conversion } from "../../../dto/enums";
 import { PlayerInGameDto, ResourcesDto } from "../../../dto/interfaces";
 import styles from "../../game-board/player-box/PlayerBox.module.scss";
 import ResourceToken from "../../game-board/ResourceToken";
-import { executePlayerAction } from "../../store/actions-thunks";
+import { useGamePageContext } from "../../GamePage.context";
 import { useWorkflow } from "../../WorkflowContext";
 import { TerransDecideIncomeWorkflow } from "../../workflows/rounds-phase/terrans-decide-income.workflow";
 import { CommonWorkflowStates } from "../../workflows/types";
@@ -35,7 +34,7 @@ interface PlayerWithConversions {
 }
 
 const reducer = (state: PlayerWithConversions, action: { type: Conversion | "reset"; data?: any }): PlayerWithConversions => {
-	const newState = _.cloneDeep(state);
+	const newState = cloneDeep(state);
 	const resources = newState.resources;
 
 	const spendPower = (amount: number) => {
@@ -44,7 +43,7 @@ const reducer = (state: PlayerWithConversions, action: { type: Conversion | "res
 
 	switch (action.type) {
 		case "reset":
-			return { resources: _.cloneDeep(action.data.resources as ResourcesDto), remainingPower: action.data.remainingPower, conversions: [] };
+			return { resources: cloneDeep(action.data.resources as ResourcesDto), remainingPower: action.data.remainingPower, conversions: [] };
 		case Conversion.PowerToQic:
 			resources.qic += 1;
 			spendPower(4);
@@ -75,14 +74,14 @@ interface TerransDecideIncomeProps {
 
 const TerransDecideIncome = ({ gameId, currentPlayer }: TerransDecideIncomeProps) => {
 	const classes = useStyles();
-	const storeDispatch = useDispatch();
+	const { vm } = useGamePageContext();
 	const { activeWorkflow } = useWorkflow();
 	const tdiWorkflow = activeWorkflow as TerransDecideIncomeWorkflow;
 	const powerToConvert = tdiWorkflow?.powerToConvert ?? 0;
 	const [isPerformingConversion, setIsPerformingConversion] = useState(false);
 
 	const [conversionsState, dispatch] = useReducer(reducer, {
-		resources: _.cloneDeep(currentPlayer.state.resources),
+		resources: cloneDeep(currentPlayer.state.resources),
 		remainingPower: powerToConvert,
 		conversions: [],
 	});
@@ -95,7 +94,7 @@ const TerransDecideIncome = ({ gameId, currentPlayer }: TerransDecideIncomeProps
 
 	const convert = () => {
 		const action = activeWorkflow!.handleCommand({ nextState: CommonWorkflowStates.PERFORM_ACTION, data: conversionsState.conversions })!;
-		storeDispatch(executePlayerAction({ gameId, action }));
+		vm.executePlayerAction(gameId, action);
 		setIsPerformingConversion(true);
 	};
 
@@ -156,20 +155,19 @@ const TerransDecideIncome = ({ gameId, currentPlayer }: TerransDecideIncomeProps
 						<div className={classes.commands}>
 							<Button
 								variant="contained"
-								color="default"
 								className="command"
 								onClick={() => dispatch({ type: "reset", data: { resources: currentPlayer.state.resources, remainingPower: powerToConvert } })}
 							>
 								<span className="gaia-font">Reset</span>
 							</Button>
-							<Button variant="contained" color="default" className="command" onClick={closeDialog}>
+							<Button variant="contained" className="command" onClick={closeDialog}>
 								<span className="gaia-font">Close</span>
 							</Button>
 							<Button
 								variant="contained"
 								color="primary"
 								className="command"
-								disabled={isPerformingConversion || _.isEmpty(conversionsState.conversions)}
+								disabled={isPerformingConversion || isEmpty(conversionsState.conversions)}
 								onClick={convert}
 							>
 								<span className="gaia-font">Confirm</span>

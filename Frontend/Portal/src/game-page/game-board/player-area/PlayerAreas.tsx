@@ -1,6 +1,6 @@
-import Grid from "@material-ui/core/Grid";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import _ from "lodash";
+import Grid from "@mui/material/Grid";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import { PlayerInGameDto } from "../../../dto/interfaces";
 import { fillParent } from "../../../utils/miscellanea";
 import PlayerArea from "./PlayerArea";
@@ -25,7 +25,7 @@ const PlayerAreas = ({ players }: PlayerAreasProps) => {
 	return (
 		<div className={classes.root}>
 			<Grid container spacing={2}>
-				{_.map(players, player => (
+				{players.map(player => (
 					<Grid key={player.id} item xs={12} xl={6}>
 						<PlayerArea player={player} framed={true} />
 					</Grid>

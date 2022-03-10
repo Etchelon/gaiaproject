@@ -6,3 +6,4 @@ obj/
 linuxapp/
 .DS_Store
 .devcontainer/devcontainer.env
+.ionide/

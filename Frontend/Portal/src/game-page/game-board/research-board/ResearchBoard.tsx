@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { isNil } from "lodash";
 import ResearchBoardImg from "../../../assets/Resources/Boards/ResearchBoard.jpg";
 import { ResearchBoardDto } from "../../../dto/interfaces";
 import { ElementSize } from "../../../utils/hooks";
@@ -14,7 +14,7 @@ interface ResearchBoardProps {
 }
 
 function calculateDimensions(parentWidth: number, parentHeight?: number): ElementSize {
-	if (!_.isNil(parentHeight)) {
+	if (!isNil(parentHeight)) {
 		const widthFromHeight = parentHeight / HEIGHT_TO_WIDTH_RATIO;
 		if (widthFromHeight <= parentWidth) {
 			return { width: widthFromHeight, height: parentHeight };
@@ -37,12 +37,12 @@ const ResearchBoard = (props: ResearchBoardProps) => {
 		<div className={classes.researchBoard}>
 			<img className={classes.image} src={ResearchBoardImg} alt="" />
 			<div className={classes.tracks}>
-				{_.map(board.tracks, track => (
+				{board.tracks.map(track => (
 					<ResearchTrack key={track.id} track={track} width={trackWidth} height={trackHeight} />
 				))}
 			</div>
 			<div className={classes.freeTiles}>
-				{_.map(board.freeStandardTiles, (stack, index) => (
+				{board.freeStandardTiles.map((stack, index) => (
 					<div key={stack.type} className={classes.freeTile} style={{ marginLeft: freeTilesLeftMargins[index] }}>
 						<TechnologyTileStack stack={stack} />
 					</div>
@@ -50,14 +50,14 @@ const ResearchBoard = (props: ResearchBoardProps) => {
 			</div>
 			<div className={classes.actions}>
 				<div className={classes.powerActions}>
-					{_.map(board.powerActions, pa => (
+					{board.powerActions.map(pa => (
 						<div key={`${pa.kind}_${pa.type}`} className={classes.powerAction}>
 							<ActionSpace space={pa} />
 						</div>
 					))}
 				</div>
 				<div className={classes.qicActions}>
-					{_.map(board.qicActions, qa => (
+					{board.qicActions.map(qa => (
 						<div key={`${qa.kind}_${qa.type}`} className={classes.qicAction}>
 							<ActionSpace space={qa} />
 						</div>

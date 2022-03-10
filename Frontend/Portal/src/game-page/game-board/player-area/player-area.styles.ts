@@ -1,4 +1,7 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Theme } from "@mui/material/styles";
+
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const BOOSTER_TO_BOARD_RATIO = 16;
 
@@ -7,11 +10,11 @@ const useStyles = makeStyles((theme: Theme) =>
 		root: {
 			"&.with-frame": {
 				padding: theme.spacing(2),
-				[theme.breakpoints.down("sm")]: {
+				[theme.breakpoints.down('md')]: {
 					padding: theme.spacing(1),
 					borderWidth: 2,
 				},
-				[theme.breakpoints.down("xs")]: {
+				[theme.breakpoints.down('sm')]: {
 					padding: theme.spacing(0.5),
 					borderWidth: 1,
 				},
@@ -27,10 +30,10 @@ const useStyles = makeStyles((theme: Theme) =>
 			"& > .spacer": {
 				flex: "0 0 auto",
 				width: theme.spacing(2),
-				[theme.breakpoints.down("sm")]: {
+				[theme.breakpoints.down('md')]: {
 					width: theme.spacing(1),
 				},
-				[theme.breakpoints.down("xs")]: {
+				[theme.breakpoints.down('sm')]: {
 					width: theme.spacing(0.5),
 				},
 			},
@@ -48,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) =>
 		booster: {
 			width: "100%",
 			marginBottom: theme.spacing(2),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				marginBottom: theme.spacing(1),
 			},
 		},
@@ -69,14 +72,14 @@ const useStyles = makeStyles((theme: Theme) =>
 			display: "flex",
 			flexFlow: "row wrap",
 			marginTop: theme.spacing(2),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				marginTop: theme.spacing(1),
 			},
 		},
 		techTile: {
 			width: "10%",
 			marginRight: theme.spacing(2),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				marginRight: theme.spacing(1),
 			},
 			"&:last-child": {

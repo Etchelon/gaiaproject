@@ -1,4 +1,5 @@
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Race } from "../../../dto/enums";
 import { fillParent, fillParentAbs, withAspectRatioW } from "../../../utils/miscellanea";
 

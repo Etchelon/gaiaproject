@@ -1,4 +1,6 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Theme } from "@mui/material/styles";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { fillParent } from "../../../utils/miscellanea";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -7,7 +9,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			...fillParent,
 			alignSelf: "flex-start",
 			overflow: "hidden auto",
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				overflow: "visible",
 			},
 		},
@@ -16,15 +18,15 @@ const useStyles = makeStyles((theme: Theme) =>
 			flexWrap: "wrap",
 			alignItems: "flex-start",
 			...fillParent,
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down('md')]: {
 				marginTop: theme.spacing(1),
 			},
 			"& > .booster": {
-				width: `calc((100% - 4 * ${theme.spacing(2)}px) / 5)`,
+				width: `calc((100% - 4 * ${theme.spacing(2)}) / 5)`,
 				maxWidth: "100px",
 				margin: theme.spacing(0, 2, 2, 0),
-				[theme.breakpoints.down("sm")]: {
-					width: `calc((100% - 6 * ${theme.spacing(0.5)}px) / 7)`,
+				[theme.breakpoints.down('md')]: {
+					width: `calc((100% - 6 * ${theme.spacing(0.5)}) / 7)`,
 					margin: theme.spacing(0, 0.5, 0.5, 0),
 				},
 				"&:last-child": {
@@ -42,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
 				width: "6%",
 				maxWidth: 150,
 				margin: theme.spacing(0, 3, 3, 0),
-				[theme.breakpoints.down("sm")]: {
+				[theme.breakpoints.down('md')]: {
 					minWidth: 50,
 					width: "5%",
 					maxWidth: 100,

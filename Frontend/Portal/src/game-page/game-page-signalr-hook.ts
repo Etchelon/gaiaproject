@@ -1,12 +1,11 @@
 import { HubConnection } from "@microsoft/signalr";
-import _ from "lodash";
+import { noop } from "lodash";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
-import { useDispatch } from "react-redux";
 import { GameStateDto } from "../dto/interfaces";
 import hubClient from "../utils/hub-client";
 import { Nullable } from "../utils/miscellanea";
-import { gameUpdated, setConnectedToGame, setConnecting, setDisconnected, setDisconnecting, setOnlineUsers, userJoined, userLeft } from "./store/active-game.slice";
+import { useGamePageContext } from "./GamePage.context";
 
 async function startGameEventsListener(gameId: string): Promise<HubConnection> {
 	await hubClient.establishConnection();
@@ -25,25 +24,25 @@ async function leaveGame(gameId: string): Promise<Nullable<HubConnection>> {
 }
 
 export const useGamePageSignalRConnection = (gameId: string, closeWorkflowCallback: () => void) => {
+	const { vm } = useGamePageContext();
 	const { enqueueSnackbar } = useSnackbar();
-	const dispatch = useDispatch();
 
 	const onGameStateChanged = useCallback((newState: string) => {
 		closeWorkflowCallback();
 		const newGameState = JSON.parse(newState) as GameStateDto;
-		dispatch(gameUpdated(newGameState));
+		vm.gameUpdated(newGameState);
 	}, []);
 
 	const onUserJoined = useCallback((userId: string) => {
-		dispatch(userJoined(userId));
+		vm.userJoined(userId);
 	}, []);
 
 	const onUserLeft = useCallback((userId: string) => {
-		dispatch(userLeft(userId));
+		vm.userLeft(userId);
 	}, []);
 
 	const onSetOnlineUsers = useCallback((userIds: string[]) => {
-		dispatch(setOnlineUsers(userIds));
+		vm.setOnlineUsers(userIds);
 	}, []);
 
 	const turnOffListeners = (connection: HubConnection) => {
@@ -60,19 +59,19 @@ export const useGamePageSignalRConnection = (gameId: string, closeWorkflowCallba
 	};
 
 	const connectToHub = () => {
-		dispatch(setConnecting());
+		vm.setConnecting();
 		startGameEventsListener(gameId)
 			.then(connection => {
 				connection.onreconnecting = () => {
-					dispatch(setConnecting());
+					vm.setConnecting();
 					turnOffListeners(connection);
 				};
 				connection.onreconnected = () => {
-					dispatch(setConnectedToGame(gameId));
+					vm.setConnectedToGame(gameId);
 					turnOnListeners(connection);
 				};
 
-				dispatch(setConnectedToGame(gameId));
+				vm.setConnectedToGame(gameId);
 				turnOffListeners(connection);
 				turnOnListeners(connection);
 			})
@@ -84,14 +83,14 @@ export const useGamePageSignalRConnection = (gameId: string, closeWorkflowCallba
 	};
 
 	const disconnectFromHub = () => {
-		dispatch(setDisconnecting());
+		vm.setDisconnecting();
 		leaveGame(gameId).then(connection => {
 			if (connection) {
-				connection.onreconnecting = _.noop;
-				connection.onreconnected = _.noop;
+				connection.onreconnecting = noop;
+				connection.onreconnected = noop;
 				turnOffListeners(connection);
 			}
-			dispatch(setDisconnected());
+			vm.setDisconnected();
 		});
 	};
 

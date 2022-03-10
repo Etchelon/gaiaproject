@@ -1,4 +1,5 @@
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { smartMemoize } from "../../../utils/miscellanea";
 import { hexSpike, tileHeight, tileWidth } from "../shape-utils";
 

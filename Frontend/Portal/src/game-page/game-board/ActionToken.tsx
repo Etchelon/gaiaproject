@@ -1,4 +1,5 @@
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import ActionTokenImg from "../../assets/Resources/Markers/ActionToken.png";
 import { fillParentAbs, withAspectRatioW } from "../../utils/miscellanea";
 

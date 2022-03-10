@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { useRef } from "react";
 import ScoringTrackImg from "../../../assets/Resources/Boards/ScoreTrack.png";
 import { ScoringTrackDto } from "../../../dto/interfaces";
@@ -50,12 +49,12 @@ const ScoringTrack = (props: ScoringTrackProps) => {
 	return (
 		<div ref={ref} className={classes.scoringTrack}>
 			<img className={classes.image} src={ScoringTrackImg} alt="" />
-			{_.map(board.scoringTiles, roundTile => (
+			{board.scoringTiles.map(roundTile => (
 				<div key={roundTile.roundNumber} className={classes.roundTile} style={getRoundTileCoordinates(roundTile.roundNumber, width)}>
 					<RoundScoringTile tile={roundTile} width={roundTileWidth} />
 				</div>
 			))}
-			{_.map([board.finalScoring1, board.finalScoring2], (finalScoring, index) => (
+			{[board.finalScoring1, board.finalScoring2].map((finalScoring, index) => (
 				<div key={finalScoring.tileId} className={classes.finalScoring} style={getFinalScoringTrackCoordinates(index, { width, height })}>
 					<FinalScoringTrack scoring={finalScoring} />
 				</div>

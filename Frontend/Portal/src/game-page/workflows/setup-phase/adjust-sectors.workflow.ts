@@ -1,11 +1,10 @@
-import _ from "lodash";
+import { first } from "lodash";
 import { ActionType } from "../../../dto/enums";
 import { ActionDto, MapDto } from "../../../dto/interfaces";
 import { CENTRAL_HEX_INDEX, Identifier, Nullable } from "../../../utils/miscellanea";
-import { resetSectors, rotateSector } from "../../store/active-game.slice";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";
-import { ActiveView, Command, CommonCommands, CommonWorkflowStates, InteractiveElement } from "../types";
+import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../types";
 
 const WaitingForSector = 0;
 const WaitingForRotation = 1;
@@ -27,10 +26,12 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 	private readonly _centralHexesBySector: { sectorId: string; hexId: string }[];
 	private _selectedSectorId: Nullable<string> = null;
 	private _adjustments: SectorAdjustmentDto[] = [];
+	private readonly _initialRotations: Map<string, number>;
 
 	constructor(private readonly _initialMap: MapDto) {
 		super(null);
-		this._centralHexesBySector = _.map(this._initialMap.sectors, s => ({ sectorId: s.id, hexId: _.find(s.hexes, h => h.index === CENTRAL_HEX_INDEX)!.id }));
+		this._centralHexesBySector = this._initialMap.sectors.map(s => ({ sectorId: s.id, hexId: s.hexes.find(h => h.index === CENTRAL_HEX_INDEX)!.id }));
+		this._initialRotations = new Map(this._initialMap.sectors.map(s => [s.id, s.rotation]));
 		this.init();
 	}
 
@@ -77,7 +78,7 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
@@ -88,7 +89,7 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 			return;
 		}
 		const hexId = id as string;
-		this._selectedSectorId = _.find(this._centralHexesBySector, o => o.hexId === hexId)!.sectorId;
+		this._selectedSectorId = this._centralHexesBySector.find(o => o.hexId === hexId)!.sectorId;
 		this.advanceState();
 	}
 
@@ -98,7 +99,7 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 				this._selectedSectorId = null;
 				this._adjustments = [];
 				this.advanceState(WaitingForSector);
-				this.dispatch!(resetSectors(this._initialMap));
+				this.vm!.resetSectors(this._initialMap);
 				return null;
 			case CommonWorkflowStates.CANCEL:
 				this._selectedSectorId = null;
@@ -112,7 +113,7 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 			case DoRotation:
 				const sectorId = this._selectedSectorId!;
 				const rotationAdjustment = command.data as number;
-				let adjustment = _.find(this._adjustments, o => o.SectorId === sectorId);
+				let adjustment = this._adjustments.find(o => o.SectorId === sectorId);
 				if (!adjustment) {
 					adjustment = { SectorId: sectorId, Rotation: rotationAdjustment };
 					this._adjustments.push(adjustment);
@@ -120,12 +121,12 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 					adjustment.Rotation += rotationAdjustment;
 				}
 				const actualRotation = this.getActualRotation(sectorId, adjustment.Rotation);
-				this.dispatch!(rotateSector({ id: sectorId, rotation: actualRotation }));
+				this.vm!.rotateSector(sectorId, actualRotation);
 				return null;
 			case CommonWorkflowStates.PERFORM_ACTION:
 				const action: AdjustSectorsActionDto = {
 					Type: ActionType.AdjustSectors,
-					Adjustments: _.map(this._adjustments, adj => ({
+					Adjustments: this._adjustments.map(adj => ({
 						SectorId: adj.SectorId,
 						Rotation: adj.Rotation % ONE_FULL_ROTATION,
 					})),
@@ -141,12 +142,12 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 		return isRotatingSector
 			? [
 					{
-						id: _.find(this._centralHexesBySector, s => s.sectorId === this._selectedSectorId)!.hexId,
+						id: this._centralHexesBySector.find(s => s.sectorId === this._selectedSectorId)!.hexId,
 						type: InteractiveElementType.Hex,
 						state: InteractiveElementState.Selected,
 					},
 			  ]
-			: _.map(this._centralHexesBySector, o => ({
+			: this._centralHexesBySector.map(o => ({
 					id: o.hexId,
 					type: InteractiveElementType.Hex,
 					state: InteractiveElementState.Enabled,
@@ -154,7 +155,7 @@ export class AdjustSectorsWorkflow extends ActionWorkflow {
 	}
 
 	private getActualRotation(sectorId: string, adjustment: number): number {
-		const initialRotation = _.find(this._initialMap.sectors, s => s.id === sectorId)!.rotation;
+		const initialRotation = this._initialRotations.get(sectorId)!;
 		const currentRotation = (initialRotation + adjustment) % ONE_FULL_ROTATION;
 		const actualRotation = currentRotation >= 0 ? currentRotation : ONE_FULL_ROTATION + currentRotation;
 		return actualRotation;

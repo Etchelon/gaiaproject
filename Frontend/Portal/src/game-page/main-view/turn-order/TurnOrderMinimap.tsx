@@ -1,13 +1,14 @@
-import { useTheme } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import _ from "lodash";
-import { useSelector } from "react-redux";
+import { useTheme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import { some } from "lodash";
+import { observer } from "mobx-react";
 import { GamePhase, Race } from "../../../dto/enums";
 import { GameStateDto } from "../../../dto/interfaces";
 import { useAssetUrl } from "../../../utils/hooks";
 import { isAuctionOngoing, isLastRound, Nullable } from "../../../utils/miscellanea";
 import { getRaceImage } from "../../../utils/race-utils";
-import { selectSortedActivePlayers, selectSortedPassedPlayers } from "../../store/active-game.slice";
+import { useGamePageContext } from "../../GamePage.context";
+import { selectSortedActivePlayers, selectSortedPassedPlayers } from "../../store/selectors";
 import { RACE_AVATAR_WIDTH } from "../main-view.styles";
 import useStyles from "./turn-order-minimap.styles";
 
@@ -56,10 +57,11 @@ interface TurnOrderMinimapProps {
 
 const TurnOrderMinimap = ({ game, direction }: TurnOrderMinimapProps) => {
 	const classes = useStyles();
+	const { vm } = useGamePageContext();
 	const isAuctioning = isAuctionOngoing(game);
 	const isLastRound_ = isLastRound(game);
-	const activePlayers = useSelector(selectSortedActivePlayers);
-	const passedPlayers = useSelector(selectSortedPassedPlayers);
+	const activePlayers = selectSortedActivePlayers(vm);
+	const passedPlayers = selectSortedPassedPlayers(vm);
 
 	if (isAuctioning) {
 		return (
@@ -67,7 +69,7 @@ const TurnOrderMinimap = ({ game, direction }: TurnOrderMinimapProps) => {
 				<div>
 					<div className="gaia-font">Auction</div>
 					<div className={direction === "vertical" ? classes.playersColumn : classes.playersRow}>
-						{_.map(game.auctionState!.auctionedRaces, (auction, index) => (
+						{game.auctionState!.auctionedRaces.map((auction, index) => (
 							<div key={index} className={classes.ongoingAuction}>
 								<OngoingAuction race={auction.race} username={auction.playerUsername ?? "No bid"} orderLabel={`${auction.order + 1}°`} />
 							</div>
@@ -85,20 +87,20 @@ const TurnOrderMinimap = ({ game, direction }: TurnOrderMinimapProps) => {
 					Round {game.currentRound}
 				</Typography>
 				<div className={direction === "vertical" ? classes.playersColumn : classes.playersRow}>
-					{_.map(activePlayers, p => (
+					{activePlayers.map(p => (
 						<div key={p.id} className={`${classes.avatar} ${direction}`}>
 							<PlayerAvatar race={p.raceId} username={p.username} orderLabel={`${p.state?.currentRoundTurnOrder ?? 0}°`} />
 						</div>
 					))}
 				</div>
 			</div>
-			{game.currentPhase !== GamePhase.Setup && !isLastRound_ && _.some(passedPlayers) && (
+			{game.currentPhase !== GamePhase.Setup && !isLastRound_ && some(passedPlayers) && (
 				<div className={classes.nextRound}>
 					<Typography variant="body2" className="gaia-font">
 						Round {game.currentRound + 1}
 					</Typography>
 					<div className={direction === "vertical" ? classes.playersColumn : classes.playersRow}>
-						{_.map(passedPlayers, pp => (
+						{passedPlayers.map(pp => (
 							<div key={pp.id} className={`${classes.avatar} ${direction}`}>
 								<PlayerAvatar race={pp.raceId} username={pp.username} orderLabel={`${pp.state!.nextRoundTurnOrder}°`} />
 							</div>
@@ -110,4 +112,4 @@ const TurnOrderMinimap = ({ game, direction }: TurnOrderMinimapProps) => {
 	);
 };
 
-export default TurnOrderMinimap;
+export default observer(TurnOrderMinimap);

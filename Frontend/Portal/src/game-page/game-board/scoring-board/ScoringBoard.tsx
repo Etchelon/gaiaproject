@@ -1,6 +1,6 @@
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import _ from "lodash";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import { chain } from "lodash";
 import { FederationTokenStackDto, RoundBoosterTileDto, ScoringTrackDto } from "../../../dto/interfaces";
 import FederationTokenStack from "../federation-token/FederationTokenStack";
 import RoundBooster from "../round-booster/RoundBooster";
@@ -26,7 +26,7 @@ const ScoringBoard = ({ board, roundBoosters, federationTokens, isMobile }: Scor
 					</Grid>
 					<Grid item xs={12} md={6}>
 						<div className={classes.roundBoosters}>
-							{_.map(roundBoosters, booster => (
+							{roundBoosters.map(booster => (
 								<div key={booster.id} className="booster">
 									<RoundBooster booster={booster} withPlayerInfo={false} />
 								</div>
@@ -35,7 +35,7 @@ const ScoringBoard = ({ board, roundBoosters, federationTokens, isMobile }: Scor
 					</Grid>
 					<Grid item xs={12}>
 						<div className={classes.federationTokens}>
-							{_.chain(federationTokens)
+							{chain(federationTokens)
 								.filter(stack => stack.remaining > 0)
 								.map(stack => (
 									<div key={stack.type} className="stack">

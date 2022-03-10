@@ -1,4 +1,4 @@
-import { Theme } from "@material-ui/core";
+import { Theme } from "@mui/material";
 import { formatDistance } from "date-fns";
 import _ from "lodash";
 import { ActionType, AdvancedTechnologyTileType, GamePhase, RoundBoosterType, StandardTechnologyTileType } from "../dto/enums";
@@ -114,10 +114,10 @@ export type Nullable<T> = T | null;
 export const responsivePadding = (theme: Theme) => {
 	return {
 		padding: theme.spacing(3),
-		[theme.breakpoints.down("sm")]: {
+		[theme.breakpoints.down("md")]: {
 			padding: theme.spacing(2),
 		},
-		[theme.breakpoints.down("xs")]: {
+		[theme.breakpoints.down("sm")]: {
 			padding: theme.spacing(1),
 		},
 	};
@@ -148,7 +148,7 @@ export function prettyTimestamp(isoDate: string): string {
 	return formatDistance(date, now, { addSuffix: true });
 }
 
-export type UniversalFn = (...args: any[]) => any;
+export type UniversalFn<TResult = any> = (...args: any[]) => TResult;
 
 const ACTIVATABLE_ACTIONS: ActionType[] = [
 	ActionType.AmbasSwapPlanetaryInstituteAndMine,

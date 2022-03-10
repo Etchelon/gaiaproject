@@ -1,19 +1,19 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import Divider from "@material-ui/core/Divider";
-import List from "@material-ui/core/List";
-import GamesIcon from "@material-ui/icons/Games";
-import HistoryIcon from "@material-ui/icons/History";
-import HomeIcon from "@material-ui/icons/Home";
-import _ from "lodash";
+import GamesIcon from "@mui/icons-material/Games";
+import HistoryIcon from "@mui/icons-material/History";
+import HomeIcon from "@mui/icons-material/Home";
+import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import { chain } from "lodash";
+import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppFrameContext } from "../AppFrame.context";
 import { UserInfoDto } from "../../dto/interfaces";
 import ListItemLink from "../../utils/ListItemLink";
 import { Nullable } from "../../utils/miscellanea";
 import userInfoService from "../../utils/user-info.service";
 import useStyles from "../appFrame.styles";
-import { loadUserPreferences, selectUserPreferences } from "../store/active-user.slice";
-import { ActiveUserState } from "../store/types";
+import { DrawerState } from "../store/types";
 import UserBox from "./user-box/UserBox";
 
 interface AppSection {
@@ -34,9 +34,8 @@ const storageKey = (userId?: string) => `USER_PREFERENCES_${userId ?? "WTF"}`;
 const AppDrawer = () => {
 	const classes = useStyles();
 	const { isAuthenticated, user: auth0User } = useAuth0();
+	const { vm } = useAppFrameContext();
 	const [userInfo, setUserInfo] = useState<Nullable<UserInfoDto>>(null);
-	const dispatch = useDispatch();
-	const userPreferences = useSelector(selectUserPreferences);
 
 	useEffect(() => {
 		if (!isAuthenticated) {
@@ -48,8 +47,8 @@ const AppDrawer = () => {
 
 		const userPreferencesStr = window.localStorage.getItem(storageKey(auth0User.sub));
 		if (userPreferencesStr) {
-			const userPreferences_ = JSON.parse(userPreferencesStr) as ActiveUserState;
-			dispatch(loadUserPreferences(userPreferences_));
+			const userPreferences_ = JSON.parse(userPreferencesStr) as { drawerState: DrawerState };
+			vm.loadUserPreferences(userPreferences_);
 		}
 	}, []);
 
@@ -65,15 +64,15 @@ const AppDrawer = () => {
 			return;
 		}
 
-		const userPreferencesStr = JSON.stringify(userPreferences);
+		const userPreferencesStr = JSON.stringify({ drawerState: vm.drawerState });
 		window.localStorage.setItem(storageKey(auth0User.sub), userPreferencesStr);
-	}, [auth0User, userPreferences]);
+	}, [auth0User, vm.drawerState]);
 
 	return (
 		<div className={classes.appDrawer}>
 			<div className={classes.toolbar} />
 			<List>
-				{_.chain(APP_SECTIONS)
+				{chain(APP_SECTIONS)
 					.filter(section => isAuthenticated || !section.protected)
 					.map(section => <ListItemLink button key={section.label} primary={section.label} icon={section.icon} to={section.route} />)
 					.value()}
@@ -86,4 +85,4 @@ const AppDrawer = () => {
 	);
 };
 
-export default AppDrawer;
+export default observer(AppDrawer);

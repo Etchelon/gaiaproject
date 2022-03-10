@@ -1,15 +1,16 @@
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import _ from "lodash";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { Theme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import { observer } from "mobx-react";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { AvailableActionDto, GameStateDto } from "../../dto/interfaces";
 import { centeredFlexRow, fillParent, Nullable } from "../../utils/miscellanea";
-import { selectAvailableActions, selectAvailableCommands, selectStatusMessage } from "../store/active-game.slice";
-import { executePlayerAction, selectIsExecutingAction } from "../store/actions-thunks";
+import { useGamePageContext } from "../GamePage.context";
+import { selectAvailableActions, selectAvailableCommands, selectStatusMessage } from "../store/selectors";
 import { useWorkflow } from "../WorkflowContext";
 import { Command } from "../workflows/types";
 import { fromAction } from "../workflows/utils";
@@ -21,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
 			flexDirection: ({ useVerticalLayout }: { useVerticalLayout: boolean }) => (useVerticalLayout ? "column" : "row"),
 			...fillParent,
 			padding: theme.spacing(1, 2),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down("md")]: {
 				padding: theme.spacing(0.5, 1),
 			},
 			backgroundColor: "white",
@@ -32,23 +33,23 @@ const useStyles = makeStyles((theme: Theme) =>
 			color: "black",
 			fontSize: "0.9rem",
 			textAlign: "center",
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down("md")]: {
 				fontSize: "0.7rem",
 			},
-			[theme.breakpoints.down("xs")]: {
+			[theme.breakpoints.down("sm")]: {
 				fontSize: "0.6rem",
 			},
 		},
 		actionSelector: {
 			flex: "0 0 auto",
 			marginLeft: theme.spacing(2),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down("md")]: {
 				marginLeft: theme.spacing(1),
 			},
 		},
 		actionList: {
 			top: "113px !important",
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down("md")]: {
 				top: "100px !important",
 			},
 			"& .MuiMenuItem-root": {
@@ -59,14 +60,14 @@ const useStyles = makeStyles((theme: Theme) =>
 			flex: "0 0 auto",
 			marginTop: ({ useVerticalLayout }: { useVerticalLayout: boolean }) => (useVerticalLayout ? theme.spacing(0.25) : 0),
 			marginLeft: ({ useVerticalLayout }: { useVerticalLayout: boolean }) => (useVerticalLayout ? 0 : theme.spacing(2)),
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down("md")]: {
 				marginLeft: theme.spacing(1),
 			},
 			...centeredFlexRow,
 		},
 		command: {
 			fontSize: "0.75rem",
-			[theme.breakpoints.down("sm")]: {
+			[theme.breakpoints.down("md")]: {
 				padding: theme.spacing(0.5, 1),
 				fontSize: "0.6rem",
 			},
@@ -85,11 +86,11 @@ interface StatusBarProps {
 }
 
 const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) => {
-	const dispatch = useDispatch();
-	const statusMessage = useSelector(selectStatusMessage);
-	const commands = useSelector(selectAvailableCommands);
-	const availableActions = useSelector(selectAvailableActions);
-	const isExecutingAction = useSelector(selectIsExecutingAction);
+	const { vm } = useGamePageContext();
+	const statusMessage = selectStatusMessage(vm);
+	const commands = selectAvailableCommands(vm);
+	const availableActions = selectAvailableActions(vm);
+	const isExecutingAction = vm.isExecutingAction;
 	const isIdle = !isExecutingAction;
 	const statusBarMessage = isExecutingAction ? "Executing..." : statusMessage;
 	const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
@@ -107,14 +108,14 @@ const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) =>
 		if (!action) {
 			return;
 		}
-		dispatch(executePlayerAction({ gameId: game.id, action }));
+		vm.executePlayerAction(game.id, action);
 	};
 
 	const onActionSelected = (action: AvailableActionDto) => {
 		if (isSpectator) {
 			return;
 		}
-		const workflow = fromAction(playerId!, game, action, dispatch);
+		const workflow = fromAction(playerId!, game, action, vm);
 		startWorkflow(workflow);
 		setMenuAnchor(null);
 	};
@@ -128,13 +129,13 @@ const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) =>
 				<>
 					{isIdle && (
 						<div className={classes.commands}>
-							{_.map(commands, cmd => (
+							{commands.map(cmd => (
 								<Button
 									key={`${cmd.nextState}§${cmd.text}`}
 									className={classes.command}
 									onClick={() => handleCommand(cmd)}
 									variant="contained"
-									color={cmd.isPrimary ? "primary" : "default"}
+									color={cmd.isPrimary ? "primary" : undefined}
 								>
 									<span className="gaia-font">{cmd.text}</span>
 								</Button>
@@ -155,7 +156,7 @@ const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) =>
 									className: classes.actionList,
 								}}
 							>
-								{_.map(availableActions, action => (
+								{availableActions.map(action => (
 									<MenuItem key={action.type} onClick={() => onActionSelected(action)}>
 										<span className="gaia-font">{action.description}</span>
 									</MenuItem>
@@ -169,4 +170,4 @@ const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) =>
 	);
 };
 
-export default StatusBar;
+export default observer(StatusBar);

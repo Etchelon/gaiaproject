@@ -1,20 +1,21 @@
-import DoneAllIcon from "@material-ui/icons/DoneAll";
-import GamesIcon from "@material-ui/icons/Games";
-import _ from "lodash";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import GamesIcon from "@mui/icons-material/Games";
+import { delay } from "lodash";
+import { observer } from "mobx-react";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { GameNotificationDto } from "../../dto/interfaces";
 import { useVisibility } from "../../utils/hooks";
 import ListItemLink from "../../utils/ListItemLink";
 import { prettyTimestamp } from "../../utils/miscellanea";
-import { setNotificationRead } from "../store/active-user.slice";
+import { useAppFrameContext } from "../AppFrame.context";
 import { NotificationProps, useStyles } from "./GenericNotification";
 
 const GameNotification = ({ notification, parentScrollable, bordered, notificationClicked }: NotificationProps<GameNotificationDto>) => {
 	const classes = useStyles();
-	const dispatch = useDispatch();
 	const [isVisible, currentRef] = useVisibility<HTMLDivElement>(parentScrollable, 0);
+	const { vm } = useAppFrameContext();
 	const isRead = notification.isRead;
+
 	useEffect(() => {
 		if (!isVisible) {
 			return;
@@ -22,7 +23,8 @@ const GameNotification = ({ notification, parentScrollable, bordered, notificati
 		if (isRead) {
 			return;
 		}
-		_.delay(() => dispatch(setNotificationRead({ id: notification.id })), 1000);
+
+		delay(() => vm.setNotificationRead(notification.id), 1000);
 	}, [isRead, isVisible]);
 
 	return (
@@ -37,4 +39,4 @@ const GameNotification = ({ notification, parentScrollable, bordered, notificati
 	);
 };
 
-export default GameNotification;
+export default observer(GameNotification);

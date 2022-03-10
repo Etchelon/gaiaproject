@@ -1,4 +1,3 @@
-import { BASE_URL } from "../config";
 import { Nullable } from "./miscellanea";
 
 const OK = 200;
@@ -13,7 +12,7 @@ export interface FetchAdditionalOptions {
 	readAsString?: boolean;
 }
 
-class HttpClient {
+export class HttpClient {
 	constructor(private readonly baseUrl: string) {}
 
 	private _bearerTokenFactory: BearerTokenFactoryFn = async () => null;
@@ -38,41 +37,41 @@ class HttpClient {
 		};
 	}
 
-	private async checkedFetch<T>(url: string, options: RequestInit, readAsString?: boolean): Promise<T | null> {
+	private async checkedFetch<T>(url: string, options: RequestInit, readAsString?: boolean): Promise<T> {
 		const response = await fetch(`${this.baseUrl}/${url}`, options);
 		switch (response.status) {
 			case OK:
 				var ret = readAsString ? await response.text() : await response.json();
 				return ret;
 			case NO_CONTENT:
-				return null;
+				return null as any;
 			case UNAUTHENTICATED:
 			case UNAUTHORIZED:
 				window.location.assign("/unauthorized");
-				return null;
+				return {} as any;
 			default:
 				throw new Error(`Status ${response.status} (${response.statusText}) not handled.`);
 		}
 	}
 
-	async get<T = void>(url: string, additionalOptions?: FetchAdditionalOptions): Promise<T | null> {
+	async get<T = void>(url: string, additionalOptions?: FetchAdditionalOptions): Promise<T> {
 		const options = await this.fetchOptions("GET", undefined, additionalOptions);
-		return await this.checkedFetch<T | null>(url, options, additionalOptions?.readAsString);
+		return await this.checkedFetch<T>(url, options, additionalOptions?.readAsString);
 	}
 
-	async post<T = void>(url: string, body?: unknown, additionalOptions?: FetchAdditionalOptions): Promise<T | null> {
+	async post<T = void>(url: string, body?: unknown, additionalOptions?: FetchAdditionalOptions): Promise<T> {
 		const options = await this.fetchOptions("POST", body, additionalOptions);
-		return await this.checkedFetch<T | null>(url, options, additionalOptions?.readAsString);
+		return await this.checkedFetch<T>(url, options, additionalOptions?.readAsString);
 	}
 
-	async put<T = void>(url: string, body?: unknown, additionalOptions?: FetchAdditionalOptions): Promise<T | null> {
+	async put<T = void>(url: string, body?: unknown, additionalOptions?: FetchAdditionalOptions): Promise<T> {
 		const options = await this.fetchOptions("PUT", body, additionalOptions);
-		return await this.checkedFetch<T | null>(url, options, additionalOptions?.readAsString);
+		return await this.checkedFetch<T>(url, options, additionalOptions?.readAsString);
 	}
 
-	async delete<T = void>(url: string, additionalOptions?: FetchAdditionalOptions): Promise<T | null> {
+	async delete<T = void>(url: string, additionalOptions?: FetchAdditionalOptions): Promise<T> {
 		const options = await this.fetchOptions("DELETE", undefined, additionalOptions);
-		return await this.checkedFetch<T | null>(url, options, additionalOptions?.readAsString);
+		return await this.checkedFetch<T>(url, options, additionalOptions?.readAsString);
 	}
 }
 

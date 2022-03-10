@@ -1,15 +1,14 @@
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import _ from "lodash";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { chain, cloneDeep, isEmpty } from "lodash";
 import { useReducer, useState } from "react";
-import { useDispatch } from "react-redux";
 import ConversionsPanelImg from "../../../assets/Resources/Conversions.png";
 import { BrainstoneLocation, Conversion, Race } from "../../../dto/enums";
 import { PlayerInGameDto, PlayerStateDto } from "../../../dto/interfaces";
 import styles from "../../game-board/player-box/PlayerBox.module.scss";
 import ResourceToken from "../../game-board/ResourceToken";
-import { executePlayerAction } from "../../store/actions-thunks";
+import { useGamePageContext } from "../../GamePage.context";
 import { useWorkflow } from "../../WorkflowContext";
 import { PassTurn, PerformConversionsOrPassTurnWorkflow } from "../../workflows/rounds-phase/perform-conversions-or-pass.workflow";
 import { CommonWorkflowStates } from "../../workflows/types";
@@ -37,7 +36,7 @@ const power3 = (playerState: PlayerStateDto) => playerState.resources.power.bowl
 const actualPower3 = (playerState: PlayerStateDto) => power3(playerState) + BRAINSTONE_POWER_VALUE * Number(brainstone(playerState) === BrainstoneLocation.Bowl3);
 const powerGaia = (playerState: PlayerStateDto) => playerState.resources.power.gaiaArea;
 const availableGaiaformersCount = (playerState: PlayerStateDto) =>
-	_.chain(playerState.availableGaiaformers)
+	chain(playerState.availableGaiaformers)
 		.filter(gf => gf.available)
 		.size()
 		.value();
@@ -69,7 +68,7 @@ interface PlayerWithConversions {
 }
 
 const reducer = (state: PlayerWithConversions, action: { type: Conversion | "reset"; data?: any }): PlayerWithConversions => {
-	const newState = _.cloneDeep(state);
+	const newState = cloneDeep(state);
 	const player = newState.player;
 	const playerState = newState.player.state;
 	const resources = newState.player.state.resources;
@@ -89,7 +88,7 @@ const reducer = (state: PlayerWithConversions, action: { type: Conversion | "res
 
 	switch (action.type) {
 		case "reset":
-			return { player: _.cloneDeep(action.data! as PlayerInGameDto), conversions: [] };
+			return { player: cloneDeep(action.data! as PlayerInGameDto), conversions: [] };
 		case Conversion.BurnPower:
 			if (isTaklonsWithBrainstone(player) && brainstone(playerState) === BrainstoneLocation.Bowl2) {
 				power.bowl2 -= 1;
@@ -187,7 +186,7 @@ const reducer = (state: PlayerWithConversions, action: { type: Conversion | "res
 			resources.ores += 1;
 			break;
 		case Conversion.BalTaksGaiaformerToQic:
-			const gfToSpend = _.chain(playerState.availableGaiaformers)
+			const gfToSpend = chain(playerState.availableGaiaformers)
 				.filter(gf => gf.available)
 				.first()
 				.value();
@@ -213,11 +212,11 @@ interface ConversionsDialogProps {
 
 const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) => {
 	const classes = useStyles();
+	const { vm } = useGamePageContext();
 	const { activeWorkflow } = useWorkflow();
-	const storeDispatch = useDispatch();
 
 	const [isPerformingConversion, setIsPerformingConversion] = useState(false);
-	const [conversionsState, dispatch] = useReducer(reducer, { player: _.cloneDeep(currentPlayer), conversions: [] });
+	const [conversionsState, dispatch] = useReducer(reducer, { player: cloneDeep(currentPlayer), conversions: [] });
 	const player = conversionsState.player;
 	const playerState = player.state;
 	const isFinalConversions = activeWorkflow instanceof PerformConversionsOrPassTurnWorkflow;
@@ -225,11 +224,11 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 	const cancel = (pass: boolean) => () => {
 		const nextState = isFinalConversions && pass ? PassTurn : CommonWorkflowStates.CANCEL;
 		const action = activeWorkflow!.handleCommand({ nextState });
-		action && storeDispatch(executePlayerAction({ gameId, action }));
+		action && vm.executePlayerAction(gameId, action);
 	};
 	const convert = () => {
 		const action = activeWorkflow!.handleCommand({ nextState: CommonWorkflowStates.PERFORM_CONVERSION, data: conversionsState.conversions })!;
-		storeDispatch(executePlayerAction({ gameId, action }));
+		vm.executePlayerAction(gameId, action);
 		setIsPerformingConversion(true);
 	};
 
@@ -291,13 +290,12 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 							<Typography variant="body1" className="gaia-font text-center">
 								Other
 							</Typography>
-							<Button variant="contained" color="default" className={classes.conversion} disabled={!canBurn} onClick={() => dispatch({ type: Conversion.BurnPower })}>
+							<Button variant="contained" className={classes.conversion} disabled={!canBurn} onClick={() => dispatch({ type: Conversion.BurnPower })}>
 								<span className="gaia-font">Burn 1 Power</span>
 							</Button>
 							{isNevlas(player) && (
 								<Button
 									variant="contained"
-									color="default"
 									className={classes.conversion}
 									disabled={power3(playerState) <= 0}
 									onClick={() => dispatch({ type: Conversion.NevlasPower3ToKnowledge })}
@@ -308,7 +306,6 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 							{isNevlasWithPlanetaryInstitute(player) && (
 								<Button
 									variant="contained"
-									color="default"
 									className={classes.conversion}
 									disabled={equivalentPower3(player) < 6}
 									onClick={() => dispatch({ type: Conversion.Nevlas3PowerTo2Ores })}
@@ -320,7 +317,6 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 								<>
 									<Button
 										variant="contained"
-										color="default"
 										className={classes.conversion}
 										disabled={credits(playerState) < 4}
 										onClick={() => dispatch({ type: Conversion.HadschHallas4CreditsToQic })}
@@ -329,7 +325,6 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 									</Button>
 									<Button
 										variant="contained"
-										color="default"
 										className={classes.conversion}
 										disabled={credits(playerState) < 4}
 										onClick={() => dispatch({ type: Conversion.HadschHallas4CreditsToKnowledge })}
@@ -338,7 +333,6 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 									</Button>
 									<Button
 										variant="contained"
-										color="default"
 										className={classes.conversion}
 										disabled={credits(playerState) < 3}
 										onClick={() => dispatch({ type: Conversion.HadschHallas3CreditsToOre })}
@@ -350,7 +344,6 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 							{playerIs(player, Race.BalTaks) && (
 								<Button
 									variant="contained"
-									color="default"
 									className={classes.conversion}
 									disabled={availableGaiaformersCount(playerState) === 0}
 									onClick={() => dispatch({ type: Conversion.BalTaksGaiaformerToQic })}
@@ -361,7 +354,6 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 							{playerIs(player, Race.Taklons) && (
 								<Button
 									variant="contained"
-									color="default"
 									className={classes.conversion}
 									disabled={brainstone(playerState) !== BrainstoneLocation.Bowl3}
 									onClick={() => dispatch({ type: Conversion.TaklonsBrainstoneToCredits })}
@@ -437,24 +429,24 @@ const ConversionsDialog = ({ gameId, currentPlayer }: ConversionsDialogProps) =>
 									<Button variant="contained" color="secondary" className="command" onClick={cancel(true)}>
 										<span className="gaia-font">Pass</span>
 									</Button>
-									<Button variant="contained" color="default" className="command" onClick={cancel(false)}>
+									<Button variant="contained" className="command" onClick={cancel(false)}>
 										<span className="gaia-font">Cancel</span>
 									</Button>
 								</>
 							)}
 							{!isFinalConversions && (
-								<Button variant="contained" color="default" className="command" onClick={cancel(false)}>
+								<Button variant="contained" className="command" onClick={cancel(false)}>
 									<span className="gaia-font">Cancel</span>
 								</Button>
 							)}
-							<Button variant="contained" color="default" className="command" onClick={() => dispatch({ type: "reset", data: currentPlayer })}>
+							<Button variant="contained" className="command" onClick={() => dispatch({ type: "reset", data: currentPlayer })}>
 								<span className="gaia-font">Reset</span>
 							</Button>
 							<Button
 								variant="contained"
 								color="primary"
 								className="command"
-								disabled={isPerformingConversion || _.isEmpty(conversionsState.conversions)}
+								disabled={isPerformingConversion || isEmpty(conversionsState.conversions)}
 								onClick={convert}
 							>
 								<span className="gaia-font">Confirm</span>

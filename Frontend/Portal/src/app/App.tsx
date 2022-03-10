@@ -1,14 +1,16 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { createStyles, makeStyles } from "@material-ui/core";
-import _ from "lodash";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import { isNil } from "lodash";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AuthenticatedRoute from "../auth/AuthenticatedRoute";
 import { UserInfoDto } from "../dto/interfaces";
-import AppFrame from "../frame/AppFrame";
-import GamePage from "../game-page/GamePage";
-import UserGames from "../games/UserGames";
+import AppFrameRoot from "../frame";
+import GamePageRoot from "../game-page";
+import UserGamesRoot from "../games";
+import { useAppContext } from "../global";
 import Home from "../home/Home";
 import ManageProfile from "../manage-profile/ManageProfile";
 import NewGamePage from "../new-game/NewGamePage";
@@ -34,7 +36,7 @@ const useStyles = makeStyles(() =>
 
 const onAuthenticated = async (auth0User: any): Promise<boolean> => {
 	const result = await httpClient.put<{ user: UserInfoDto; isFirstLogin: boolean }>(`api/Users/LoggedIn/${auth0User.sub}`, auth0User);
-	if (_.isNil(result)) {
+	if (isNil(result)) {
 		throw new Error("Login failed");
 	}
 	userInfoService.store(auth0User.sub, result!.user);
@@ -44,8 +46,11 @@ const onAuthenticated = async (auth0User: any): Promise<boolean> => {
 const App = () => {
 	const classes = useStyles();
 	const { getAccessTokenSilently, isAuthenticated, isLoading, user } = useAuth0();
+	const { httpClient: http, hubClient: hub } = useAppContext();
 	httpClient.setBearerTokenFactory(getAccessTokenSilently);
 	hubClient.setBearerTokenFactory(getAccessTokenSilently);
+	http.setBearerTokenFactory(getAccessTokenSilently);
+	hub.setBearerTokenFactory(getAccessTokenSilently);
 	const { enqueueSnackbar } = useSnackbar();
 	const [isReady, setIsReady] = useState(false);
 
@@ -76,32 +81,46 @@ const App = () => {
 	return (
 		<Router>
 			<div className={classes.root}>
-				<AppFrame>
-					<Switch>
-						<AuthenticatedRoute path="/profile">
-							<ManageProfile />
-						</AuthenticatedRoute>
-						<AuthenticatedRoute path="/games">
-							<UserGames kind="active" />
-						</AuthenticatedRoute>
-						<AuthenticatedRoute path="/history">
-							<UserGames kind="finished" />
-						</AuthenticatedRoute>
-						<AuthenticatedRoute path="/new-game">
-							<NewGamePage />
-						</AuthenticatedRoute>
-						<Route path="/game/:id">{isReady && <GamePage />}</Route>
-						<Route exact path="/">
-							<Home />
-						</Route>
-						<Route exact path="/unauthorized">
-							<Unauthorized />
-						</Route>
-						<Route path="*">
-							<NotFound />
-						</Route>
-					</Switch>
-				</AppFrame>
+				<AppFrameRoot>
+					<Routes>
+						<Route
+							path="/profile"
+							element={
+								<AuthenticatedRoute>
+									<ManageProfile />
+								</AuthenticatedRoute>
+							}
+						/>
+						<Route
+							path="/games"
+							element={
+								<AuthenticatedRoute>
+									<UserGamesRoot kind="active" />
+								</AuthenticatedRoute>
+							}
+						/>
+						<Route
+							path="/history"
+							element={
+								<AuthenticatedRoute>
+									<UserGamesRoot kind="finished" />
+								</AuthenticatedRoute>
+							}
+						/>
+						<Route
+							path="/new-game"
+							element={
+								<AuthenticatedRoute>
+									<NewGamePage />
+								</AuthenticatedRoute>
+							}
+						/>
+						<Route path="/game/:id" element={isReady && <GamePageRoot />} />
+						<Route path="/" element={<Home />} />
+						<Route path="/unauthorized" element={<Unauthorized />} />
+						<Route path="*" element={<NotFound />} />
+					</Routes>
+				</AppFrameRoot>
 			</div>
 		</Router>
 	);

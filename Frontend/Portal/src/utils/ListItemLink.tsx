@@ -1,5 +1,5 @@
-import { ListItem, ListItemIcon, ListItemProps, ListItemText } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
+import { ListItem, ListItemIcon, ListItemProps, ListItemText } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 import { ElementType, forwardRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 
