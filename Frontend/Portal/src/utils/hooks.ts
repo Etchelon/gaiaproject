@@ -77,7 +77,7 @@ export function useAssetUrl(relativeUrl: string): string {
 
 	useEffect(() => {
 		const url = `../assets/Resources/${relativeUrl}`;
-		ALL_RESOURCES[url]()
+		ALL_RESOURCES[url]?.()
 			.then(m => setAssetUrl(m.default))
 			.catch(() => setAssetUrl(""));
 	}, [relativeUrl]);
