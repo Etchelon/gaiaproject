@@ -30,7 +30,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_4222f00d0a3a472abe4f38165048773b }}/etchelon/gaia-project:${{ github.sha }}
+        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_4222f00d0a3a472abe4f38165048773b }}/gaia-project:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -48,4 +48,4 @@ jobs:
         app-name: 'gaiaproject'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_0cee66e7730841898f7352e6ff20e959 }}
-        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_4222f00d0a3a472abe4f38165048773b }}/etchelon/gaia-project:${{ github.sha }}'
+        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_4222f00d0a3a472abe4f38165048773b }}/gaia-project:${{ github.sha }}'
