@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { partialRight } from "lodash";
 import {
 	AdvancedTechnologyTileType,
 	BuildingType,
@@ -10,7 +10,7 @@ import {
 	RoundBoosterType,
 	StandardTechnologyTileType,
 } from "../dto/enums";
-import { ActiveView } from "../game-page/workflows/types";
+import { ActiveView } from "./types";
 
 type LocalizableEnum =
 	| "AdvancedTechnologyTileType"
@@ -162,4 +162,4 @@ export function localizeEnum(value: number, enumName: LocalizableEnum): string {
 	return dictionary?.get(value) ?? "NOT LOCALIZED";
 }
 
-export const localizeRoundBooster = _.partialRight(localizeEnum, "RoundBoosterType");
+export const localizeRoundBooster = partialRight(localizeEnum, "RoundBoosterType");

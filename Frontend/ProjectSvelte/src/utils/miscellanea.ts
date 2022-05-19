@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { chain, delay, isNil, memoize } from "lodash";
 import { DateTime } from "luxon";
 import { ActionType, AdvancedTechnologyTileType, GamePhase, RoundBoosterType, StandardTechnologyTileType } from "../dto/enums";
 import type { GameStateDto, HexDto, PlayerInGameDto } from "../dto/interfaces";
@@ -14,7 +14,7 @@ export function isAuctionOngoing(game: GameStateDto): boolean {
 		return false;
 	}
 
-	return !_.every(game.auctionState.auctionedRaces, o => o.playerUsername !== null);
+	return !game.auctionState.auctionedRaces.every(o => o.playerUsername !== null);
 }
 
 export function isLastRound(game: GameStateDto): boolean {
@@ -27,10 +27,10 @@ export const executeWhen = (action: () => void, predicate: () => boolean, pollin
 		return;
 	}
 
-	_.delay(() => executeWhen(action, predicate), pollingTimeMs);
+	delay(() => executeWhen(action, predicate), pollingTimeMs);
 };
 
-export const delay = (timeoutMs: number) =>
+export const asyncDelay = (timeoutMs: number) =>
 	new Promise<void>(resolve => {
 		setTimeout(resolve, timeoutMs);
 	});
@@ -99,12 +99,12 @@ export const withAspectRatioH = (hTowRatio: number): any => ({
 
 // For the following smartMemoize implementation, see https://dev.to/nioufe/you-should-not-use-lodash-for-memoization-3441
 const hasher = (...args: any[]): string => JSON.stringify(args);
-export const smartMemoize = (fn: (...args: any[]) => any) => _.memoize(fn, hasher);
+export const smartMemoize = (fn: (...args: any[]) => any) => memoize(fn, hasher);
 
 export type Identifier = number | string;
 
 export function getHex(id: string, game: GameStateDto): HexDto {
-	return _.chain(game.boardState.map.sectors)
+	return chain(game.boardState.map.sectors)
 		.flatMap(s => s.hexes)
 		.find(h => h.id === id)
 		.value();
@@ -184,15 +184,15 @@ export const countActivatableActions = (player: PlayerInGameDto, includeGaiaform
 		return { available: 0, all: 0 };
 	}
 
-	if (!_.isNil(ps.planetaryInstituteActionSpace)) {
+	if (!isNil(ps.planetaryInstituteActionSpace)) {
 		allSpecialActionsCount += 1;
 		availableSpecialActionsCount += Number(ps.planetaryInstituteActionSpace.isAvailable);
 	}
-	if (!_.isNil(ps.rightAcademyActionSpace)) {
+	if (!isNil(ps.rightAcademyActionSpace)) {
 		allSpecialActionsCount += 1;
 		availableSpecialActionsCount += Number(ps.rightAcademyActionSpace.isAvailable);
 	}
-	if (!_.isNil(ps.raceActionSpace)) {
+	if (!isNil(ps.raceActionSpace)) {
 		allSpecialActionsCount += 1;
 		availableSpecialActionsCount += Number(ps.raceActionSpace.isAvailable);
 	}
@@ -202,14 +202,14 @@ export const countActivatableActions = (player: PlayerInGameDto, includeGaiaform
 		availableSpecialActionsCount += Number(!ps.roundBooster.used);
 	}
 
-	const gain4PowerTile = _.find(ps.technologyTiles, tt => tt.id === StandardTechnologyTileType.ActionGain4Power && _.isNil(tt.coveredByAdvancedTile));
+	const gain4PowerTile = ps.technologyTiles.find(tt => tt.id === StandardTechnologyTileType.ActionGain4Power && isNil(tt.coveredByAdvancedTile));
 	if (gain4PowerTile) {
 		allSpecialActionsCount += 1;
 		availableSpecialActionsCount += Number(!gain4PowerTile.used);
 	}
 
-	_.chain(ps.technologyTiles)
-		.filter(tt => !_.isNil(tt.coveredByAdvancedTile) && ACTIVATABLE_ADVANCED_TILES.includes(tt.coveredByAdvancedTile))
+	chain(ps.technologyTiles)
+		.filter(tt => !isNil(tt.coveredByAdvancedTile) && ACTIVATABLE_ADVANCED_TILES.includes(tt.coveredByAdvancedTile))
 		.each(tt => {
 			allSpecialActionsCount += 1;
 			availableSpecialActionsCount += Number(!tt.used);
@@ -222,3 +222,5 @@ export const countActivatableActions = (player: PlayerInGameDto, includeGaiaform
 
 	return { available: availableSpecialActionsCount, all: allSpecialActionsCount };
 };
+
+export const assetUrl = (relativeUrl: string) => `/assets/Resources/${relativeUrl}`;

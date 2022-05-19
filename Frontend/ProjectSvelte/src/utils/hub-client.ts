@@ -1,6 +1,6 @@
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import type { BearerTokenFactoryFn } from "./http-client";
-import { delay, Nullable } from "./miscellanea";
+import { asyncDelay, Nullable } from "./miscellanea";
 
 const isConnecting = (connection_: Nullable<HubConnection>) => {
 	if (connection_ === null) {
@@ -58,7 +58,7 @@ export class HubClient {
 		if (isConnecting(connection)) {
 			let retryCount = 0;
 			do {
-				await delay(100);
+				await asyncDelay(100);
 			} while (isConnecting(connection) && retryCount++ < 50);
 
 			if (!isConnected(connection)) {
