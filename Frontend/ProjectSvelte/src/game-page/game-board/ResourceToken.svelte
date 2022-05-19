@@ -2,7 +2,7 @@
 	import { assetUrl } from "$utils/miscellanea";
 
 	export let type: string;
-	export let imageUrl: string | undefined;
+	export let imageUrl: string | undefined = undefined;
 	export let scale = 1;
 </script>
 
