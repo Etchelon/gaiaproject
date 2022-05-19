@@ -3,7 +3,8 @@
 	import { assetUrl, interactiveElementClass } from "$utils/miscellanea";
 	import { isNil, random } from "lodash";
 	import AdvancedTechnologyTile from "../../AdvancedTechnologyTile.svelte";
-	import TechnologyTileStack from "../../TechnologyTileStack.svelte";
+	import FederationToken from "../../FederationToken.svelte";
+	import TechnologyTileStack from "../TechnologyTileStack.svelte";
 	import PlayerAdvancement from "./PlayerAdvancement.svelte";
 
 	export let track: ResearchTrackDto;
@@ -18,7 +19,7 @@
 <div class="research-track" {style}>
 	{#if !isNil(track.federation)}
 		<div class="federation-token">
-			<!-- <FederationToken type={track.federation} /> -->
+			<FederationToken type={track.federation} />
 		</div>
 	{/if}
 	{#if track.lostPlanet}

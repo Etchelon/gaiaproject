@@ -23,6 +23,7 @@
 	import { assetUrl } from "$utils/miscellanea";
 	import ActionSpace from "../ActionSpace.svelte";
 	import ResearchTrack from "./research-track/ResearchTrack.svelte";
+	import TechnologyTileStack from "./TechnologyTileStack.svelte";
 
 	export let board: ResearchBoardDto;
 	export let width: number;
@@ -44,7 +45,7 @@
 	<div class="free-tiles">
 		{#each board.freeStandardTiles as stack, index (stack.type)}
 			<div class="free-tile" style:margin-left={freeTilesLeftMargins[index]}>
-				<!-- <TechnologyTileStack stack={stack} /> -->
+				<TechnologyTileStack {stack} />
 			</div>
 		{/each}
 	</div>

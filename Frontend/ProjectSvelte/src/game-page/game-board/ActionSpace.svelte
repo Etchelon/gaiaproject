@@ -3,6 +3,7 @@
 	import { interactiveElementClass } from "$utils/miscellanea";
 	import { InteractiveElementType } from "$utils/types";
 	import { random } from "lodash";
+	import ActionToken from "./ActionToken.svelte";
 
 	export let space: ActionSpaceDto;
 
@@ -24,7 +25,7 @@
 <div class="action-space">
 	{#if !space.isAvailable}
 		<div class="token">
-			<!-- <ActionToken /> -->
+			<ActionToken />
 		</div>
 	{/if}
 	<div class={interactiveElementClass(clickable, selected)} on:click />
@@ -49,7 +50,7 @@
 	.token {
 		width: 83%;
 		position: absolute;
-		bottom: 6%;
+		bottom: 7%;
 		left: 8%;
 	}
 

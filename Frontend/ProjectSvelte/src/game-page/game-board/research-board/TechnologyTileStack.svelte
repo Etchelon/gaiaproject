@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { StandardTechnologyTileStackDto } from "$dto/interfaces";
-	import StandardTechnologyTile from "./StandardTechnologyTile.svelte";
+	import StandardTechnologyTile from "../StandardTechnologyTile.svelte";
 
 	export let stack: StandardTechnologyTileStackDto;
 </script>

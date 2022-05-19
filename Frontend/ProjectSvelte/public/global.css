@@ -34,6 +34,12 @@ body {
 	align-items: center;
 }
 
+.centered-flex-row {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .text-center {
 	text-align: center;
 }

@@ -1,5 +1,5 @@
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import { useAssetUrl } from "../../utils/hooks";
 import { centeredFlexRow, fillParent } from "../../utils/miscellanea";
 
@@ -22,12 +22,12 @@ const useStyles = makeStyles(() =>
 	})
 );
 
-const ResourceToken = ({ type, assetUrl, scale }: ResourceTokenProps) => {
+const ResourceToken = ({ type, assetUrl, scale = 1 }: ResourceTokenProps) => {
 	const classes = useStyles({ type });
 	const imgUrl = useAssetUrl(assetUrl ?? `Markers/${type}.png`);
 	return (
 		<div className={classes.root}>
-			<img className={classes.image} src={imgUrl} alt={type} style={{ transform: `scale(${scale ?? 1})` }} />
+			<img className={classes.image} src={imgUrl} alt={type} style={{ transform: `scale(${scale})` }} />
 		</div>
 	);
 };
