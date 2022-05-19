@@ -10,8 +10,13 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"target": "ESNext",
-		"useDefineForClassFields": true
+		"useDefineForClassFields": true,
+		"baseUrl": ".",
+		"paths": {
+			"$dto/*": ["src/dto/*"],
+			"$utils/*": ["src/utils/*"]
+		}
 	},
 	"include": ["src/**/*"],
-	"exclude": ["node_modules/*", "__sapper__/*", "public/*"]
+	"exclude": ["node_modules/*", "public/*"]
 }

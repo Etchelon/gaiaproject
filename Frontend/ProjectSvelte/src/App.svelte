@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { gameDto } from "./data";
-	import Map from "./game-page/game-board/Map.svelte";
+	import Map from "./game-page/game-board/map/Map.svelte";
 
 	export let name = "Project Svelte";
 	let mapWidth = 500;
@@ -23,7 +23,6 @@
 	}
 
 	h1 {
-		color: #ff3e00;
 		text-transform: uppercase;
 		font-size: 4em;
 		font-weight: 100;
@@ -33,10 +32,5 @@
 		main {
 			max-width: none;
 		}
-	}
-
-	.sector {
-		margin: 2rem;
-		position: relative;
 	}
 </style>
