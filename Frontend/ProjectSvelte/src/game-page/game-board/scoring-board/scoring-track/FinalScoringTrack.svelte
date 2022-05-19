@@ -17,31 +17,26 @@
 <script lang="ts">
 	import type { FinalScoringStateDto } from "$dto/interfaces";
 	import { assetUrl } from "$utils/miscellanea";
-	import { onMount } from "svelte";
+	import PlayerFinalScoringAdvancement from "./PlayerFinalScoringAdvancement.svelte";
 
 	export let scoring: FinalScoringStateDto;
-
-	let container: HTMLDivElement;
-	let width = 0;
-
-	onMount(() => {
-		width = container.clientWidth;
-	});
+	export let width: number;
 
 	$: height = width / WIDTH_TO_HEIGHT_RATIO;
+	$: style = `width: ${width}px; height: ${height}px`;
 </script>
 
-<div class="final-scoring-track" style:height={`${height}px`} bind:this={container}>
+<div class="final-scoring-track" {style}>
 	<div class="wrapper fill-parent">
-		<div class="player-scorings" style:height={`${height}px`}>
+		<div class="player-scorings" {style}>
 			{#each scoring.players as playerAdvancement (playerAdvancement.player.id)}
 				<div class="player-scoring">
-					<!-- <PlayerFinalScoringAdvancement playerStatus={playerAdvancement} /> -->
+					<PlayerFinalScoringAdvancement playerStatus={playerAdvancement} />
 				</div>
 			{/each}
-			<div class="tile" style:width={`${height * TILE_WIDTH_TO_HEIGHT_RATIO}px`}>
-				<img class="fill-parent" src={assetUrl(`Boards/FinalScoring/${finalScoringTileNames.get(scoring.tileId)}.png`)} alt="" />
-			</div>
+		</div>
+		<div class="tile" style:width={`${height * TILE_WIDTH_TO_HEIGHT_RATIO}px`}>
+			<img class="fill-parent" src={assetUrl(`Boards/FinalScoring/${finalScoringTileNames.get(scoring.tileId)}.png`)} alt="" />
 		</div>
 	</div>
 </div>
@@ -57,10 +52,13 @@
 
 	.player-scorings {
 		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
 	}
 
 	.player-scorings > .player-scoring {
-		height: 25%;
+		height: 22.5%;
 	}
 
 	.tile {

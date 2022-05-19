@@ -35,26 +35,17 @@
 <script lang="ts">
 	import type { ScoringTrackDto } from "$dto/interfaces";
 	import { assetUrl } from "$utils/miscellanea";
-	import { onMount } from "svelte";
 	import RoundScoringTile from "./RoundScoringTile.svelte";
 	import FinalScoringTrack from "./FinalScoringTrack.svelte";
 
 	export let board: ScoringTrackDto;
-
-	let container: HTMLDivElement;
-	let width = 0;
+	export let width: number;
 
 	$: height = calculateHeight(width);
 	$: roundTileWidth = width * 0.225;
-	$: console.log({ height });
-
-	onMount(() => {
-		width = container.clientWidth;
-		console.log({ width });
-	});
 </script>
 
-<div class="scoring-track" style:height={`${height}px`} bind:this={container}>
+<div class="scoring-track" style:height={`${height}px`}>
 	<img class="image" src={assetUrl("Boards/ScoreTrack.png")} alt="" />
 	{#each board.scoringTiles as roundTile (roundTile.roundNumber)}
 		<div class="round-tile" style={getRoundTileCoordinates(roundTile.roundNumber, width)}>
@@ -63,7 +54,7 @@
 	{/each}
 	{#each [board.finalScoring1, board.finalScoring2] as finalScoring, index (finalScoring.tileId)}
 		<div class="final-scoring" style={getFinalScoringTrackCoordinates(index, { width, height })}>
-			<FinalScoringTrack scoring={finalScoring} />
+			<FinalScoringTrack scoring={finalScoring} width={width * 0.81} />
 		</div>
 	{/each}
 </div>
@@ -73,10 +64,10 @@
 		position: relative;
 		width: 100%;
 		background-color: black;
-		border-width: 3;
+		border-width: 3px;
 		border-style: solid;
 		border-color: lightgray;
-		border-radius: 10;
+		border-radius: 10px;
 	}
 
 	.image {
@@ -93,7 +84,6 @@
 
 	.final-scoring {
 		position: absolute;
-		width: 81%;
 		height: auto;
 	}
 </style>

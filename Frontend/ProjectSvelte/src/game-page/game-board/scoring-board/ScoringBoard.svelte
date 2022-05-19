@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { FederationTokenStackDto, RoundBoosterTileDto, ScoringTrackDto } from "$dto/interfaces";
+	import { onMount } from "svelte";
 	import RoundBooster from "../RoundBooster.svelte";
 	import FederationTokenStack from "./FederationTokenStack.svelte";
 	import ScoringTrack from "./scoring-track/ScoringTrack.svelte";
@@ -8,13 +9,23 @@
 	export let roundBoosters: RoundBoosterTileDto[];
 	export let federationTokens: FederationTokenStackDto[];
 	export let isMobile = false;
+
+	let container: HTMLDivElement;
+	let width: number;
+
+	const getContainerWidth = () => {
+		width = container.clientWidth;
+	};
+	onMount(getContainerWidth);
 </script>
 
-<div class="scoring-board fill-parent">
+<svelte:window on:resize={getContainerWidth} />
+
+<div class="scoring-board fill-parent" bind:this={container}>
 	<div class="container">
 		<div class="grid">
 			<div class="grid">
-				<ScoringTrack {board} />
+				<ScoringTrack {board} {width} />
 			</div>
 			<div class="grid">
 				<div class="round-boosters fill-parent">
