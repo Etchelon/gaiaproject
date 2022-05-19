@@ -96,9 +96,9 @@
 		console.info(`Hex ${hex.id} clicked!!`);
 	};
 
-	let clickable = random(true) > 0.5;
-	let selected = random(true) > 0.75;
-	let notes = random(true) > 0.85;
+	let clickable = random(true) > 0.5 && false;
+	let selected = random(true) > 0.75 && false;
+	let notes = random(true) > 0.85 && false;
 
 	let hexStyles: HexStyles;
 	let hexSizing: HexSizingProps;
