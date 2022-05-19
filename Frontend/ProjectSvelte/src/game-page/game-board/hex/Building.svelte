@@ -98,24 +98,24 @@
 	$: imgUrl = assetUrl(`Races/Buildings${getBuildingFolderSuffix(buildingStyle)}/${getBuildingImagePrefix(type)}_${getBuildingColor(raceId)}.png`);
 </script>
 
-<div class="root" class:animated={!onMap && !noAnimation}>
-	<img class="building" style:height={buildingHeight} src={imgUrl} alt="" />
+<div class="building" class:animated={!onMap && !noAnimation}>
+	<img class="img" style:height={buildingHeight} src={imgUrl} alt="" />
 </div>
 
 <style>
-	.root {
+	.building {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		height: 100%;
 	}
 
-	.building {
+	.img {
 		object-fit: cover;
 		pointer-events: none;
 	}
 
-	.root.animated:hover .building {
+	.building.animated:hover .img {
 		transform: rotateY(90deg);
 		transform-origin: left -50%;
 		transition: transform 250ms;

@@ -87,6 +87,8 @@
 	import Building from "./Building.svelte";
 	import Satellite from "./Satellite.svelte";
 	import LostPlanet from "./LostPlanet.svelte";
+	import { random } from "lodash";
+	import Selector from "./Selector.svelte";
 
 	export let hex: HexDto;
 	export let width = 100;
@@ -94,8 +96,9 @@
 		console.info(`Hex ${hex.id} clicked!!`);
 	};
 
-	let isClickable = false;
-	let isSelected = false;
+	let clickable = random(true) > 0.5;
+	let selected = random(true) > 0.75;
+	let notes = random(true) > 0.85;
 
 	let hexStyles: HexStyles;
 	let hexSizing: HexSizingProps;
@@ -152,16 +155,17 @@
 	{#if hasSatellites}
 		<div class="satellites">
 			{#each hex.satellites as satellite}
-				<Satellite raceId={satellite.raceId} width={width / 4} />
+				<Satellite raceId={satellite.raceId} width={width / 5} />
 			{/each}
 		</div>
 	{/if}
-	<!-- 
-	{#if (isClickable || isSelected)}
-		<div class={classes.selector + (isSelected ? " selected" : notes ? " with-qic" : "")}></div>
-	{/if} -->
+	{#if clickable || selected}
+		<div class="selector-wrapper">
+			<Selector radius={hexSizing.height} {selected} withQic={notes} />
+		</div>
+	{/if}
 	<svg class="clicker">
-		<polygon class={isClickable ? "clickable" : ""} points={hexCorners(hexSizing)} onClick={onClicked} />
+		<polygon class:clickable points={hexCorners(hexSizing)} onClick={onClicked} />
 	</svg>
 </div>
 
@@ -179,9 +183,6 @@
 		width: 75%;
 		left: 12.5%;
 		top: 7.5%;
-	}
-
-	.ivits-space-station {
 	}
 
 	.building-wrapper {
@@ -215,6 +216,14 @@
 		height: 100%;
 		padding: 15%;
 		box-sizing: border-box;
+	}
+
+	.selector-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
 	}
 
 	.clicker {

@@ -92,3 +92,15 @@ code {
 	border-color: red;
 	pointer-events: none;
 }
+
+html {
+	--selectable-color: dodgerblue;
+	--selected-color: red;
+	--qic-color: #049E3F;
+}
+
+.wth-ratio-1 {
+	position: relative;
+	width: 100%;
+	padding-top: 100%;
+}

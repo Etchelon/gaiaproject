@@ -5,14 +5,10 @@
 	export let raceId: Race;
 	export let width: number;
 
-	$: styles = {
-		width: `${width}px`,
-		height: `${width}px`,
-		backgroundColor: getRaceColor(raceId),
-	};
+	$: style = `width: ${width}px; height: ${width}px; background-color: ${getRaceColor(raceId)}`;
 </script>
 
-<div class="satellite" style:width={styles.width} style:height={styles.height} style:background-color={styles.backgroundColor} />
+<div class="satellite" {style} />
 
 <style>
 	.satellite {
