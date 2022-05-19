@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Race } from "$dto/enums";
 	import { getContrastColor } from "$utils/colors";
+	import { withAspectRatioW } from "$utils/miscellanea";
 	import { getRaceColor } from "$utils/race-utils";
 
 	export let race: Race;
@@ -10,13 +11,14 @@
 	$: {
 		const raceColor = getRaceColor(race);
 		style = `
+	${withAspectRatioW(1)};
 	background-color: ${raceColor};
 	border-color: ${getContrastColor(raceColor)}
 	`;
 	}
 </script>
 
-<div class="player-marker wth-ratio-1" {style} />
+<div class="player-marker" {style} />
 
 <style>
 	.player-marker {

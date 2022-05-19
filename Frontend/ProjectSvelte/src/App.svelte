@@ -9,7 +9,7 @@
 </script>
 
 <main>
-	<h1 class="gaia-font">Hello {name}!</h1>
+	<h1 class="gaia-font text-primary-600">Hello {name}!</h1>
 	<section>
 		<input type="range" bind:value={playAreaWidth} min="500" max={window.innerWidth - 16} />
 	</section>

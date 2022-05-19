@@ -17,7 +17,7 @@
 	}
 </script>
 
-<div class="player-final-scoring-advancement fill-parent">
+<div class="player-final-scoring-advancement wh-full">
 	<div class="cube" style={`${cubeStyle}; left: ${getCubeX(playerStatus.count > 10 ? 0 : playerStatus.count)}`} />
 	{#if playerStatus.count > 10}
 		<div class="cube" style={`${cubeStyle}; left: ${getCubeX(playerStatus.count - 10)}`} />

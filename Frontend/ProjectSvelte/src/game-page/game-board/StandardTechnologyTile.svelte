@@ -26,6 +26,6 @@
 </script>
 
 <div style={withAspectRatioW(WIDTH_TO_HEIGHT_RATIO)}>
-	<img class="fill-parent-abs" src={assetUrl(`Boards/TechTiles/${standardTileImages.get(type)}.png`)} alt="" />
+	<img class="wh-full absolute top-0 left-0" src={assetUrl(`Boards/TechTiles/${standardTileImages.get(type)}.png`)} alt="" />
 	<div class={interactiveElementClass(clickable, selected)} on:click />
 </div>

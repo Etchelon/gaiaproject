@@ -19,6 +19,8 @@ export default defineConfig({
 			},
 			preprocess: sveltePreprocess({
 				sourceMap: !production,
+				typescript: true,
+				postcss: true,
 			}),
 		}),
 	],

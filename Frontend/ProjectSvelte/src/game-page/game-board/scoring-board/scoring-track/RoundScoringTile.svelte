@@ -27,5 +27,5 @@
 </script>
 
 <div {style}>
-	<img class="fill-parent" src={assetUrl(`Boards/ScoringTiles/${roundScoringTileNames.get(tile.tileId)}.png`)} alt="" />
+	<img class="wh-full" src={assetUrl(`Boards/ScoringTiles/${roundScoringTileNames.get(tile.tileId)}.png`)} alt="" />
 </div>

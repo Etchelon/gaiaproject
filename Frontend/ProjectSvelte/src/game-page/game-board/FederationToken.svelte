@@ -27,7 +27,11 @@
 </script>
 
 <div class:used style={withAspectRatioW(WIDTH_TO_HEIGHT_RATIO)}>
-	<img class="fill-parent-abs" style:object-fit="cover" src={assetUrl(`Boards/Federations/${federationTokenImages.get(type)}.png`)} alt="" />
+	<img
+		class="wh-full absolute top-0 left-0 object-cover"
+		src={assetUrl(`Boards/Federations/${federationTokenImages.get(type)}.png`)}
+		alt=""
+	/>
 	{#if inPlayerArea}
 		<div class={interactiveElementClass(clickable, selected)} on:click />
 	{/if}

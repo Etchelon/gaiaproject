@@ -27,7 +27,7 @@
 </script>
 
 <div class="final-scoring-track" {style}>
-	<div class="wrapper fill-parent">
+	<div class="wrapper wh-full">
 		<div class="player-scorings" {style}>
 			{#each scoring.players as playerAdvancement (playerAdvancement.player.id)}
 				<div class="player-scoring">
@@ -36,7 +36,7 @@
 			{/each}
 		</div>
 		<div class="tile" style:width={`${height * TILE_WIDTH_TO_HEIGHT_RATIO}px`}>
-			<img class="fill-parent" src={assetUrl(`Boards/FinalScoring/${finalScoringTileNames.get(scoring.tileId)}.png`)} alt="" />
+			<img class="wh-full" src={assetUrl(`Boards/FinalScoring/${finalScoringTileNames.get(scoring.tileId)}.png`)} alt="" />
 		</div>
 	</div>
 </div>

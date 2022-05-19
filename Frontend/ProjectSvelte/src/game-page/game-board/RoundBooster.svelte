@@ -35,7 +35,7 @@
 </script>
 
 <div style={withAspectRatioW(WIDTH_TO_HEIGHT_RATIO)}>
-	<img class="fill-parent-abs" src={assetUrl(`Boards/RoundBoosters/${roundBoosterNames.get(booster.id)}.png`)} alt="" />
+	<img class="wh-full absolute top-0 left-0" src={assetUrl(`Boards/RoundBoosters/${roundBoosterNames.get(booster.id)}.png`)} alt="" />
 	{#if booster.used}
 		<div class="action-token">
 			<ActionToken />

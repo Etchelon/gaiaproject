@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	import type { FederationTokenStackDto } from "$dto/interfaces";
-	import { interactiveElementClass, withAspectRatioH } from "$utils/miscellanea";
+	import { interactiveElementClass, withAspectRatioW } from "$utils/miscellanea";
 	import { random, range } from "lodash";
 	import FederationToken from "../FederationToken.svelte";
 
@@ -14,8 +14,8 @@
 	let selected = random(true) > 0.75;
 </script>
 
-<div style={withAspectRatioH(HEIGHT_TO_WIDTH_RATIO)}>
-	<div class="fill-parent-abs">
+<div style={withAspectRatioW(1 / HEIGHT_TO_WIDTH_RATIO)}>
+	<div class="wh-full absolute top-0 left-0">
 		{#each range(0, stack.remaining) as n}
 			<div class="token" style={`top: ${n * 12}%; left: ${n * 15}%`}>
 				<FederationToken type={stack.type} />

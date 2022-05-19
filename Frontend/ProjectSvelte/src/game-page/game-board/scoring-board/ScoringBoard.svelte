@@ -21,23 +21,21 @@
 
 <svelte:window on:resize={getContainerWidth} />
 
-<div class="scoring-board fill-parent" bind:this={container}>
-	<div class="container">
-		<div class="grid">
-			<div class="grid">
+<div class="scoring-board wh-full">
+	<div class="lg:container lg:mx-auto">
+		<div class="grid grid-cols-2 gap-2 md:gap-4">
+			<div class="col-span-2 md:col-span-1" bind:this={container}>
 				<ScoringTrack {board} {width} />
 			</div>
-			<div class="grid">
-				<div class="round-boosters fill-parent">
+			<div class="grid grid-rows-2 gap-2 md:gap-4">
+				<div class="round-boosters wh-full">
 					{#each roundBoosters as booster (booster.id)}
 						<div class="booster">
 							<RoundBooster {booster} />
 						</div>
 					{/each}
 				</div>
-			</div>
-			<div class="grid">
-				<div class="federation-tokens fill-parent">
+				<div class="federation-tokens wh-full">
 					{#each federationTokens.filter(stack => stack.remaining > 0) as stack (stack.type)}
 						<div class="stack">
 							<FederationTokenStack {stack} />

@@ -3,5 +3,5 @@
 </script>
 
 <div style={withAspectRatioW(1)}>
-	<img class="fill-parent" style:object-fit="cover" src={assetUrl("Markers/ActionToken.png")} alt="" />
+	<img class="wh-full object-cover" src={assetUrl("Markers/ActionToken.png")} alt="" />
 </div>
