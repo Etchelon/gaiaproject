@@ -1,0 +1,40 @@
+<script lang="ts" context="module">
+	const getCubeX = (count: number): string => `${count === 0 ? 1 : 8.85 * (count - 1) + 11}%`;
+</script>
+
+<script lang="ts">
+	import type { PlayerFinalScoringStatusDto } from "$dto/interfaces";
+	import { getContrastColor } from "$utils/colors";
+	import { getRaceColor } from "$utils/race-utils";
+
+	export let playerStatus: PlayerFinalScoringStatusDto;
+
+	let cubeStyle: string;
+	$: {
+		const color = getRaceColor(playerStatus.player.raceId!);
+		const borderColor = getContrastColor(color);
+		cubeStyle = `border-color: ${borderColor}; background-color: ${color}; `;
+	}
+</script>
+
+<div class="player-final-scoring-advancement fill-parent">
+	<div class="cube" style={`${cubeStyle}; left: ${getCubeX(playerStatus.count % 11)}`} />
+	{#if playerStatus.count > 10}
+		<div class="cube" style={`${cubeStyle}; left: ${getCubeX(playerStatus.count - 10)}`} />
+	{/if}
+</div>
+
+<style>
+	.player-final-scoring-advancement {
+		position: relative;
+	}
+
+	.player-final-scoring-advancement > .cube {
+		position: absolute;
+		width: calc(6% + 2px); /* 2px is twice the border */
+		padding-top: 6%;
+		top: 0;
+		border: 1px solid;
+		border-radius: 3;
+	}
+</style>

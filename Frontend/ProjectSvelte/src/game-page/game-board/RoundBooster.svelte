@@ -25,7 +25,7 @@
 	import PlayerMarker from "./PlayerMarker.svelte";
 
 	export let booster: RoundBoosterTileDto | RoundBoosterDto;
-	export let withPlayerInfo: boolean;
+	export let withPlayerInfo = false;
 	export let nonInteractive = false;
 
 	let availableBooster = booster as RoundBoosterTileDto;
