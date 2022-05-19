@@ -85,17 +85,20 @@ export const interactiveBorder: any = {
 	},
 };
 
-export const withAspectRatioW = (wTohRatio: number): any => ({
-	position: "relative",
-	width: "100%",
-	paddingTop: `${100 / wTohRatio}%`,
-});
+export const interactiveElementClass = (isClickable: boolean, isSelected: boolean, rootClass = "") =>
+	`${rootClass} interactive${isSelected ? " selected" : isClickable ? " clickable" : ""}`;
 
-export const withAspectRatioH = (hTowRatio: number): any => ({
-	position: "relative",
-	height: "100%",
-	paddingLeft: `${100 / hTowRatio}%`,
-});
+export const withAspectRatioW = (wTohRatio: number) => `
+	position: relative;
+	width: 100%;
+	padding-top: ${100 / wTohRatio}%
+`;
+
+export const withAspectRatioH = (hTowRatio: number) => `
+	position: relative;
+	height: 100%;
+	padding-left: ${100 / hTowRatio}%
+`;
 
 // For the following smartMemoize implementation, see https://dev.to/nioufe/you-should-not-use-lodash-for-memoization-3441
 const hasher = (...args: any[]): string => JSON.stringify(args);
@@ -109,9 +112,6 @@ export function getHex(id: string, game: GameStateDto): HexDto {
 		.find(h => h.id === id)
 		.value();
 }
-
-export const interactiveElementClass = (isClickable: boolean, isSelected: boolean, rootClass = "") =>
-	`${rootClass} interactive${isSelected ? " selected" : isClickable ? " clickable" : ""}`;
 
 export type Nullable<T> = T | null;
 

@@ -12,6 +12,10 @@ body {
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
+* {
+	box-sizing: border-box;
+}
+
 @font-face {
 	font-family: nulshock-bold;
 	src: url("./assets/nulshock-bold.ttf");
@@ -103,4 +107,17 @@ html {
 	position: relative;
 	width: 100%;
 	padding-top: 100%;
+}
+
+.fill-parent {
+	width: 100%;
+	height: 100%;
+}
+
+.fill-parent-abs {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
 }

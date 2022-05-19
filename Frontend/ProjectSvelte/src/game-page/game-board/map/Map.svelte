@@ -145,9 +145,7 @@
 	let dimensions: HexDimensions;
 	$: {
 		const shape = map.shape;
-		// height = isNil(height) ? 450 : Math.max(height, 450);
 		dimensions = isNil(height) ? calculateDimensionsFromWidth(width, shape) : calculateDimensionsFromHeight(height - 4, shape);
-		console.log({ dimensions, width });
 	}
 	$: style = `width: ${dimensions.mapWidth}px; height: ${dimensions.mapHeight}px`;
 </script>

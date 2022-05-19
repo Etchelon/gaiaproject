@@ -1,17 +1,19 @@
 <script lang="ts">
 	import { gameDto } from "./data";
 	import Map from "./game-page/game-board/map/Map.svelte";
+	import ResearchBoard from "./game-page/game-board/research-board/ResearchBoard.svelte";
 
 	export let name = "Project Svelte";
-	let mapWidth = 500;
+	let playAreaWidth = 500;
 </script>
 
 <main>
 	<h1 class="gaia-font">Hello {name}!</h1>
 	<section>
-		<input type="range" bind:value={mapWidth} min="500" max={window.innerWidth} />
+		<input type="range" bind:value={playAreaWidth} min="500" max={window.innerWidth} />
 	</section>
-	<Map map={gameDto.boardState.map} width={mapWidth} />
+	<ResearchBoard board={gameDto.boardState.researchBoard} width={playAreaWidth} />
+	<Map map={gameDto.boardState.map} width={playAreaWidth} />
 </main>
 
 <style>
