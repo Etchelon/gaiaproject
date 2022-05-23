@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import { BrainstoneLocation, Race } from "$dto/enums";
+	import { BrainstoneLocation, BuildingType, Race } from "$dto/enums";
 	import type { PlayerInGameDto, PowerPoolsDto } from "$dto/interfaces";
 	import { Point, withAspectRatioW } from "$utils/miscellanea";
 	import { assetUrl } from "$utils/miscellanea";
@@ -106,7 +106,7 @@
 		spacing?: number;
 	}
 
-	const resourcesH = 0.035;
+	const resourcesH = 0.055;
 	const buildingGeometries: { [type: string]: BuildingGeometry } = {
 		mine: {
 			w: 0.0381,
@@ -198,8 +198,8 @@
 		gf: {
 			w: 0.0623,
 			h: 0.0984,
-			x: 0.775,
-			y: 0.3,
+			x: 0.75,
+			y: 0.305,
 			spacing: 0.0775,
 		},
 		raceAsBescods: {
@@ -215,11 +215,11 @@
 
 	//#endregion
 
-	const boardElementStyle = (type: string) => `
+	const boardElementStyle = (type: string, left?: number) => `
 		width: ${buildingGeometries[type].w * 100}%;
 		height: ${buildingGeometries[type].h * 100}%;
 		top: ${buildingGeometries[type].y * 100}%;
-		left: ${buildingGeometries[type].x * 100}%;
+		left: ${left ?? buildingGeometries[type].x * 100}%;
 	`;
 </script>
 
@@ -230,82 +230,120 @@
 	$: race = player?.raceId ?? Race.None;
 </script>
 
-<div style={withAspectRatioW(WIDTH_TO_HEIGHT_RATIO)}>
-	<div class="wh-full absolute top-0 left-0 flex justify-center items-center">
-		<img class="wh-full" src={assetUrl(`Races/Boards_${boardVersion}/${getRaceBoard(player.raceId)}`)} alt="" />
-		<div class="resource-tokens absolute top-0 left-0 w-full" style:padding-top={`${resourcesH * 100}%`}>
-			<div class="token" style:left={resourceX(player.state.resources.ores, -1)}>
-				<ResourceToken type="Ores" />
-			</div>
-			<div class="token" style:left={resourceX(player.state.resources.knowledge)}>
-				<ResourceToken type="Knowledge" />
-			</div>
-			<div class="token" style:left={resourceX(Math.min(player.state.resources.credits, 15), 1)}>
-				<ResourceToken type="Credits" />
-			</div>
-			{#if player.state.resources.credits > 15}
-				<div class="token" style:left={resourceX(player.state.resources.credits - 15, -2)}>
+{#if player?.state}
+	<div style={withAspectRatioW(WIDTH_TO_HEIGHT_RATIO)}>
+		<div class="wh-full absolute top-0 left-0 flex justify-center items-center">
+			<img class="wh-full" src={assetUrl(`Races/Boards_${boardVersion}/${getRaceBoard(player.raceId)}`)} alt="" />
+			<div class="resource-tokens absolute top-0 left-0 w-full" style:height={`${resourcesH * 100}%`}>
+				<div class="token" style:left={resourceX(player.state.resources.ores, -1)}>
+					<ResourceToken type="Ores" />
+				</div>
+				<div class="token" style:left={resourceX(player.state.resources.knowledge)}>
+					<ResourceToken type="Knowledge" />
+				</div>
+				<div class="token" style:left={resourceX(Math.min(player.state.resources.credits, 15), 1)}>
 					<ResourceToken type="Credits" />
 				</div>
+				{#if player.state.resources.credits > 15}
+					<div class="token" style:left={resourceX(player.state.resources.credits - 15, -2)}>
+						<ResourceToken type="Credits" />
+					</div>
+				{/if}
+			</div>
+			{#if player.state.raceActionSpace}
+				<div class="action-space" style={isBescods ? boardElementStyle("raceAsBescods") : ""}>
+					<ActionSpace space={player.state.raceActionSpace} />
+				</div>
 			{/if}
+			{#if !player.state.buildings.planetaryInstitute}
+				<div class="action-space" style={isBescods ? boardElementStyle("piBescods") : boardElementStyle("pi")}>
+					<Building type={BuildingType.PlanetaryInstitute} raceId={race} />
+				</div>
+			{/if}
+			{#if player.state.planetaryInstituteActionSpace}
+				<div
+					class="action-space"
+					style={boardElementStyle(race === Race.Ambas ? "piAsAmbas" : race === Race.Firaks ? "piAsFiraks" : "piAsIvits")}
+				>
+					<ActionSpace space={player.state.planetaryInstituteActionSpace} />
+				</div>
+			{/if}
+			{#if !player.state.buildings.academyLeft}
+				<div class="action-space" style={isBescods ? boardElementStyle("aclBescods") : boardElementStyle("acl")}>
+					<Building type={BuildingType.AcademyLeft} raceId={race} />
+				</div>
+			{/if}
+			{#if !player.state.buildings.academyRight}
+				<div class="action-space" style={isBescods ? boardElementStyle("acrBescods") : boardElementStyle("acr")}>
+					<Building type={BuildingType.AcademyRight} raceId={race} />
+				</div>
+			{/if}
+			{#if player.state.rightAcademyActionSpace}
+				<div class="action-space" style={isBescods ? boardElementStyle("acrAsBescods") : boardElementStyle("acrAs")}>
+					<ActionSpace space={player.state.rightAcademyActionSpace} />
+				</div>
+			{/if}
+			{#each range(0, 4 - player.state.buildings.tradingStations) as n}
+				<div
+					class="building-wrapper"
+					style={`${boardElementStyle("ts", (buildingGeometries.ts.x + (buildingGeometries.ts.spacing || 0) * (3 - n)) * 100)}`}
+				>
+					<Building type={BuildingType.TradingStation} raceId={race} />
+				</div>
+			{/each}
+			{#each range(0, 3 - player.state.buildings.researchLabs) as n}
+				<div
+					class="building-wrapper"
+					style={`${boardElementStyle("rl", (buildingGeometries.rl.x + (buildingGeometries.rl.spacing || 0) * (2 - n)) * 100)}`}
+				>
+					<Building type={BuildingType.ResearchLab} raceId={race} />
+				</div>
+			{/each}
+			{#each range(0, 8 - player.state.buildings.mines) as n}
+				<div
+					class="building-wrapper"
+					style={`${boardElementStyle(
+						"mine",
+						(buildingGeometries.mine.x + (buildingGeometries.mine.spacing || 0) * (7 - n)) * 100
+					)}`}
+				>
+					<Building type={BuildingType.Mine} raceId={race} />
+				</div>
+			{/each}
+			{#each player.state.availableGaiaformers.filter(gf => gf.available || gf.spentInGaiaArea) as gf, index (gf.id)}
+				<div
+					class="building-wrapper"
+					style={`
+						top: ${(gf.available ? buildingGeometries.gf.y : gfgaX + gfgaSpacing * (index + 1)) * 100}%;
+						left: ${(gf.available ? buildingGeometries.gf.x + (buildingGeometries.gf.spacing || 0) * index : gfgaX) * 100}%;
+						height: ${buildingGeometries.gf.h * 80}%
+					`}
+				>
+					<Building type={BuildingType.Gaiaformer} raceId={race} />
+				</div>
+			{/each}
+			<!-- {renderPowerTokens(player.state.resources.power, race)} -->
 		</div>
-		{#if player.state.raceActionSpace}
-			<div class="action-space" style={isBescods ? boardElementStyle("raceAsBescods") : ""}>
-				<ActionSpace space={player.state.raceActionSpace} />
-			</div>
-		{/if}
-		{#if !player.state.buildings.planetaryInstitute}
-			<div class="action-space" style={isBescods ? boardElementStyle("piBescods") : boardElementStyle("pi")}>
-				 <Building type={BuildingType.PlanetaryInstitute} raceId={player.raceId!} />
-			 </div>
-		{/if}
-		{#if player.state.planetaryInstituteActionSpace}
-			<div class="action-space" style={boardElementStyle(race === Race.Ambas ? "piAsAmbas" : race === Race.Firaks ? "piAsFiraks" : "piAsIvits")}>
-				<ActionSpace space={player.state.planetaryInstituteActionSpace} />
-			</div>
-		{/if}
-		{#if !player.state.buildings.academyLeft}
-			<div class={`${isBescods ? "aclBescods" : classes.acl} actionSpace`}>
-				<Building type={BuildingType.AcademyLeft} raceId={player.raceId!} />
-			</div>
-		{/if}
-		{#if !player.state.buildings.academyRight}
-			<div class={`${isBescods ? "acrBescods" : classes.acr} actionSpace`}>
-				<Building type={BuildingType.AcademyRight} raceId={player.raceId!} />
-			</div>
-		{/if}
-		{#if player.state.rightAcademyActionSpace}
-			<div class={`${isBescods ? "acrAsBescods" : classes.acrAs} actionSpace`}>
-				<ActionSpace space={player.state.rightAcademyActionSpace} />
-			</div>
-		{/if}
-		{#each range(0, 4 - player.state.buildings.tradingStations) as n}
-			<div class={classes.ts + " building"} style={`left: ${(buildingGeometries.ts.x + buildingGeometries.ts.spacing * (3 - n)) * 100}%`}>
-				<Building type={BuildingType.TradingStation} raceId={player.raceId!} />
-			</div>
-		{/each}
-		{#each range(0, 3 - player.state.buildings.researchLabs) as n}
-			<div class={classes.rl + " building"} style={`left: ${(buildingGeometries.rl.x + buildingGeometries.rl.spacing * (2 - n)) * 100}%`}>
-				<Building type={BuildingType.ResearchLab} raceId={player.raceId!} />
-			</div>
-		{/each}
-		{#each range(0, 8 - player.state.buildings.mines) as n}
-			<div class={classes.mine + " building"} style={`left: ${(buildingGeometries.mine.x + buildingGeometries.mine.spacing * (7 - n)) * 100}%`}>
-				<Building type={BuildingType.Mine} raceId={player.raceId!} />
-			</div>
-		{/each}
-		{#each player.state.availableGaiaformers.filter(gf => gf.available || gf.spentInGaiaArea) as gf, index (gf.id)}
-			<div
-				class={classes.gf + " building"}
-				style={`
-					top: ${(gf.available ? buildingGeometries.gf.y : (gfgaX + gfgaSpacing * (index + 1))) * 100}%;
-					left: ${(gf.available ? (buildingGeometries.gf.x + buildingGeometries.gf.spacing * index) : gfgaX) * 100}%;
-					height: ${buildingGeometries.gf.h * 80}%
-				`}
-			>
-				<Building type={BuildingType.Gaiaformer} raceId={player.raceId!} />
-			</div>
-		{/each}
-		<!-- {renderPowerTokens(player.state.resources.power, player.raceId!)} -->
 	</div>
-</div>
+{/if}
+
+<style>
+	.token {
+		position: absolute;
+		top: 15%;
+		width: 3%;
+	}
+
+	.action-space {
+		position: absolute;
+	}
+
+	.building-wrapper {
+		position: absolute;
+	}
+
+	.power-token {
+		position: absolute;
+		width: 3%;
+	}
+</style>

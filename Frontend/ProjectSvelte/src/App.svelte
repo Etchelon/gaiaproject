@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { gameDto } from "./data";
 	import Map from "./game-page/game-board/map/Map.svelte";
+	import PlayerArea from "./game-page/game-board/players/PlayerArea.svelte";
 	import ResearchBoard from "./game-page/game-board/research-board/ResearchBoard.svelte";
 	import ScoringBoard from "./game-page/game-board/scoring-board/ScoringBoard.svelte";
 
@@ -20,6 +21,11 @@
 	/>
 	<ResearchBoard board={gameDto.boardState.researchBoard} width={playAreaWidth} />
 	<Map map={gameDto.boardState.map} width={playAreaWidth} />
+	{#each gameDto.players as player}
+		<div class="player-area-wrapper" style:width={`${playAreaWidth}px`}>
+			<PlayerArea {player} />
+		</div>
+	{/each}
 </main>
 
 <style>

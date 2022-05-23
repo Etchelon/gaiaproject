@@ -86,7 +86,7 @@ export const interactiveBorder: any = {
 };
 
 export const interactiveElementClass = (isClickable: boolean, isSelected: boolean, rootClass = "") =>
-	`${rootClass} interactive${isSelected ? " selected" : isClickable ? " clickable" : ""}`;
+	`interactive-element${isSelected ? " selected" : isClickable ? " clickable" : ""}${rootClass ? ` ${rootClass}` : ""}`;
 
 export const withAspectRatioW = (wTohRatio: number) => `
 	position: relative;
@@ -202,7 +202,9 @@ export const countActivatableActions = (player: PlayerInGameDto, includeGaiaform
 		availableSpecialActionsCount += Number(!ps.roundBooster.used);
 	}
 
-	const gain4PowerTile = ps.technologyTiles.find(tt => tt.id === StandardTechnologyTileType.ActionGain4Power && isNil(tt.coveredByAdvancedTile));
+	const gain4PowerTile = ps.technologyTiles.find(
+		tt => tt.id === StandardTechnologyTileType.ActionGain4Power && isNil(tt.coveredByAdvancedTile)
+	);
 	if (gain4PowerTile) {
 		allSpecialActionsCount += 1;
 		availableSpecialActionsCount += Number(!gain4PowerTile.used);

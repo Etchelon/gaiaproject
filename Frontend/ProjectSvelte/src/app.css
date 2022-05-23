@@ -39,7 +39,7 @@ html {
 	font-family: nulshock-bold !important;
 }
 
-.interactive {
+.interactive-element {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -52,13 +52,13 @@ html {
 	background-color: transparent;
 }
 
-.interactive.clickable {
+.interactive-element.clickable {
 	border-color: var(--selectable-color);
 	cursor: pointer;
 	pointer-events: all;
 }
 
-.interactive.selected {
+.interactive-element.selected {
 	border-color: var(--selected-color);
 	pointer-events: none;
 }

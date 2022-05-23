@@ -7,6 +7,7 @@
 	import { isEmpty, isNil } from "lodash";
 	import FederationToken from "../FederationToken.svelte";
 	import RoundBooster from "../RoundBooster.svelte";
+	import PlayerBoard from "./PlayerBoard.svelte";
 	import PlayerTechnologyTile from "./PlayerTechnologyTile.svelte";
 
 	export let player: PlayerInGameDto;
@@ -17,7 +18,7 @@
 	<div class={framed ? "p-1 sm:p-2 md:p-2 border-1 md:border-2 border-gray-500 rounded-md" : ""}>
 		<div class="flex items-stretch">
 			<div class="flex-initial" style:width={`calc(100% * ${BOOSTER_TO_BOARD_RATIO - 1} / ${BOOSTER_TO_BOARD_RATIO})`}>
-				<!-- <PlayerBoard player={player} /> -->
+				<PlayerBoard {player} />
 			</div>
 			<div class="flex-shrink-0 w-2 sm:w-3 md:w-4" />
 			<div class="flex flex-col flex-shrink-0" style:width={`calc(100% / ${BOOSTER_TO_BOARD_RATIO})`}>
@@ -38,7 +39,7 @@
 		{#if !isEmpty(player.state.technologyTiles)}
 			<div class="flex flex-wrap mt-1 md:mt-3">
 				{#each player.state.technologyTiles as tile (tile.id)}
-					<div class="tech-tile mr-1 md:mr-3">
+					<div class="tech-tile-wrapper mr-1 md:mr-3">
 						<PlayerTechnologyTile {tile} playerId={player.id} />
 					</div>
 				{/each}
@@ -48,7 +49,7 @@
 {/if}
 
 <style>
-	.tech-tile {
+	.tech-tile-wrapper {
 		width: 10%;
 	}
 </style>

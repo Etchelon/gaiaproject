@@ -95,7 +95,9 @@
 
 	$: buildingStyle = onMap ? "sandwich" : "vanilla";
 	$: buildingHeight = `${100 * getBuildingScale(type, onMap)}%`;
-	$: imgUrl = assetUrl(`Races/Buildings${getBuildingFolderSuffix(buildingStyle)}/${getBuildingImagePrefix(type)}_${getBuildingColor(raceId)}.png`);
+	$: imgUrl = assetUrl(
+		`Races/Buildings${getBuildingFolderSuffix(buildingStyle)}/${getBuildingImagePrefix(type)}_${getBuildingColor(raceId)}.png`
+	);
 </script>
 
 <div class="building" class:animated={!onMap && !noAnimation}>
@@ -113,6 +115,7 @@
 	.img {
 		object-fit: cover;
 		pointer-events: none;
+		max-width: none;
 	}
 
 	.building.animated:hover .img {

@@ -50,8 +50,9 @@
 	}
 
 	.action-token {
+		position: absolute;
 		width: 50%;
-		top: 17%;
+		top: 20%;
 		left: 25%;
 	}
 
