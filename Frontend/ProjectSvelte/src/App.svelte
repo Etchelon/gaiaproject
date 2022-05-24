@@ -2,6 +2,7 @@
 	import { gameDto } from "./data";
 	import Map from "./game-page/game-board/map/Map.svelte";
 	import PlayerArea from "./game-page/game-board/players/PlayerArea.svelte";
+	import PlayerBox from "./game-page/game-board/players/PlayerBox.svelte";
 	import ResearchBoard from "./game-page/game-board/research-board/ResearchBoard.svelte";
 	import ScoringBoard from "./game-page/game-board/scoring-board/ScoringBoard.svelte";
 
@@ -14,6 +15,12 @@
 	<section>
 		<input type="range" bind:value={playAreaWidth} min="500" max={window.innerWidth - 16} />
 	</section>
+	<hr />
+	<div class="player-boxes-and-logs">
+		{#each gameDto.players as player, index (player.id)}
+			<PlayerBox {player} {index} />
+		{/each}
+	</div>
 	<ScoringBoard
 		board={gameDto.boardState.scoringBoard}
 		federationTokens={gameDto.boardState.availableFederations}
@@ -33,5 +40,9 @@
 		text-transform: uppercase;
 		font-size: 4em;
 		font-weight: 100;
+	}
+
+	.player-boxes-and-logs {
+		max-width: 350px;
 	}
 </style>

@@ -21,6 +21,7 @@ export default defineConfig({
 				sourceMap: !production,
 				typescript: true,
 				postcss: true,
+				scss: true,
 			}),
 		}),
 	],
