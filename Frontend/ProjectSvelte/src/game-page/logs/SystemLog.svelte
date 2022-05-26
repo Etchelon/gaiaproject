@@ -1,9 +1,10 @@
 <script lang="ts">
 	import ListItem from "$components/list/ListItem.svelte";
+	import ListItemText from "$components/list/ListItemText.svelte";
 
 	export let message: string;
 </script>
 
 <ListItem>
-	<p class="m-0 gaia-font text-center">{message}</p>
+	<ListItemText classes="text-center" text={message} />
 </ListItem>

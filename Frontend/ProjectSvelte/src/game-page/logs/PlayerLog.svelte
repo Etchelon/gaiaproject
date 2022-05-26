@@ -1,27 +1,31 @@
 <script lang="ts">
 	import ListItem from "$components/list/ListItem.svelte";
 	import ListItemAvatar from "$components/list/ListItemAvatar.svelte";
+	import ListItemText from "$components/list/ListItemText.svelte";
 	import type { GameLogDto } from "$dto/interfaces";
+	import { getContrastColor } from "$utils/colors";
 	import { assetUrl } from "$utils/miscellanea";
-	import { getRaceImage } from "$utils/race-utils";
+	import { getRaceColor, getRaceImage } from "$utils/race-utils";
+	import PlayerSubLog from "./PlayerSubLog.svelte";
 
 	export let log: GameLogDto;
 	export let canRollback: boolean;
 	export let doRollback: (actionId: number) => void;
 
-	$: imgUrl = assetUrl(`Races/${getRaceImage(log.race)}`);
+	const imgUrl = assetUrl(`Races/${getRaceImage(log.race)}`);
+	const playerColor = getRaceColor(log.race);
+	const textColor = getContrastColor(playerColor);
 </script>
 
-<ListItem>
+<ListItem --background-color={playerColor} --color={textColor}>
 	<ListItemAvatar src={imgUrl} />
-	<!-- <ListItemText
-		style={{ margin: theme.spacing(0) }}
-		primary={log.message}
-		primaryTypographyProps={{ class: `${styles.mainLog} ${"gaia-font"}` }}
-		secondary={some(log.subLogs) && subLogs()}
-		secondaryTypographyProps={{ component: "div" }}
-	/>
-	{#if canRollback}
+	<div class="flex-auto min-w-0">
+		<ListItemText text={log.message} size="sm" />
+		{#each log.subLogs as subLog}
+			<PlayerSubLog {subLog} isAnotherPlayer={log.player !== subLog.player} />
+		{/each}
+	</div>
+	<!-- {#if canRollback}
 		<div class={styles.rollbackButton}>
 			<IconButton aria-label="Rollback to this action" onClick={() => setIsPromptingForRollback(true)} size="large">
 				<HistoryIcon style={{ color }} />

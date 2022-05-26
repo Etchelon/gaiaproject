@@ -5,6 +5,7 @@
 	import PlayerBox from "./game-page/game-board/players/PlayerBox.svelte";
 	import ResearchBoard from "./game-page/game-board/research-board/ResearchBoard.svelte";
 	import ScoringBoard from "./game-page/game-board/scoring-board/ScoringBoard.svelte";
+	import GameLog from "./game-page/logs/GameLog.svelte";
 
 	export let name = "Project Svelte";
 	let playAreaWidth = 500;
@@ -16,10 +17,19 @@
 		<input type="range" bind:value={playAreaWidth} min="500" max={window.innerWidth - 16} />
 	</section>
 	<hr />
-	<div class="player-boxes-and-logs">
-		{#each gameDto.players as player, index (player.id)}
-			<PlayerBox {player} {index} />
-		{/each}
+	<div class="container flex">
+		<div class="player-boxes-and-logs w-full md:w-1/2">
+			{#each gameDto.players as player, index (player.id)}
+				<PlayerBox {player} {index} />
+			{/each}
+		</div>
+		<div class="player-boxes-and-logs w-full md:w-1/2">
+			{#each gameDto.gameLogs as log}
+				<div class="mb-2 last:mb-0">
+					<GameLog {log} canRollback={false} doRollback={() => {}} />
+				</div>
+			{/each}
+		</div>
 	</div>
 	<ScoringBoard
 		board={gameDto.boardState.scoringBoard}
@@ -44,5 +54,7 @@
 
 	.player-boxes-and-logs {
 		max-width: 350px;
+		padding: 1rem;
+		background-color: black;
 	}
 </style>

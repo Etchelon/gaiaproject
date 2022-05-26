@@ -1,8 +1,19 @@
 <script lang="ts">
-	export let backgroundColor = "white";
-	export let color = "black";
+	export let noPadding = false;
 </script>
 
-<li class={`p-3 text-xl text-${color} bg-${backgroundColor} list-none`}>
+<div class={`wrapper flex items-center text-xl ${noPadding ? "" : " py-2 px-4"}`}>
 	<slot />
-</li>
+</div>
+
+<style>
+	:root {
+		--background-color: white;
+		--color: black;
+	}
+
+	.wrapper {
+		background-color: var(--background-color);
+		color: var(--color);
+	}
+</style>
