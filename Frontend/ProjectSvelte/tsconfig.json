@@ -13,6 +13,7 @@
 		"useDefineForClassFields": true,
 		"baseUrl": ".",
 		"paths": {
+			"$components/*": ["src/components/*"],
 			"$dto/*": ["src/dto/*"],
 			"$utils/*": ["src/utils/*"]
 		}

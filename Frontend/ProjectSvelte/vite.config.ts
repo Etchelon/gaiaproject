@@ -8,6 +8,7 @@ const production = process.env.MODE?.toLowerCase() === "production";
 export default defineConfig({
 	resolve: {
 		alias: {
+			$components: path.resolve(__dirname, "./src/components"),
 			$dto: path.resolve(__dirname, "./src/dto"),
 			$utils: path.resolve(__dirname, "./src/utils"),
 		},
