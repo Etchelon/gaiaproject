@@ -56,26 +56,3 @@
 		</div>
 	{/if} -->
 </ListItem>
-
-<style lang="scss">
-	.playerLog {
-		padding: 4px 8px !important;
-		position: relative;
-
-		.mainLog {
-			font-size: 0.75rem;
-		}
-
-		.rollbackButton {
-			display: none;
-			position: absolute;
-			top: 5px;
-			right: 5px;
-			cursor: pointer;
-		}
-
-		&:hover .rollbackButton {
-			display: block;
-		}
-	}
-</style>

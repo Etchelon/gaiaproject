@@ -2,7 +2,7 @@
 	export let noPadding = false;
 </script>
 
-<div class={`wrapper flex items-center text-xl ${noPadding ? "" : " py-2 px-4"}`}>
+<div class={`wrapper flex items-center text-xl ${noPadding ? "" : " py-2 px-4"} hover:cursor-pointer`}>
 	<slot />
 </div>
 

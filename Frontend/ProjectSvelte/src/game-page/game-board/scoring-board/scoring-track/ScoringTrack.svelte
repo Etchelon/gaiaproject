@@ -45,7 +45,7 @@
 	$: roundTileWidth = width * 0.225;
 </script>
 
-<div class="scoring-track" style:height={`${height}px`}>
+<div class="scoring-track" style:width={`${width}px`} style:height={`${height}px`}>
 	<img class="image" src={assetUrl("Boards/ScoreTrack.png")} alt="" />
 	{#each board.scoringTiles as roundTile (roundTile.roundNumber)}
 		<div class="round-tile" style={getRoundTileCoordinates(roundTile.roundNumber, width)}>
