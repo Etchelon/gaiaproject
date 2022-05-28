@@ -7,13 +7,15 @@
 </script>
 
 <script lang="ts">
-	import type { GameStateDto, RoundBoosterTileDto } from "$dto/interfaces";
+	import type { GameStateDto } from "$dto/interfaces";
 	import { ActiveView } from "$utils/types";
 	import FederationTokenStack from "../game-board/scoring-board/FederationTokenStack.svelte";
 	import Map from "../game-board/map/Map.svelte";
 	import ResearchBoard from "../game-board/research-board/ResearchBoard.svelte";
 	import RoundBooster from "../game-board/RoundBooster.svelte";
 	import ScoringTrack from "../game-board/scoring-board/scoring-track/ScoringTrack.svelte";
+	import { selectAllRoundBoosters } from "$utils/selectors";
+	import TurnOrderMinimap from "../turn-order/TurnOrderMinimap.svelte";
 
 	export let game: GameStateDto;
 	export let width: number;
@@ -22,9 +24,10 @@
 	export let minimapClicked: (view: ActiveView) => void;
 
 	$: map = game.boardState.map;
-	$: boosters = [] as RoundBoosterTileDto[];
+	$: boosters = selectAllRoundBoosters(game);
 	$: nBoosters = boosters.length;
 	$: federations = game.boardState.availableFederations.filter(stack => stack.remaining > 0);
+	$: nFederations = federations.length;
 </script>
 
 <div class="main-view flex justify-center items-center overflow-auto relative wh-full">
@@ -44,15 +47,27 @@
 					style:width={`${nBoosters * BOOSTER_AND_FEDERATION_WIDTH + (nBoosters - 1) * BOOSTER_SPACING}px`}
 				>
 					{#each boosters as booster, index (booster.id)}
-						<div class="round-booster" style:right={`${(BOOSTER_AND_FEDERATION_WIDTH + BOOSTER_SPACING) * index}px`}>
+						<div
+							class="round-booster"
+							style:width={`${BOOSTER_AND_FEDERATION_WIDTH}px`}
+							style:right={`${(BOOSTER_AND_FEDERATION_WIDTH + BOOSTER_SPACING) * index}px`}
+						>
 							<RoundBooster {booster} withPlayerInfo={true} nonInteractive={true} />
 						</div>
 					{/each}
 					<div class="click-trap" onClick={() => minimapClicked(ActiveView.ScoringBoard)} />
 				</div>
-				<div class="federations" style:top={`calc(${BOOSTER_HEIGHT_TO_WIDTH_RATIO * BOOSTER_AND_FEDERATION_WIDTH}px + 8px)`}>
+				<div
+					class="federations"
+					style:width={`${nFederations * FEDERATION_WIDTH + (nFederations - 1) * FEDERATION_SPACING}px`}
+					style:top={`calc(${BOOSTER_HEIGHT_TO_WIDTH_RATIO * BOOSTER_AND_FEDERATION_WIDTH}px + 8px)`}
+				>
 					{#each federations as stack, index (stack.type)}
-						<div class="federation" style:right={`${(FEDERATION_WIDTH + FEDERATION_SPACING) * index}px`}>
+						<div
+							class="federation"
+							style:width={`${FEDERATION_WIDTH}px`}
+							style:right={`${(FEDERATION_WIDTH + FEDERATION_SPACING) * index}px`}
+						>
 							<FederationTokenStack {stack} />
 						</div>
 					{/each}
@@ -60,7 +75,7 @@
 				</div>
 			</div>
 			<div class="minimap turn-order">
-				<!-- <TurnOrderMinimap {game} direction="vertical" /> -->
+				<TurnOrderMinimap {game} direction="vertical" />
 			</div>
 		</div>
 	{/if}
@@ -119,11 +134,10 @@
 		right: 0;
 
 		&:not(:hover) {
-			width: 70px;
+			width: 70px !important;
 		}
 
 		.round-booster {
-			width: 100%;
 			position: absolute;
 			top: 0;
 
@@ -142,11 +156,10 @@
 		right: 0;
 
 		&:not(:hover) {
-			width: 70px;
+			width: 70px !important;
 		}
 
 		.federation {
-			width: 100%;
 			position: absolute;
 			bottom: 0;
 
@@ -154,10 +167,10 @@
 				position: static;
 			}
 		}
+	}
 
-		.turn-order {
-			bottom: 0;
-			right: 0;
-		}
+	.turn-order {
+		bottom: 0;
+		right: 0;
 	}
 </style>
