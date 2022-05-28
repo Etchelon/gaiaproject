@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { ActiveView } from "$utils/types";
+
 	import { onMount } from "svelte";
 
 	import { gameDto } from "./data";
-	import MainView from "./game-page/desktop/MainView.svelte";
+	import DesktopView from "./game-page/desktop/DesktopView.svelte";
 	import Map from "./game-page/game-board/map/Map.svelte";
 	import PlayerArea from "./game-page/game-board/players/PlayerArea.svelte";
 	import PlayerBox from "./game-page/game-board/players/PlayerBox.svelte";
@@ -24,7 +26,7 @@
 
 <main>
 	<div class="desktop-view">
-		<MainView game={gameDto} width={playAreaWidth} height={(playAreaWidth * 3) / 4} showMinimaps minimapClicked={() => {}} />
+		<DesktopView game={gameDto} players={gameDto.players} activeView={ActiveView.Map} />
 	</div>
 	<div class="status-bar-wrapper" class:mobile={isMobile}>
 		<StatusBar game={gameDto} playerId="" {isMobile} isSpectator={false} />
