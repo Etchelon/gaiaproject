@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	import { ActiveView } from "$utils/types";
 
+	const PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO = 1.439;
 	const ACTIVATABLE_VIEWS = [
 		{ label: "Map", view: ActiveView.Map },
 		{ label: "Research Board", view: ActiveView.ResearchBoard },
@@ -9,6 +10,7 @@
 </script>
 
 <script lang="ts">
+	import { GamePhase } from "$dto/enums";
 	import type { GameStateDto, PlayerInGameDto } from "$dto/interfaces";
 	import { noop } from "lodash";
 	import { onMount } from "svelte";
@@ -25,22 +27,56 @@
 	export let currentPlayerId = "";
 	export let isSpectator = false;
 
+	const isGameCreator = game.createdBy.id === currentPlayerId;
+	const canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
+
 	let container: HTMLDivElement;
 	let width: number;
 	let height: number;
+	let dialogPlayerAreaStyle = `width: 0; height: 0; top: 0; left: 0;`;
+
 	onMount(() => {
 		width = container.clientWidth;
 		height = container.clientHeight;
-		console.log({ container });
+
+		let dpaHeight = height * 0.95;
+		let dpaWidth = dpaHeight * PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO;
+		if (dpaWidth > width) {
+			dpaWidth = width * 0.95;
+			dpaHeight = dpaWidth / PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO;
+		}
+
+		dialogPlayerAreaStyle = `width: ${dpaWidth}px; height: ${dpaHeight}px; top: ${(height - dpaHeight) / 2}px; left: ${
+			(width - dpaWidth) / 2
+		}px;`;
 	});
 
 	const setActiveView = (view: ActiveView) => {
 		activeView = view;
 	};
+	const showPlayerArea = (playerId: string) => {
+		if (playerId === playerAreaToShow?.id) {
+			hidePlayerArea();
+			return;
+		}
+
+		const player = players.find(p => p.id === playerId)!;
+		playerAreaToShow = player;
+	};
+	const hidePlayerArea = () => {
+		playerAreaToShow = null;
+	};
 
 	let playerAreaToShow: PlayerInGameDto | null = null;
 
 	$: actualView = activeView === ActiveView.Map || activeView === ActiveView.PlayerArea ? ActiveView.Map : activeView;
+	$: {
+		if (activeView !== ActiveView.PlayerArea) {
+			hidePlayerArea();
+		} else {
+			showPlayerArea(currentPlayerId);
+		}
+	}
 </script>
 
 <div class="w-full h-screen p-2 overflow-x-hidden overflow-y-auto bg-gray-900">
@@ -62,7 +98,7 @@
 					<!-- <PlayerConfig gameId={game.id} /> -->
 				{/if}
 				{#if playerAreaToShow}
-					<div class="absolute z-10 bg-gray-900">
+					<div class="absolute z-10 bg-gray-900" style={dialogPlayerAreaStyle}>
 						<PlayerArea player={playerAreaToShow} framed />
 					</div>
 				{/if}
@@ -82,12 +118,14 @@
 		<div class="h-full overflow-x-hidden overflow-y-auto">
 			<div class="w-full flex flex-col gap-2">
 				{#each game.players as player, index (player.id)}
-					<PlayerBox {player} {index} />
+					<div class="contents" on:click={() => showPlayerArea(player.id)}>
+						<PlayerBox {player} {index} />
+					</div>
 				{/each}
 			</div>
 			<div class="w-full mt-2 flex flex-col gap-2">
 				{#each game.gameLogs as log}
-					<GameLog {log} canRollback={false} doRollback={noop} />
+					<GameLog {log} {canRollback} doRollback={noop} />
 				{/each}
 			</div>
 		</div>

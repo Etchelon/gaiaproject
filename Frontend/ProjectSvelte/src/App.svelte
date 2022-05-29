@@ -10,6 +10,7 @@
 	import PlayerBox from "./game-page/game-board/players/PlayerBox.svelte";
 	import ResearchBoard from "./game-page/game-board/research-board/ResearchBoard.svelte";
 	import ScoringBoard from "./game-page/game-board/scoring-board/ScoringBoard.svelte";
+	import GamePageProvider from "./game-page/GamePageProvider.svelte";
 	import GameLog from "./game-page/logs/GameLog.svelte";
 	import StatusBar from "./game-page/status-bar/StatusBar.svelte";
 
@@ -25,6 +26,9 @@
 </script>
 
 <main>
+	<div class="game-page">
+		<GamePageProvider gameId="" />
+	</div>
 	<div class="desktop-view">
 		<DesktopView game={gameDto} players={gameDto.players} activeView={ActiveView.Map} />
 	</div>
