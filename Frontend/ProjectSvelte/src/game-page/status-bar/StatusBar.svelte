@@ -2,13 +2,16 @@
 	import Button from "$components/list/Button.svelte";
 	import ListItem from "$components/list/ListItem.svelte";
 	import ListItemText from "$components/list/ListItemText.svelte";
-	import type { GameStateDto } from "$dto/interfaces";
 	import { noop, random } from "lodash";
+	import { getGamePageContext } from "../GamePage.context";
 
-	export let game: GameStateDto;
 	export let isMobile: boolean;
 	export let playerId: string | null;
 	export let isSpectator: boolean;
+
+	const { store } = getGamePageContext();
+
+	$: game = $store.game;
 
 	const isExecutingAction = random(true) > 0.95;
 	const statusMessage = "TODO: from the store";
@@ -53,7 +56,7 @@
 
 <svelte:window on:click={closeMenu} />
 <div
-	class="flex items-center justify-center gap-1 md:gap-3 py-1 px-2 md:py-2 md:px-4 bg-white shadow-sm shadow-gray-500"
+	class="flex items-center justify-center h-full gap-1 md:gap-3 py-1 px-2 md:py-2 md:px-4 bg-white shadow-sm shadow-gray-500"
 	class:flex-col={useVerticalLayout}
 >
 	<div class="flex-initial text-xs md:text-sm text-center gaia-font">{statusBarMessage}</div>

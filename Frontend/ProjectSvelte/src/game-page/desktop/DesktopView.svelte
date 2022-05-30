@@ -20,22 +20,35 @@
 	import ScoringBoard from "../game-board/scoring-board/ScoringBoard.svelte";
 	import GameLog from "../logs/GameLog.svelte";
 	import MainView from "./MainView.svelte";
+	import { getGamePageContext } from "../GamePage.context";
 
-	export let game: GameStateDto;
-	export let players: PlayerInGameDto[];
-	export let activeView: ActiveView;
 	export let currentPlayerId = "";
 	export let isSpectator = false;
 
-	const isGameCreator = game.createdBy.id === currentPlayerId;
-	const canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
+	const { store } = getGamePageContext();
+
+	$: game = $store.game;
+	$: players = game.players;
+	$: isGameCreator = game.createdBy.id === currentPlayerId;
+	$: canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
+	$: activeView = $store.activeView;
+	$: actualView = activeView === ActiveView.Map || activeView === ActiveView.PlayerArea ? ActiveView.Map : activeView;
+	$: {
+		if (activeView !== ActiveView.PlayerArea) {
+			hidePlayerArea();
+		} else {
+			showPlayerArea(currentPlayerId);
+		}
+	}
+
+	//#region Sizing
 
 	let container: HTMLDivElement;
 	let width: number;
 	let height: number;
-	let dialogPlayerAreaStyle = `width: 0; height: 0; top: 0; left: 0;`;
+	let playerAreaModalStyle = `width: 0; height: 0; top: 0; left: 0;`;
 
-	onMount(() => {
+	const calculatePlayerAreaModalSize = () => {
 		width = container.clientWidth;
 		height = container.clientHeight;
 
@@ -46,14 +59,24 @@
 			dpaHeight = dpaWidth / PLAYER_AREA_WIDTH_TO_HEIGHT_RATIO;
 		}
 
-		dialogPlayerAreaStyle = `width: ${dpaWidth}px; height: ${dpaHeight}px; top: ${(height - dpaHeight) / 2}px; left: ${
+		playerAreaModalStyle = `width: ${dpaWidth}px; height: ${dpaHeight}px; top: ${(height - dpaHeight) / 2}px; left: ${
 			(width - dpaWidth) / 2
 		}px;`;
-	});
+	};
+
+	onMount(calculatePlayerAreaModalSize);
+
+	//#endregion
+
+	let playerAreaToShow: PlayerInGameDto | null = null;
 
 	const setActiveView = (view: ActiveView) => {
-		activeView = view;
+		store.update(gamePageStore => ({
+			...gamePageStore,
+			activeView: view,
+		}));
 	};
+
 	const showPlayerArea = (playerId: string) => {
 		if (playerId === playerAreaToShow?.id) {
 			hidePlayerArea();
@@ -66,20 +89,10 @@
 	const hidePlayerArea = () => {
 		playerAreaToShow = null;
 	};
-
-	let playerAreaToShow: PlayerInGameDto | null = null;
-
-	$: actualView = activeView === ActiveView.Map || activeView === ActiveView.PlayerArea ? ActiveView.Map : activeView;
-	$: {
-		if (activeView !== ActiveView.PlayerArea) {
-			hidePlayerArea();
-		} else {
-			showPlayerArea(currentPlayerId);
-		}
-	}
 </script>
 
-<div class="w-full h-screen p-2 overflow-x-hidden overflow-y-auto bg-gray-900">
+<svelte:window on:resize={calculatePlayerAreaModalSize} />
+<div class="desktop-view wh-full overflow-x-hidden overflow-y-auto">
 	<div class="grid grid-cols-4 gap-2 h-full">
 		<div class="col-span-3 h-full flex flex-col gap-2">
 			<div class="flex justify-center items-center flex-auto relative" bind:this={container}>
@@ -98,7 +111,7 @@
 					<!-- <PlayerConfig gameId={game.id} /> -->
 				{/if}
 				{#if playerAreaToShow}
-					<div class="absolute z-10 bg-gray-900" style={dialogPlayerAreaStyle}>
+					<div class="absolute z-10 bg-gray-900" style={playerAreaModalStyle}>
 						<PlayerArea player={playerAreaToShow} framed />
 					</div>
 				{/if}

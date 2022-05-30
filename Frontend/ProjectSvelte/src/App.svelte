@@ -1,10 +1,6 @@
 <script lang="ts">
-	import { ActiveView } from "$utils/types";
-
 	import { onMount } from "svelte";
-
 	import { gameDto } from "./data";
-	import DesktopView from "./game-page/desktop/DesktopView.svelte";
 	import Map from "./game-page/game-board/map/Map.svelte";
 	import PlayerArea from "./game-page/game-board/players/PlayerArea.svelte";
 	import PlayerBox from "./game-page/game-board/players/PlayerBox.svelte";
@@ -12,7 +8,6 @@
 	import ScoringBoard from "./game-page/game-board/scoring-board/ScoringBoard.svelte";
 	import GamePageProvider from "./game-page/GamePageProvider.svelte";
 	import GameLog from "./game-page/logs/GameLog.svelte";
-	import StatusBar from "./game-page/status-bar/StatusBar.svelte";
 
 	export let name = "Project Svelte";
 	let playAreaWidth: number;
@@ -28,12 +23,6 @@
 <main>
 	<div class="game-page">
 		<GamePageProvider gameId="" />
-	</div>
-	<div class="desktop-view">
-		<DesktopView game={gameDto} players={gameDto.players} activeView={ActiveView.Map} />
-	</div>
-	<div class="status-bar-wrapper" class:mobile={isMobile}>
-		<StatusBar game={gameDto} playerId="" {isMobile} isSpectator={false} />
 	</div>
 	<h1 class="gaia-font text-primary-600">Hello {name}!</h1>
 	<section>
