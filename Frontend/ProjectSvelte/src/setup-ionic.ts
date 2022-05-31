@@ -74,6 +74,7 @@ import { IonRow } from "@ionic/core/components/ion-row";
 import { IonTitle } from "@ionic/core/components/ion-title";
 import { IonToast } from "@ionic/core/components/ion-toast";
 import { IonToolbar } from "@ionic/core/components/ion-toolbar";
+import { IonIcon } from "ionicons/components/ion-icon";
 
 // Prevents exception when hot reloading.
 function tryDefine(tag: string, impl: any) {
@@ -82,7 +83,7 @@ function tryDefine(tag: string, impl: any) {
 	} catch (error) {}
 }
 
-export const setupIonic = () => {
+export const setupIonic = async () => {
 	initialize();
 	tryDefine("ion-accordion-group", IonAccordionGroup);
 	tryDefine("ion-accordion", IonAccordion);
@@ -112,6 +113,7 @@ export const setupIonic = () => {
 	tryDefine("ion-footer", IonFooter);
 	tryDefine("ion-grid", IonGrid);
 	tryDefine("ion-header", IonHeader);
+	tryDefine("ion-icon", IonIcon);
 	tryDefine("ion-img", IonImg);
 	tryDefine("ion-input", IonInput);
 	tryDefine("ion-item-divider", IonItemDivider);

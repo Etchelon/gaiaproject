@@ -15,7 +15,7 @@
 	let classes: string;
 	$: {
 		const sizeClasses = size === "normal" ? "py-2 px-4 text-sm" : "py-1 px-2 text-xs";
-		const colorClasses = variant === "default" ? "bg-white text-black border-gray-400 border-2" : "bg-primary-700 text-white";
+		const colorClasses = variant === "default" ? "bg-white text-gray-900 border-gray-400 border-2" : "bg-primary-700 text-white";
 		classes = `${sizeClasses} ${colorClasses}`;
 	}
 </script>

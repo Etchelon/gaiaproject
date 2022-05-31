@@ -8,8 +8,8 @@
 </script>
 
 <ion-app>
-	<ion-split-pane content-id="main-content">
-		<ion-menu content-id="main-content" type="reveal" swipe-gesture>
+	<ion-split-pane content-id="main-content" when="(min-width: 2000px)">
+		<ion-menu content-id="main-content" type="overlay" swipe-gesture>
 			<ion-content>
 				<ion-menu-toggle auto-hide={false}>
 					<ion-item lines="full">
@@ -24,8 +24,14 @@
 				</ion-menu-toggle>
 			</ion-content>
 		</ion-menu>
+		<Page contentId="main-content">
+			<GamePageProvider gameId="" />
+		</Page>
 	</ion-split-pane>
-	<Page contentId="main-content">
-		<GamePageProvider gameId="" />
-	</Page>
 </ion-app>
+
+<style>
+	ion-split-pane {
+		--side-max-width: 300px;
+	}
+</style>

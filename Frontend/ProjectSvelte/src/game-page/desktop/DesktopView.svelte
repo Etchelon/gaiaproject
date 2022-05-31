@@ -119,7 +119,7 @@
 			<div class="tabs flex items-center justify-center gap-4 flex-shrink-0 bg-white">
 				{#each ACTIVATABLE_VIEWS as av (av.view)}
 					<div
-						class="tab text-center cursor-pointer gaia-font"
+						class="tab text-center text-gray-900 cursor-pointer gaia-font"
 						class:active={actualView === av.view}
 						on:click={() => setActiveView(av.view)}
 					>

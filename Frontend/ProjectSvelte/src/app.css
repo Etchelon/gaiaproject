@@ -1,6 +1,7 @@
 @import "./tailwind.css";
 
 @import "@ionic/core/css/core";
+@import "./ionic-variables.css";
 
 /* Fonts */
 @font-face {
