@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Button from "$components/list/Button.svelte";
+	import Button from "$components/Button.svelte";
 	import ListItem from "$components/list/ListItem.svelte";
 	import ListItemText from "$components/list/ListItemText.svelte";
 	import { noop, random } from "lodash";

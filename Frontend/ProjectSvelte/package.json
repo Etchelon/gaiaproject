@@ -11,10 +11,12 @@
 		"check": "svelte-check --tsconfig ./tsconfig.json"
 	},
 	"dependencies": {
+		"@ionic/core": "^6.1.7",
 		"@microsoft/signalr": "^6.0.5",
+		"ionicons": "6.0.1",
 		"lodash": "^4.17.21",
 		"luxon": "^2.4.0",
-		"sirv-cli": "^2.0.0"
+		"rxjs": "^7.5.5"
 	},
 	"devDependencies": {
 		"@rollup/plugin-commonjs": "^17.0.0",

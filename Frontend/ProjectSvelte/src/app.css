@@ -1,5 +1,7 @@
 @import "./tailwind.css";
 
+@import "@ionic/core/css/core";
+
 /* Fonts */
 @font-face {
 	font-family: nulshock-bold;

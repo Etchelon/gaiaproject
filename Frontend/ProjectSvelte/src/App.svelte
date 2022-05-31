@@ -1,85 +1,31 @@
 <script lang="ts">
+	import Page from "$components/Page.svelte";
 	import { onMount } from "svelte";
-	import { gameDto } from "./data";
-	import Map from "./game-page/game-board/map/Map.svelte";
-	import PlayerArea from "./game-page/game-board/players/PlayerArea.svelte";
-	import PlayerBox from "./game-page/game-board/players/PlayerBox.svelte";
-	import ResearchBoard from "./game-page/game-board/research-board/ResearchBoard.svelte";
-	import ScoringBoard from "./game-page/game-board/scoring-board/ScoringBoard.svelte";
 	import GamePageProvider from "./game-page/GamePageProvider.svelte";
-	import GameLog from "./game-page/logs/GameLog.svelte";
+	import { setupIonic } from "./setup-ionic";
 
-	export let name = "Project Svelte";
-	let playAreaWidth: number;
-
-	onMount(() => {
-		playAreaWidth = window.innerWidth - 16;
-		console.log({ playAreaWidth });
-	});
-
-	$: isMobile = playAreaWidth < 600;
+	onMount(setupIonic);
 </script>
 
-<main>
-	<div class="game-page">
+<ion-app>
+	<ion-split-pane content-id="main-content">
+		<ion-menu content-id="main-content" type="reveal" swipe-gesture>
+			<ion-content>
+				<ion-menu-toggle auto-hide={false}>
+					<ion-item lines="full">
+						<ion-label>
+							<h2>Games</h2>
+							<p>Your active games</p>
+						</ion-label>
+						<ion-button slot="end" fill="none" on:click={() => {}}>
+							<ion-icon slot="icon-only" name="log-in" />
+						</ion-button>
+					</ion-item>
+				</ion-menu-toggle>
+			</ion-content>
+		</ion-menu>
+	</ion-split-pane>
+	<Page contentId="main-content">
 		<GamePageProvider gameId="" />
-	</div>
-	<h1 class="gaia-font text-primary-600">Hello {name}!</h1>
-	<section>
-		<input type="range" bind:value={playAreaWidth} min="500" max={window.innerWidth - 16} />
-	</section>
-	<hr />
-	<div class="container flex">
-		<div class="player-boxes-and-logs w-full md:w-1/2">
-			{#each gameDto.players as player, index (player.id)}
-				<PlayerBox {player} {index} />
-			{/each}
-		</div>
-		<div class="player-boxes-and-logs w-full md:w-1/2">
-			{#each gameDto.gameLogs as log}
-				<div class="mb-2 last:mb-0">
-					<GameLog {log} canRollback={false} doRollback={() => {}} />
-				</div>
-			{/each}
-		</div>
-	</div>
-	<ScoringBoard
-		board={gameDto.boardState.scoringBoard}
-		federationTokens={gameDto.boardState.availableFederations}
-		roundBoosters={gameDto.boardState.availableRoundBoosters}
-	/>
-	<ResearchBoard board={gameDto.boardState.researchBoard} width={playAreaWidth} />
-	<Map map={gameDto.boardState.map} width={playAreaWidth} />
-	{#each gameDto.players as player}
-		<div class="player-area-wrapper" style:width={`${playAreaWidth}px`}>
-			<PlayerArea {player} />
-		</div>
-	{/each}
-</main>
-
-<style>
-	.status-bar-wrapper {
-		height: 56px;
-		padding: 3px;
-	}
-
-	.status-bar-wrapper.mobile {
-		position: sticky;
-		top: 0;
-		height: auto;
-		padding: 3px 0;
-		z-index: 11;
-	}
-
-	h1 {
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	.player-boxes-and-logs {
-		max-width: 350px;
-		padding: 1rem;
-		background-color: black;
-	}
-</style>
+	</Page>
+</ion-app>
