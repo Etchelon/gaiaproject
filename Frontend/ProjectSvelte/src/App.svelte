@@ -2,8 +2,11 @@
 	import { logIn } from "ionicons/icons";
 	import { onMount } from "svelte";
 	import Router from "svelte-spa-router";
+	import { setAppContext } from "./App.context";
 	import routes from "./routes";
 	import { setupIonic } from "./setup-ionic";
+
+	setAppContext();
 
 	onMount(setupIonic);
 </script>
@@ -21,7 +24,7 @@
 					<ion-item href="#/games" lines="full">
 						<ion-label>
 							<h2>Games</h2>
-							<p>Your active games</p>
+							<p>Your Games</p>
 						</ion-label>
 						<ion-button slot="end" fill="none" on:click={() => {}}>
 							<ion-icon slot="icon-only" icon={logIn} />

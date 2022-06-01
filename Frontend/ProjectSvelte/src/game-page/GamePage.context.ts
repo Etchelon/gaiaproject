@@ -1,6 +1,7 @@
 import { getContext, setContext } from "svelte";
 import type { Writable } from "svelte/store";
-import { gamePageStore, IGamePageStore } from "./GamePage.store";
+import { getAppContext } from "../App.context";
+import { getGamePageStore, IGamePageStore } from "./GamePage.store";
 
 const key = Symbol.for("GamePageContext");
 
@@ -13,10 +14,12 @@ interface IGamePageContext {
 export const getGamePageContext = () => getContext<IGamePageContext>(key);
 
 export const setGamePageContext = (id: string) => {
+	const { http } = getAppContext();
+	const store = getGamePageStore(id, http);
 	const ctx: IGamePageContext = {
 		id,
 		activeWorkflow: null,
-		store: gamePageStore,
+		store,
 	};
 	setContext(key, ctx);
 };

@@ -3,9 +3,9 @@
 	import { setGamePageContext } from "./GamePage.context";
 	import GamePage from "./GamePage.svelte";
 
-	export let gameId: string;
+	export let params: { id: string };
 
-	setGamePageContext(gameId);
+	setGamePageContext(params.id);
 </script>
 
 <Page title="Game">

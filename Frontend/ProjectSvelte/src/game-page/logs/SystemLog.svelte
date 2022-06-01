@@ -6,5 +6,5 @@
 </script>
 
 <ListItem>
-	<ListItemText classes="text-center" text={message} />
+	<ListItemText classes="text-center text-gray-900" text={message} />
 </ListItem>

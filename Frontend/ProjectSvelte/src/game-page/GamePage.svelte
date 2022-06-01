@@ -1,10 +1,17 @@
+<script lang="ts" context="module">
+	export const GAMEVIEW_WRAPPER_ID = "gameViewWrapper";
+	export const STATUSBAR_ID = "statusBar";
+</script>
+
 <script lang="ts">
-	import DesktopView from "./desktop/DesktopView.svelte";
-	import StatusBar from "./status-bar/StatusBar.svelte";
-	import { getGamePageContext } from "./GamePage.context";
-	import { airplane } from "ionicons/icons";
 	import { actionSheetController } from "@ionic/core/components";
 	import type { IonModal } from "@ionic/core/components/ion-modal";
+	import { airplane } from "ionicons/icons";
+	import { onMount } from "svelte";
+	import DesktopView from "./desktop/DesktopView.svelte";
+	import { getGamePageContext } from "./GamePage.context";
+	import MobileView from "./mobile/MobileView.svelte";
+	import StatusBar from "./status-bar/StatusBar.svelte";
 
 	async function showActionSheet() {
 		console.log({ actionSheetController, airplane });
@@ -21,19 +28,28 @@
 	const { store } = getGamePageContext();
 
 	const isSpectator = false;
-	const isMobile = false;
+	let isMobile = false;
+
+	const checkIsMobile = () => {
+		isMobile = window.innerWidth <= 600;
+	};
+	onMount(checkIsMobile);
 
 	let modal: IonModal;
 	let showModal = false;
 </script>
 
+<svelte:window on:resize={checkIsMobile} />
+
 {#if $store.game}
-	<div class="game-page h-full bg-gray-900" on:click={() => (showModal = true)}>
-		<div class="status-bar" class:desktop={!isMobile} class:mobile={isMobile}>
+	<div id={GAMEVIEW_WRAPPER_ID} class="game-page h-full bg-gray-900">
+		<div id={STATUSBAR_ID} class="status-bar" class:desktop={!isMobile} class:mobile={isMobile}>
 			<StatusBar playerId={null} {isSpectator} {isMobile} />
 		</div>
 		<div class="game-view" class:desktop={!isMobile} class:mobile={isMobile}>
-			{#if !isMobile}
+			{#if isMobile}
+				<MobileView currentPlayerId="" {isSpectator} />
+			{:else}
 				<DesktopView currentPlayerId="" {isSpectator} />
 			{/if}
 		</div>

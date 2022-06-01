@@ -59,7 +59,7 @@
 	class="flex items-center justify-center h-full gap-1 md:gap-3 py-1 px-2 md:py-2 md:px-4 bg-white shadow-sm shadow-gray-500"
 	class:flex-col={useVerticalLayout}
 >
-	<div class="flex-initial text-xs md:text-sm text-center gaia-font">{statusBarMessage}</div>
+	<div class="flex-initial text-xs md:text-sm text-center text-gray-900 gaia-font">{statusBarMessage}</div>
 	{#if !isSpectator}
 		{#if isIdle}
 			<div class="flex flex-shrink-0 gap-1 md:gap-3">
