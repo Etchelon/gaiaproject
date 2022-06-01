@@ -11,7 +11,7 @@
 
 <script lang="ts">
 	import { GamePhase } from "$dto/enums";
-	import type { GameStateDto, PlayerInGameDto } from "$dto/interfaces";
+	import type { PlayerInGameDto } from "$dto/interfaces";
 	import { noop } from "lodash";
 	import { onMount } from "svelte";
 	import PlayerArea from "../game-board/players/PlayerArea.svelte";
@@ -64,7 +64,12 @@
 		}px;`;
 	};
 
-	onMount(calculatePlayerAreaModalSize);
+	onMount(() => {
+		const resizeObserver = new ResizeObserver(calculatePlayerAreaModalSize);
+		resizeObserver.observe(container);
+
+		return () => resizeObserver.disconnect();
+	});
 
 	//#endregion
 
@@ -91,7 +96,6 @@
 	};
 </script>
 
-<svelte:window on:resize={calculatePlayerAreaModalSize} />
 <div class="desktop-view wh-full overflow-x-hidden overflow-y-auto">
 	<div class="grid grid-cols-4 gap-2 h-full">
 		<div class="col-span-3 h-full flex flex-col gap-2">

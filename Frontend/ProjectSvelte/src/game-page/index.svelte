@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Page from "$components/Page.svelte";
 	import { setGamePageContext } from "./GamePage.context";
 	import GamePage from "./GamePage.svelte";
 
@@ -7,4 +8,6 @@
 	setGamePageContext(gameId);
 </script>
 
-<GamePage />
+<Page title="Game">
+	<GamePage />
+</Page>

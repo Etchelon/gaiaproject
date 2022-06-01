@@ -25,6 +25,7 @@ specifiers:
   svelte: ^3.0.0
   svelte-check: ^2.0.0
   svelte-preprocess: ^4.0.0
+  svelte-spa-router: ^3.2.0
   tailwindcss: ^3.0.24
   tslib: ^2.0.0
   typescript: ^4.0.0
@@ -37,6 +38,7 @@ dependencies:
   lodash: 4.17.21
   luxon: 2.4.0
   rxjs: 7.5.5
+  svelte-spa-router: 3.2.0
 
 devDependencies:
   '@rollup/plugin-commonjs': 17.1.0_rollup@2.73.0
@@ -1215,6 +1217,11 @@ packages:
       picomatch: 2.3.1
     dev: true
 
+  /regexparam/2.0.0:
+    resolution: {integrity: sha512-gJKwd2MVPWHAIFLsaYDZfyKzHNS4o7E/v8YmNf44vmeV2e4YfVoDToTOKTvE7ab68cRJ++kLuEXJBaEeJVt5ow==}
+    engines: {node: '>=8'}
+    dev: false
+
   /require-relative/0.8.7:
     resolution: {integrity: sha1-eZlTn8ngR6N5KPoZb44VY9q9Nt4=}
     dev: true
@@ -1509,6 +1516,12 @@ packages:
       svelte: 3.48.0
       typescript: 4.6.4
     dev: true
+
+  /svelte-spa-router/3.2.0:
+    resolution: {integrity: sha512-igemo5Vs82TGBBw+DjWt6qKameXYzNs6aDXcTxou5XbEvOjiRcAM6MLkdVRCatn6u8r42dE99bt/br7T4qe/AQ==}
+    dependencies:
+      regexparam: 2.0.0
+    dev: false
 
   /svelte/3.48.0:
     resolution: {integrity: sha512-fN2YRm/bGumvjUpu6yI3BpvZnpIm9I6A7HR4oUNYd7ggYyIwSA/BX7DJ+UXXffLp6XNcUijyLvttbPVCYa/3xQ==}
