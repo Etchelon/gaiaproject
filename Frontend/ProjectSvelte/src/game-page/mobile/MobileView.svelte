@@ -30,7 +30,6 @@
 
 	$: game = $store.game;
 	$: map = game.boardState.map;
-	$: players = game.players;
 	$: isGameCreator = game.createdBy.id === currentPlayerId;
 	$: canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
 	$: activeView = $store.activeView;
@@ -58,7 +57,7 @@
 </script>
 
 <div bind:this={container}>
-	<div id="map" class="w-full overflow-x-auto overflow-y-hidden">
+	<div id="map" class="w-full overflow-x-auto overflow-y-hidden py-1">
 		<GameMap {map} {width} />
 	</div>
 	<div class="w-full mt-2" />
@@ -71,7 +70,6 @@
 			board={game.boardState.scoringBoard}
 			roundBoosters={game.boardState.availableRoundBoosters}
 			federationTokens={game.boardState.availableFederations}
-			isMobile={true}
 		/>
 	</div>
 	<div class="w-full mt-2" />

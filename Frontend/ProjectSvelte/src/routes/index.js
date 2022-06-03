@@ -9,7 +9,7 @@ const authenticationGuard = () => get(useAuth0.isAuthenticated);
 
 export default {
 	"/": HomePage,
-	"/games": wrap({
+	"/games/:kind": wrap({
 		asyncComponent: () => import("../games/index.svelte"),
 		conditions: [authenticationGuard],
 	}),

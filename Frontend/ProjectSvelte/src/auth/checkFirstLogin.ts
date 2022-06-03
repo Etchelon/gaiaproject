@@ -18,12 +18,13 @@ const isFirstLogin = async (http: HttpClient, auth0User: User): Promise<boolean>
 };
 
 const checkFirstLogin = async () => {
+	const { http } = getAppContext();
 	const { isAuthenticated, user } = useAuth0;
 	if (!get(isAuthenticated)) {
+		http.setBearerTokenFactory(async () => null);
 		return;
 	}
 
-	const { http } = getAppContext();
 	http.setBearerTokenFactory(() => useAuth0.getAccessToken({}));
 	const isFirst = await isFirstLogin(http, get(user)!);
 	if (!isFirst) {

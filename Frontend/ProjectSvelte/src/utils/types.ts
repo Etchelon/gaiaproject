@@ -1,3 +1,5 @@
+export type GameKind = "waiting" | "active" | "finished";
+
 export enum ActiveView {
 	Map,
 	ResearchBoard,

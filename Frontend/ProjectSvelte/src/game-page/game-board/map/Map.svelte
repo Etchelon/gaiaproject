@@ -15,11 +15,20 @@
 				throw new Error(`Shape ${shape} not handled`);
 			case 1:
 			case 2:
-				return (sectorNumber < 2 ? sectorNumber + 1 : sectorNumber < 5 ? (sectorNumber - 2) * 1.25 : sectorNumber - 5 + 1) * tileSpacings.horizontalSpacing;
+				return (
+					(sectorNumber < 2 ? sectorNumber + 1 : sectorNumber < 5 ? (sectorNumber - 2) * 1.25 : sectorNumber - 5 + 1) *
+					tileSpacings.horizontalSpacing
+				);
 			case 3:
-				return (sectorNumber < 3 ? sectorNumber : sectorNumber < 5 ? sectorNumber - 3 + 0.5 : sectorNumber - 5) * tileSpacings.horizontalSpacing;
+				return (
+					(sectorNumber < 3 ? sectorNumber : sectorNumber < 5 ? sectorNumber - 3 + 0.5 : sectorNumber - 5) *
+					tileSpacings.horizontalSpacing
+				);
 			case 4:
-				return (sectorNumber < 3 ? sectorNumber + 1 : sectorNumber < 7 ? (sectorNumber - 3) * 1.25 : sectorNumber - 7 + 1) * tileSpacings.horizontalSpacing;
+				return (
+					(sectorNumber < 3 ? sectorNumber + 1 : sectorNumber < 7 ? (sectorNumber - 3) * 1.25 : sectorNumber - 7 + 1) *
+					tileSpacings.horizontalSpacing
+				);
 		}
 	};
 
@@ -145,6 +154,7 @@
 	let dimensions: HexDimensions;
 	$: {
 		const shape = map.shape;
+		height = isNil(height) ? 450 : Math.max(height, 450);
 		dimensions = isNil(height) ? calculateDimensionsFromWidth(width, shape) : calculateDimensionsFromHeight(height - 4, shape);
 	}
 	$: style = `width: ${dimensions.mapWidth}px; height: ${dimensions.mapHeight}px`;

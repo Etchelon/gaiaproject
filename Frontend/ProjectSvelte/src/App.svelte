@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { logIn, logOut } from "ionicons/icons";
+	import { once } from "lodash";
 	import { onMount } from "svelte";
-	import { get } from "svelte/store";
-	import Router, { replace } from "svelte-spa-router";
 	import type { ConditionsFailedEvent } from "svelte-spa-router";
+	import Router, { replace } from "svelte-spa-router";
+	import { get } from "svelte/store";
 	import { initAppContext } from "./App.context";
-	import routes from "./routes";
-	import { setupIonic } from "./setup-ionic";
 	import { useAuth0 } from "./auth";
 	import checkFirstLogin from "./auth/checkFirstLogin";
+	import routes from "./routes";
+	import { setupIonic } from "./setup-ionic";
 
 	const { isAuthenticated, user, login, logout, initializeAuth0 } = useAuth0;
 
@@ -25,6 +26,8 @@
 		window.history.replaceState({}, document.title, appState && appState.targetUrl ? appState.targetUrl : window.location.pathname);
 	};
 
+	const onAuthenticated = once(checkFirstLogin);
+
 	initAppContext();
 
 	onMount(async () => {
@@ -34,7 +37,7 @@
 
 	$: {
 		if ($isAuthenticated && $user) {
-			checkFirstLogin();
+			onAuthenticated();
 		}
 	}
 </script>
@@ -51,10 +54,20 @@
 							<h2>Home</h2>
 						</ion-label>
 					</ion-item>
-					<ion-item href="#/games" lines="full">
+					<ion-item href="#/games/active" lines="full">
 						<ion-label>
-							<h2>Games</h2>
-							<p>Your Games</p>
+							<h2>Active Games</h2>
+						</ion-label>
+					</ion-item>
+					<ion-item href="#/games/waiting" lines="full">
+						<ion-label>
+							<h2>Active Games</h2>
+							<p>That are waiting for you</p>
+						</ion-label>
+					</ion-item>
+					<ion-item href="#/games/finished" lines="full">
+						<ion-label>
+							<h2>Finished Games</h2>
 						</ion-label>
 					</ion-item>
 					{#if !$isAuthenticated}
@@ -92,10 +105,5 @@
 <style>
 	ion-split-pane {
 		--side-max-width: 300px;
-	}
-
-	.toolbar-spacer {
-		width: 100%;
-		height: 56px;
 	}
 </style>

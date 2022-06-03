@@ -1,3 +1,4 @@
+import { push } from "svelte-spa-router";
 import type { Nullable } from "./miscellanea";
 
 const OK = 200;
@@ -15,15 +16,15 @@ export interface FetchAdditionalOptions {
 export class HttpClient {
 	constructor(private readonly baseUrl: string) {}
 
-	private _bearerTokenFactory: BearerTokenFactoryFn = async () => null;
+	private _bearerTokenFactory: Nullable<BearerTokenFactoryFn> = null;
 
-	setBearerTokenFactory(factory: () => Promise<string>): void {
+	setBearerTokenFactory(factory: BearerTokenFactoryFn): void {
 		this._bearerTokenFactory = factory;
 	}
 
 	private async fetchOptions(verb: HttpVerb, body?: unknown, additionalOptions?: FetchAdditionalOptions): Promise<RequestInit> {
-		const token = await this._bearerTokenFactory();
-		const authHeader = token !== null ? { Authorization: `Bearer ${token}` } : undefined;
+		const token = await this._bearerTokenFactory?.();
+		const authHeader = token ? { Authorization: `Bearer ${token}` } : undefined;
 		const headers = {
 			"Content-Type": additionalOptions?.contentType ?? "application/json",
 			...authHeader,
@@ -47,7 +48,7 @@ export class HttpClient {
 				return null as any;
 			case UNAUTHENTICATED:
 			case UNAUTHORIZED:
-				window.location.assign("/unauthorized");
+				push("/unauthorized");
 				return {} as any;
 			default:
 				throw new Error(`Status ${response.status} (${response.statusText}) not handled.`);

@@ -8,7 +8,6 @@
 	export let board: ScoringTrackDto;
 	export let roundBoosters: RoundBoosterTileDto[];
 	export let federationTokens: FederationTokenStackDto[];
-	export let isMobile = false;
 
 	let container: HTMLDivElement;
 	let width: number;
@@ -27,7 +26,7 @@
 			<div class="col-span-2 md:col-span-1" bind:this={container}>
 				<ScoringTrack {board} {width} />
 			</div>
-			<div class="col-span-2 md:col-span-1 grid grid-rows-2 gap-2 md:gap-4">
+			<div class="col-span-2 md:col-span-1 flex flex-col gap-2 md:gap-4">
 				<div class="round-boosters wh-full">
 					{#each roundBoosters as booster (booster.id)}
 						<div class="booster">
