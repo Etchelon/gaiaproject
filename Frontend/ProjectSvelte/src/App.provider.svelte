@@ -1,32 +1,28 @@
 <script lang="ts">
-	import { once } from "lodash";
+	import { HttpClient } from "$utils/http-client";
 	import { onMount } from "svelte";
-	import { initAppContext } from "./App.context";
+	import { IAppContext, initAppContext } from "./App.context";
 	import App from "./App.svelte";
-	import { useAuth0 } from "./auth";
-	import checkFirstLogin from "./auth/checkFirstLogin";
+	import { AuthService } from "./auth";
 	import { setupIonic } from "./setup-ionic";
-
-	const { isAuthenticated, isLoading, user, initializeAuth0 } = useAuth0;
 
 	const onRedirectCallback = (appState: any) => {
 		window.history.replaceState({}, document.title, appState && appState.targetUrl ? appState.targetUrl : window.location.pathname);
 	};
 
-	const onAuthenticated = once(checkFirstLogin);
-
-	initAppContext();
+	const http = new HttpClient(import.meta.env.VITE_API_BASE_URL);
+	const auth = new AuthService(http);
+	const { isLoading } = auth;
+	const ctx: IAppContext = {
+		http,
+		auth,
+	};
+	initAppContext(ctx);
 
 	onMount(async () => {
 		setupIonic();
-		await initializeAuth0(onRedirectCallback);
+		await auth.initializeAuth0(onRedirectCallback);
 	});
-
-	$: {
-		if ($isAuthenticated && $user) {
-			onAuthenticated();
-		}
-	}
 </script>
 
 {#if !$isLoading}

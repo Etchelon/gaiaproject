@@ -1,18 +1,16 @@
-import { HttpClient } from "$utils/http-client";
+import type { HttpClient } from "$utils/http-client";
 import { getContext, setContext } from "svelte";
+import type { AuthService } from "./auth";
 
 const key = Symbol.for("AppContext");
 
-interface IAppContext {
+export interface IAppContext {
 	http: HttpClient;
+	auth: AuthService;
 }
 
 export const getAppContext = () => getContext<IAppContext>(key);
 
-export const initAppContext = () => {
-	const http = new HttpClient("https://gaiaproject-no-docker.azurewebsites.net");
-	const ctx: IAppContext = {
-		http,
-	};
+export const initAppContext = (ctx: IAppContext) => {
 	setContext(key, ctx);
 };

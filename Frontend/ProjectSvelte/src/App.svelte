@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { logIn, logOut } from "ionicons/icons";
 	import Router, { replace } from "svelte-spa-router";
-	import { useAuth0 } from "./auth";
-	import routes from "./routes";
+	import { get } from "svelte/store";
+	import { getAppContext } from "./App.context";
+	import getRoutes from "./routes/index.mjs";
 
-	const { isAuthenticated, user, login, logout } = useAuth0;
+	const { auth } = getAppContext();
+	const { isAuthenticated, loggedUser, login, logout } = auth;
 
 	const onConditionFailed = () => {
 		if (!$isAuthenticated) {
@@ -14,6 +16,8 @@
 
 		replace("/not-found");
 	};
+
+	const routes = getRoutes(auth);
 </script>
 
 <ion-app>
@@ -50,7 +54,7 @@
 								<ion-img src="user.avatar" alt="AVT" />
 							</ion-avatar>
 							<ion-label>
-								<h2>{$user?.nickname}</h2>
+								<h2>{get(loggedUser).username}</h2>
 							</ion-label>
 							<ion-button slot="end" fill="none" on:click={logout}>
 								<ion-icon slot="icon-only" icon={logOut} />

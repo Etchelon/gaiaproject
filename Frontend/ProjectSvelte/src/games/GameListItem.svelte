@@ -16,7 +16,7 @@
 <ion-item-sliding>
 	<ion-item href={`#/game/${game.id}`}>
 		<ion-label class="gaia-font">
-			<h3>{game.name}</h3>
+			<h2>{game.name}</h2>
 			<p>
 				{#if finishDate}
 					Finished on {finishDate}

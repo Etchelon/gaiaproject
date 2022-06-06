@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { useAuth0 } from "src/auth";
 	import { getAppContext } from "../App.context";
 
-	const { user } = useAuth0;
+	const {
+		auth: { loggedUser },
+	} = getAppContext();
 </script>
 
-<h1>Profile page for user {$user?.nickname}</h1>
+<h1>Profile page for user {$loggedUser.username}</h1>

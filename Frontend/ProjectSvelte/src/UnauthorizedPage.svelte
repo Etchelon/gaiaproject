@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { useAuth0 } from "./auth";
+	import { getAppContext } from "./App.context";
+
+	const { auth } = getAppContext();
 </script>
 
 <div class="ion-page">
@@ -18,9 +20,7 @@
 			alt="You Shall Not Pass"
 		/>
 		<ion-text color="medium">
-			<h1 class="mt-4 text-center cursor-pointer" on:click={useAuth0.login}>
-				You need to login in order to browse the selected content
-			</h1>
+			<h1 class="mt-4 text-center cursor-pointer" on:click={auth.login}>You need to login in order to browse the selected content</h1>
 		</ion-text>
 	</ion-content>
 </div>
