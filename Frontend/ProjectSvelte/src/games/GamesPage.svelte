@@ -19,6 +19,7 @@
 	import Page from "$components/Page.svelte";
 	import type { GameInfoDto } from "$dto/interfaces";
 	import { getAppContext } from "../App.context";
+	import GameListItem from "./GameListItem.svelte";
 
 	export let kind: GameKind;
 
@@ -31,18 +32,15 @@
 	}
 </script>
 
-<Page title="Your games">
+<Page title={gameKindLabels.get(kind) ?? ""}>
 	{#await games$}
 		<div class="w-full h-10 p-4 flex justify-center">
 			<ion-spinner />
 		</div>
 	{:then games}
 		<ion-list>
-			<ion-list-header>{gameKindLabels.get(kind)}</ion-list-header>
 			{#each games as game (game.id)}
-				<ion-item href={`#/game/${game.id}`}>
-					<ion-label>{game.name}</ion-label>
-				</ion-item>
+				<GameListItem {game} />
 			{:else}
 				<ion-item>
 					<ion-label>Nothing here!</ion-label>

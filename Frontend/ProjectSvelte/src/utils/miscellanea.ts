@@ -1,7 +1,7 @@
 import { chain, delay, isNil, memoize } from "lodash";
 import { DateTime } from "luxon";
 import { ActionType, AdvancedTechnologyTileType, GamePhase, RoundBoosterType, StandardTechnologyTileType } from "../dto/enums";
-import type { GameStateDto, HexDto, PlayerInGameDto } from "../dto/interfaces";
+import type { GameStateDto, HexDto, PlayerInfoDto, PlayerInGameDto } from "../dto/interfaces";
 
 const LAST_ROUND = 6;
 export const CENTRAL_HEX_INDEX = 9;
@@ -226,3 +226,5 @@ export const countActivatableActions = (player: PlayerInGameDto, includeGaiaform
 };
 
 export const assetUrl = (relativeUrl: string) => `/assets/Resources/${relativeUrl}`;
+
+export const playerInitials = (player: PlayerInfoDto) => player.username.substring(0, 2);

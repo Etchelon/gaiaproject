@@ -4,6 +4,7 @@
 </script>
 
 <script lang="ts">
+	import Page from "$components/Page.svelte";
 	import { actionSheetController } from "@ionic/core/components";
 	import type { IonModal } from "@ionic/core/components/ion-modal";
 	import { airplane } from "ionicons/icons";
@@ -42,29 +43,31 @@
 <svelte:window on:resize={checkIsMobile} />
 
 {#if $store.game}
-	<div id={GAMEVIEW_WRAPPER_ID} class="game-page h-full bg-gray-900">
-		<div id={STATUSBAR_ID} class="status-bar" class:desktop={!isMobile} class:mobile={isMobile}>
-			<StatusBar playerId={null} {isSpectator} {isMobile} />
+	<Page title={$store.game.name}>
+		<div id={GAMEVIEW_WRAPPER_ID} class="game-page h-full bg-gray-900">
+			<div id={STATUSBAR_ID} class="status-bar" class:desktop={!isMobile} class:mobile={isMobile}>
+				<StatusBar playerId={null} {isSpectator} {isMobile} />
+			</div>
+			<div class="game-view" class:desktop={!isMobile} class:mobile={isMobile}>
+				{#if isMobile}
+					<MobileView currentPlayerId="" {isSpectator} />
+				{:else}
+					<DesktopView currentPlayerId="" {isSpectator} />
+				{/if}
+			</div>
 		</div>
-		<div class="game-view" class:desktop={!isMobile} class:mobile={isMobile}>
-			{#if isMobile}
-				<MobileView currentPlayerId="" {isSpectator} />
-			{:else}
-				<DesktopView currentPlayerId="" {isSpectator} />
-			{/if}
-		</div>
-	</div>
 
-	<ion-modal
-		bind:this={modal}
-		is-open={showModal}
-		on:click={async () => {
-			await modal.dismiss();
-			showModal = false;
-		}}
-	>
-		<h1 on:click={showActionSheet}>Hello Ionic modal!</h1>
-	</ion-modal>
+		<ion-modal
+			bind:this={modal}
+			is-open={showModal}
+			on:click={async () => {
+				await modal.dismiss();
+				showModal = false;
+			}}
+		>
+			<h1 on:click={showActionSheet}>Hello Ionic modal!</h1>
+		</ion-modal>
+	</Page>
 {/if}
 
 <style lang="scss">

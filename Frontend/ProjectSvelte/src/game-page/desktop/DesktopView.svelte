@@ -109,7 +109,6 @@
 						board={game.boardState.scoringBoard}
 						roundBoosters={game.boardState.availableRoundBoosters}
 						federationTokens={game.boardState.availableFederations}
-						isMobile={false}
 					/>
 				{:else if actualView === ActiveView.NotesAndSettings}
 					<!-- <PlayerConfig gameId={game.id} /> -->
