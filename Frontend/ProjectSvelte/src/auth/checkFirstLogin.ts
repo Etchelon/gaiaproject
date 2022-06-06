@@ -8,13 +8,13 @@ import { push } from "svelte-spa-router";
 import { getAppContext } from "../App.context";
 import { useAuth0 } from ".";
 
-const isFirstLogin = async (http: HttpClient, auth0User: User): Promise<boolean> => {
+const isFirstLogin = async (http: HttpClient, auth0User: User) => {
 	const result = await http.put<{ user: UserInfoDto; isFirstLogin: boolean }>(`api/Users/LoggedIn/${auth0User.sub}`, auth0User);
 	if (isNil(result)) {
 		throw new Error("Login failed");
 	}
 
-	return result.isFirstLogin;
+	return result;
 };
 
 const checkFirstLogin = async () => {
@@ -26,7 +26,7 @@ const checkFirstLogin = async () => {
 	}
 
 	http.setBearerTokenFactory(() => useAuth0.getAccessToken({}));
-	const isFirst = await isFirstLogin(http, get(user)!);
+	const { user: userDto, isFirstLogin: isFirst } = await isFirstLogin(http, get(user)!);
 	if (!isFirst) {
 		return;
 	}

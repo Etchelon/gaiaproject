@@ -13,6 +13,9 @@ export default defineConfig({
 			$utils: path.resolve(__dirname, "./src/utils"),
 		},
 	},
+	server: {
+		https: true,
+	},
 	plugins: [
 		svelte({
 			compilerOptions: {

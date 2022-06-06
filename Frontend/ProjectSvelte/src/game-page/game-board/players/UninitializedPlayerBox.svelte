@@ -9,7 +9,7 @@
 </script>
 
 <div class="player-box bg-white">
-	<div class="header text-black">
+	<div class="header text-gray-900">
 		<img class="avatar" class:opacity-0={!player.isActive} src={assetUrl("PlayerLoader.gif")} alt="" />
 		<div class="info">
 			<p class="username text-base gaia-font ellipsify">
