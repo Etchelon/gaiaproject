@@ -6,10 +6,6 @@
 	import { AuthService } from "./auth";
 	import { setupIonic } from "./setup-ionic";
 
-	const onRedirectCallback = (appState: any) => {
-		window.history.replaceState({}, document.title, appState && appState.targetUrl ? appState.targetUrl : window.location.pathname);
-	};
-
 	const http = new HttpClient(import.meta.env.VITE_API_BASE_URL);
 	const auth = new AuthService(http);
 	const { isLoading } = auth;
@@ -21,7 +17,7 @@
 
 	onMount(async () => {
 		setupIonic();
-		await auth.initializeAuth0(onRedirectCallback);
+		await auth.initializeAuth0();
 	});
 </script>
 

@@ -6,7 +6,11 @@
 	const { login } = auth;
 </script>
 
-<ion-item lines="full">
+<div class="flex-auto overflow-x-hidden overflow-y-auto">
+	<!-- No routes -->
+</div>
+
+<ion-item class="flex-shrink-0" lines="none">
 	<ion-label>
 		<h2>Anonymous user</h2>
 		<p>Login to use all the features</p>

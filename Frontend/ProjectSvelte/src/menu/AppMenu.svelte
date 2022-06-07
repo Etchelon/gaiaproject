@@ -9,19 +9,16 @@
 </script>
 
 <ion-menu content-id={contentId} type="overlay" swipe-gesture>
-	<ion-content>
-		<ion-toolbar />
-		<ion-menu-toggle auto-hide={false}>
-			<ion-item href="#/" lines="full">
-				<ion-label>
-					<h2>Home</h2>
-				</ion-label>
-			</ion-item>
-			{#if $isAuthenticated}
-				<AuthenticatedUserMenu />
-			{:else}
-				<UnauthenticatedUserMenu />
-			{/if}
-		</ion-menu-toggle>
-	</ion-content>
+	<ion-menu-toggle class="flex flex-col h-screen" auto-hide={false}>
+		<ion-toolbar class="flex-shrink-0">
+			<ion-title class="gaia-font w-full px-2">
+				<a href="#/"> Gaia Project </a>
+			</ion-title>
+		</ion-toolbar>
+		{#if $isAuthenticated}
+			<AuthenticatedUserMenu />
+		{:else}
+			<UnauthenticatedUserMenu />
+		{/if}
+	</ion-menu-toggle>
 </ion-menu>

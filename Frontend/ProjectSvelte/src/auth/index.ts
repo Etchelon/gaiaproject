@@ -15,7 +15,13 @@ import { push } from "svelte-spa-router";
 import { derived, get, writable } from "svelte/store";
 import config from "./config";
 
+const USER_INFO = "gp-user-info";
+
 type OnRedirectCallback = (appState?: any) => void;
+
+const defaultOnRedirectCallback: OnRedirectCallback = (appState: any) => {
+	window.history.replaceState({}, document.title, appState && appState.targetUrl ? appState.targetUrl : window.location.pathname);
+};
 
 export class AuthService {
 	isLoading = writable(true);
@@ -34,30 +40,38 @@ export class AuthService {
 
 	constructor(private readonly http: HttpClient) {}
 
-	initializeAuth0 = async (onRedirectCallback?: OnRedirectCallback) => {
+	initializeAuth0 = async (onRedirectCallback: OnRedirectCallback = defaultOnRedirectCallback) => {
+		if (this._auth0Client) {
+			throw new Error("AuthService already initialized!");
+		}
+
 		const client = await this.createAuth0Client(config);
 
 		const cb = onRedirectCallback ?? (() => window.history.replaceState({}, document.title, window.location.pathname));
 		try {
 			await this.handleAuth0RedirectCallback(cb);
-			this.http.setBearerTokenFactory(() => this.getAccessToken({}));
-			this.auth0User.set(await client.getUser());
-			await this.checkFirstLogin();
+			if (await client.isAuthenticated()) {
+				await this.handleAuthenticated(client);
+			} else {
+				await this.handleNotAuthenticated();
+			}
 		} catch (err) {
 			this.error.set(err as Error);
-			this.http.setBearerTokenFactory(async () => null);
-			this.auth0User.set(void 0);
+			await this.handleNotAuthenticated();
 		} finally {
 			this.isLoading.set(false);
 		}
 	};
 
 	login = async (options?: RedirectLoginOptions) => {
-		await this._auth0Client?.loginWithRedirect(options);
+		await this._auth0Client.loginWithRedirect(options);
 	};
 
 	logout = async (options: LogoutOptions) => {
-		this._auth0Client?.logout(options);
+		this._auth0Client.logout({
+			...options,
+			returnTo: window.location.origin,
+		});
 	};
 
 	getAccessToken = async (options: GetTokenSilentlyOptions) => await this._auth0Client.getTokenSilently(options);
@@ -91,8 +105,15 @@ export class AuthService {
 		return result;
 	};
 
-	private checkFirstLogin = async () => {
+	private fetchUserInfo = async () => {
+		const userFromSession = await this.getFromSessionStorage();
+		if (userFromSession) {
+			this.user.set(userFromSession);
+			return;
+		}
+
 		const { user, isFirstLogin } = await this.isFirstLogin();
+		this.saveToSessionStorage(user);
 		this.user.set(user);
 		if (!isFirstLogin) {
 			return;
@@ -104,4 +125,35 @@ export class AuthService {
 		await snack.present();
 		push("/profile");
 	};
+
+	private getFromSessionStorage = () => {
+		const userInfoStr = window.sessionStorage.getItem(USER_INFO);
+		if (!userInfoStr) {
+			return null;
+		}
+
+		return JSON.parse(userInfoStr) as UserInfoDto;
+	};
+
+	private saveToSessionStorage = (userInfo: UserInfoDto) => {
+		const userInfoStr = JSON.stringify(userInfo);
+		window.sessionStorage.setItem(USER_INFO, userInfoStr);
+	};
+
+	private clearFromSessionStorage = () => {
+		window.sessionStorage.removeItem(USER_INFO);
+	};
+
+	private async handleAuthenticated(client: Auth0Client) {
+		this.http.setBearerTokenFactory(() => this.getAccessToken({}));
+		this.auth0User.set(await client.getUser());
+		await this.fetchUserInfo();
+	}
+
+	private async handleNotAuthenticated() {
+		this.http.setBearerTokenFactory(async () => null);
+		this.auth0User.set(void 0);
+		this.user.set(void 0);
+		this.clearFromSessionStorage();
+	}
 }

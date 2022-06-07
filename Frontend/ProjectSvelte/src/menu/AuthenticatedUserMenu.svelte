@@ -6,24 +6,26 @@
 	const { loggedUser, logout } = auth;
 </script>
 
-<ion-item href="#/games/active" lines="full">
-	<ion-label>
-		<h2>Active Games</h2>
-	</ion-label>
-</ion-item>
-<ion-item href="#/games/waiting" lines="full">
-	<ion-label>
-		<h2>Active Games</h2>
-		<p>That are waiting for you</p>
-	</ion-label>
-</ion-item>
-<ion-item href="#/games/finished" lines="full">
-	<ion-label>
-		<h2>Finished Games</h2>
-	</ion-label>
-</ion-item>
+<div class="flex-auto overflow-x-hidden overflow-y-auto">
+	<ion-item href="#/games/active" lines="full">
+		<ion-label>
+			<h2>Active Games</h2>
+		</ion-label>
+	</ion-item>
+	<ion-item href="#/games/waiting" lines="full">
+		<ion-label>
+			<h2>Active Games</h2>
+			<p>That are waiting for you</p>
+		</ion-label>
+	</ion-item>
+	<ion-item href="#/games/finished" lines="full">
+		<ion-label>
+			<h2>Finished Games</h2>
+		</ion-label>
+	</ion-item>
+</div>
 
-<ion-item lines="full">
+<ion-item class="flex-shrink-0" lines="none">
 	<ion-avatar slot="start">
 		<ion-img src={$loggedUser.avatar} alt="AVT" />
 	</ion-avatar>
