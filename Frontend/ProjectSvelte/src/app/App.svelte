@@ -1,14 +1,15 @@
 <script lang="ts">
 	import Router, { replace } from "svelte-spa-router";
+	import { get } from "svelte/store";
+	import AppMenu from "../menu/AppMenu.svelte";
+	import getRoutes from "../routes/index.mjs";
 	import { getAppContext } from "./App.context";
-	import AppMenu from "./menu/AppMenu.svelte";
-	import getRoutes from "./routes/index.mjs";
 
 	const { auth } = getAppContext();
-	const { isAuthenticated, loggedUser, login, logout } = auth;
+	const { isAuthenticated } = auth;
 
 	const onConditionFailed = () => {
-		if (!$isAuthenticated) {
+		if (!get(isAuthenticated)) {
 			replace("/unauthorized");
 			return;
 		}

@@ -1,6 +1,6 @@
 import { getContext, setContext } from "svelte";
 import type { Writable } from "svelte/store";
-import { getAppContext } from "../App.context";
+import { getAppContext } from "../app/App.context";
 import { getGamePageStore, IGamePageStore } from "./GamePage.store";
 
 const key = Symbol.for("GamePageContext");

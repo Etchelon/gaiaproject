@@ -18,7 +18,7 @@
 <script lang="ts">
 	import Page from "$components/Page.svelte";
 	import type { GameInfoDto } from "$dto/interfaces";
-	import { getAppContext } from "../App.context";
+	import { getAppContext } from "../app/App.context";
 	import GameListItem from "./GameListItem.svelte";
 
 	export let kind: GameKind;

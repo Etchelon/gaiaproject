@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getAppContext } from "./App.context";
+	import { getAppContext } from "../app/App.context";
 
 	const { auth } = getAppContext();
 </script>

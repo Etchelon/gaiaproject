@@ -75,7 +75,3 @@ export class HttpClient {
 		return await this.checkedFetch<T>(url, options, additionalOptions?.readAsString);
 	}
 }
-
-const actualBaseUrl = import.meta.env.VITE_API_BASE_URL;
-const httpClient = new HttpClient(actualBaseUrl);
-export default httpClient;

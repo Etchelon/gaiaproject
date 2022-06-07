@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { logOut } from "ionicons/icons";
-	import { getAppContext } from "../App.context";
+	import { getAppContext } from "../app/App.context";
 
 	const { auth } = getAppContext();
 	const { loggedUser, logout } = auth;

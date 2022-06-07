@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getAppContext } from "../App.context";
+	import { getAppContext } from "../app/App.context";
 	import AuthenticatedUserMenu from "./AuthenticatedUserMenu.svelte";
 	import UnauthenticatedUserMenu from "./UnauthenticatedUserMenu.svelte";
 

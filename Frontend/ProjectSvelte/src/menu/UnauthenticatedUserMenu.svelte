@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { logIn } from "ionicons/icons";
-	import { getAppContext } from "../App.context";
+	import { getAppContext } from "../app/App.context";
 
 	const { auth } = getAppContext();
 	const { login } = auth;

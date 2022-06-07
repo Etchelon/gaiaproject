@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Page from "$components/Page.svelte";
-	import { getAppContext } from "../App.context";
+	import { getAppContext } from "../app/App.context";
 
 	const {
 		auth: { loggedUser },

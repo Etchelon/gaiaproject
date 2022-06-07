@@ -82,7 +82,3 @@ export class HubClient {
 		return await this._hubConnection!.send(method, ...args);
 	}
 }
-
-const actualBaseUrl = import.meta.env.VITE_API_BASE_URL;
-const hubClient = new HubClient(actualBaseUrl);
-export default hubClient;
