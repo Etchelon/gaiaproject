@@ -1,11 +1,11 @@
 import { isNil, map } from "lodash";
 import { BehaviorSubject, Subject } from "rxjs";
-import { ActionType } from "../../dto/enums";
-import { ActionDto, InteractionStateDto } from "../../dto/interfaces";
-import { Identifier, Nullable } from "../../utils/miscellanea";
-import { GamePageViewModel } from "../store/game-page.vm";
+import type { ActionType } from "../../dto/enums";
+import type { ActionDto, InteractionStateDto } from "../../dto/interfaces";
+import type { Identifier, Nullable } from "../../utils/miscellanea";
+import type { GamePageStore } from "../store/GamePage.store";
 import { InteractiveElementState, InteractiveElementType } from "./enums";
-import { Command, InteractiveElement, WorkflowState } from "./types";
+import type { Command, InteractiveElement, WorkflowState } from "./types";
 
 export abstract class ActionWorkflow {
 	states: WorkflowState[] = [];
@@ -23,7 +23,7 @@ export abstract class ActionWorkflow {
 	protected get stateId(): number {
 		return this.currentState.id;
 	}
-	protected vm: Nullable<GamePageViewModel> = null;
+	protected store: Nullable<GamePageStore> = null;
 
 	constructor(protected interactionState: Nullable<InteractionStateDto> = null, skipInit = true) {
 		if (skipInit) {
@@ -110,16 +110,20 @@ export abstract class ActionWorkflow {
 		addElements(() => map(this.interactionState?.clickableResearchTracks, rt => rt.track), InteractiveElementType.ResearchStep);
 		addElements(() => this.interactionState?.clickableRoundBoosters, InteractiveElementType.RoundBooster);
 		addElements(() => this.interactionState?.clickableStandardTiles, InteractiveElementType.StandardTile);
-		this.interactionState?.canUseOwnRoundBooster && ret.push({ type: InteractiveElementType.OwnRoundBooster, state: InteractiveElementState.Enabled });
-		this.interactionState?.canUsePlanetaryInstitute && ret.push({ type: InteractiveElementType.PlanetaryInstitute, state: InteractiveElementState.Enabled });
-		this.interactionState?.canUseRaceAction && ret.push({ type: InteractiveElementType.RaceAction, state: InteractiveElementState.Enabled });
-		this.interactionState?.canUseRightAcademy && ret.push({ type: InteractiveElementType.RightAcademy, state: InteractiveElementState.Enabled });
+		this.interactionState?.canUseOwnRoundBooster &&
+			ret.push({ type: InteractiveElementType.OwnRoundBooster, state: InteractiveElementState.Enabled });
+		this.interactionState?.canUsePlanetaryInstitute &&
+			ret.push({ type: InteractiveElementType.PlanetaryInstitute, state: InteractiveElementState.Enabled });
+		this.interactionState?.canUseRaceAction &&
+			ret.push({ type: InteractiveElementType.RaceAction, state: InteractiveElementState.Enabled });
+		this.interactionState?.canUseRightAcademy &&
+			ret.push({ type: InteractiveElementType.RightAcademy, state: InteractiveElementState.Enabled });
 
 		return ret;
 	}
 
-	setStore(vm: GamePageViewModel): void {
-		this.vm = vm;
+	setStore(store: GamePageStore): void {
+		this.store = store;
 	}
 }
 

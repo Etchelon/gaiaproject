@@ -1,35 +1,100 @@
 <script lang="ts">
-	import { noop } from "lodash";
+	import { isNil, noop } from "lodash";
+	import type { Subscription } from "rxjs";
 	import { onDestroy, onMount } from "svelte";
+	import { push } from "svelte-spa-router";
+	import { get, writable } from "svelte/store";
 	import { getAppContext } from "../app/App.context";
-	import { GamePageSignalRConnectionService } from "./GamePageSignalRConnection.service";
 	import { IGamePageContext, setGamePageContext } from "./GamePage.context";
-	import { GamePageStore } from "./store/GamePage.store";
 	import GamePage from "./GamePage.svelte";
+	import { GamePageSignalRConnectionService } from "./GamePageSignalRConnection.service";
+	import { GamePageStore } from "./store/GamePage.store";
+	import type { ActionWorkflow } from "./workflows/action-workflow.base";
+	import { fromAction } from "./workflows/utils";
 
 	export let params: { id: string };
 
 	const { id } = params;
-	const { http, hub } = getAppContext();
+	const {
+		http,
+		hub,
+		auth: { user },
+	} = getAppContext();
+
 	const store = new GamePageStore(http);
 	const signalR = new GamePageSignalRConnectionService(hub, store, noop);
+
+	//#region Workflow management
+
+	let activeWorkflowSub: Subscription | null = null;
+	const activeWorkflow = writable<ActionWorkflow | null>(null);
+
+	const startWorkflow = (workflow: ActionWorkflow) => {
+		const sub = workflow.currentState$.subscribe(state => {
+			store.setStatusFromWorkflow(state);
+		});
+		sub.add(
+			workflow.switchToAction$.subscribe(actionType => {
+				closeWorkflow();
+
+				if (isNil(actionType)) {
+					store.setWaitingForAction();
+					return;
+				}
+
+				const { availableActions, currentPlayer, game } = store;
+				const action = get(availableActions).find(act => act.type === actionType)!;
+				const newWorkflow = fromAction(get(currentPlayer)!.id, get(game), action, store);
+				startWorkflow(newWorkflow);
+			})
+		);
+
+		activeWorkflow.set(workflow);
+		activeWorkflowSub = sub;
+	};
+
+	const closeWorkflow = () => {
+		activeWorkflowSub?.unsubscribe();
+		activeWorkflowSub = null;
+		activeWorkflow.set(null);
+	};
+
+	//#endregion
+
 	const ctx: IGamePageContext = {
 		id,
 		store,
 		signalR,
-		activeWorkflow: null,
+		activeWorkflow,
+		startWorkflow,
+		closeWorkflow,
 	};
-
 	setGamePageContext(ctx);
 
+	let isLoading = true;
 	onMount(async () => {
-		await store.loadGame(id);
+		try {
+			await store.loadGame(id);
+			isLoading = false;
+		} catch {
+			console.error(`Failed to load game ${id}.`);
+			push("#/not-found");
+		}
+
 		await signalR.connectToHub();
 	});
 
 	onDestroy(async () => {
 		await signalR.disconnectFromHub();
 	});
+
+	$: {
+		$user && store.setCurrentUser($user.id);
+	}
 </script>
 
-<GamePage />
+{#if isLoading}
+	<h2 class="w-full p-4 text-center">Loading...</h2>
+{:else}
+	<GamePage />
+{/if}

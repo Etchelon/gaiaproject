@@ -42,39 +42,37 @@
 
 <svelte:window on:resize={checkIsMobile} />
 
-{#if $game}
-	<Page title={$game.name}>
-		<div id={GAMEVIEW_WRAPPER_ID} class="game-page h-full bg-gray-900">
-			<div id={STATUSBAR_ID} class="status-bar" class:desktop={!isMobile} class:mobile={isMobile}>
-				<StatusBar playerId={null} {isMobile} />
-			</div>
-			<div class="game-view" class:desktop={!isMobile} class:mobile={isMobile}>
-				{#if isMobile}
-					<MobileView game={$game} players={$players} activeView={$activeView} currentPlayerId={$currentPlayer?.id} />
-				{:else}
-					<DesktopView
-						game={$game}
-						players={$players}
-						activeView={$activeView}
-						currentPlayerId={$currentPlayer?.id}
-						on:setActiveView={evt => store.setActiveView(evt.detail)}
-					/>
-				{/if}
-			</div>
+<Page title={$game.name}>
+	<div id={GAMEVIEW_WRAPPER_ID} class="game-page h-full bg-gray-900">
+		<div id={STATUSBAR_ID} class="status-bar" class:desktop={!isMobile} class:mobile={isMobile}>
+			<StatusBar playerId={null} {isMobile} />
 		</div>
+		<div class="game-view" class:desktop={!isMobile} class:mobile={isMobile}>
+			{#if isMobile}
+				<MobileView game={$game} players={$players} activeView={$activeView} currentPlayerId={$currentPlayer?.id} />
+			{:else}
+				<DesktopView
+					game={$game}
+					players={$players}
+					activeView={$activeView}
+					currentPlayerId={$currentPlayer?.id}
+					on:setActiveView={evt => store.setActiveView(evt.detail)}
+				/>
+			{/if}
+		</div>
+	</div>
 
-		<ion-modal
-			bind:this={modal}
-			is-open={showModal}
-			on:click={async () => {
-				await modal.dismiss();
-				showModal = false;
-			}}
-		>
-			<h1 on:click={showActionSheet}>Hello Ionic modal!</h1>
-		</ion-modal>
-	</Page>
-{/if}
+	<ion-modal
+		bind:this={modal}
+		is-open={showModal}
+		on:click={async () => {
+			await modal.dismiss();
+			showModal = false;
+		}}
+	>
+		<h1 on:click={showActionSheet}>Hello Ionic modal!</h1>
+	</ion-modal>
+</Page>
 
 <style lang="scss">
 	.status-bar {

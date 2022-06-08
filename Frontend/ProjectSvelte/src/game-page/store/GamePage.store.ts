@@ -26,7 +26,6 @@ interface IGamePageStore {
 	availableCommands: Writable<Command[]>;
 	interactiveElements: Writable<InteractiveElement[]>;
 	availableActions: Writable<AvailableActionDto[]>;
-	status: Writable<LoadingStatus>;
 	actionProgress: Writable<LoadingStatus>;
 	rollbackProgress: Writable<LoadingStatus>;
 	hubState: Writable<IHubState>;
@@ -43,7 +42,6 @@ export class GamePageStore implements IGamePageStore {
 	availableCommands = writable<Command[]>([]);
 	interactiveElements = writable<InteractiveElement[]>([]);
 	availableActions = writable<AvailableActionDto[]>([]);
-	status = writable<LoadingStatus>("idle");
 	actionProgress = writable<LoadingStatus>("idle");
 	rollbackProgress = writable<LoadingStatus>("idle");
 	hubState = writable<IHubState>({
@@ -140,18 +138,12 @@ export class GamePageStore implements IGamePageStore {
 	//#region Api calls
 
 	loadGame = async (id: string) => {
-		this.status.set("loading");
-		try {
-			const gameState = await this.http.get<GameStateDto>(`api/GaiaProject/GetGame/${id}`);
-			if (isNil(gameState)) {
-				throw new Error("Not found!!");
-			}
-
-			this.game.set(gameState);
-			this.status.set("success");
-		} catch (err) {
-			this.status.set("failure");
+		const gameState = await this.http.get<GameStateDto>(`api/GaiaProject/GetGame/${id}`);
+		if (isNil(gameState)) {
+			throw new Error("Not found!!");
 		}
+
+		this.game.set(gameState);
 	};
 
 	executePlayerAction = async (gameId: string, action: ActionDto) => {

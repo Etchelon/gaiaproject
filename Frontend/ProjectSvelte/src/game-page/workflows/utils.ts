@@ -1,10 +1,10 @@
-import _ from "lodash";
+import { isNil } from "lodash";
 import { ActionType, GamePhase, PendingDecisionType } from "../../dto/enums";
-import { AvailableActionDto, GameStateDto, PendingDecisionDto } from "../../dto/interfaces";
+import type { AvailableActionDto, GameStateDto, PendingDecisionDto } from "../../dto/interfaces";
 import { localizeRoundBooster } from "../../utils/localization";
 import { countActivatableActions } from "../../utils/miscellanea";
-import { GamePageViewModel } from "../store/game-page.vm";
-import { ActionWorkflow } from "./action-workflow.base";
+import type { GamePageStore } from "../store/GamePage.store";
+import type { ActionWorkflow } from "./action-workflow.base";
 import { AcceptOrDeclineLastStepDecisionDto, AcceptOrDeclineLastStepWorkflow } from "./rounds-phase/accept-last-step.workflow";
 import { ChargePowerDecisionDto, ChargePowerWorkflow } from "./rounds-phase/charge-power.workflow";
 import { ChooseTechnologyTileWorkflow } from "./rounds-phase/choose-technology-tile.workflow";
@@ -32,7 +32,7 @@ import { PlaceInitialStructureWorkflow } from "./setup-phase/place-initial-struc
 import { SelectRaceWorkflow } from "./setup-phase/select-race.workflow";
 import { SelectStartingRoundBoosterWorkflow } from "./setup-phase/select-starting-round-booster.workflow";
 
-export function fromAction(playerId: string, game: GameStateDto, action: AvailableActionDto, vm: GamePageViewModel): ActionWorkflow {
+export function fromAction(playerId: string, game: GameStateDto, action: AvailableActionDto, vm: GamePageStore): ActionWorkflow {
 	const isSetup = game.currentPhase === GamePhase.Setup;
 	const workflow = isSetup ? fromSetupAction(game, action) : fromRoundsAction(playerId, game, action);
 	workflow.setStore(vm);
@@ -40,7 +40,7 @@ export function fromAction(playerId: string, game: GameStateDto, action: Availab
 }
 
 export function fromDecision(playerId: string, game: GameStateDto, decision: PendingDecisionDto): ActionWorkflow {
-	const player = _.find(game.players, p => p.id === playerId)!;
+	const player = game.players.find(p => p.id === playerId)!;
 	switch (decision.type) {
 		case PendingDecisionType.ChargePower:
 			return new ChargePowerWorkflow(decision as ChargePowerDecisionDto);
@@ -76,7 +76,7 @@ function fromSetupAction(game: GameStateDto, action: AvailableActionDto): Action
 		case ActionType.AdjustSectors:
 			return new AdjustSectorsWorkflow(game.boardState.map);
 		case ActionType.SelectRace:
-			const thisRaceTurnOrder = _.filter(game.players, p => !_.isNil(p.raceId)).length + 1;
+			const thisRaceTurnOrder = game.players.filter(p => !isNil(p.raceId)).length + 1;
 			return new SelectRaceWorkflow(action.interactionState.availableRaces!, thisRaceTurnOrder, game.auctionState !== null);
 		case ActionType.BidForRace:
 			return new BidForRaceWorkflow(game.auctionState!);
@@ -90,7 +90,7 @@ function fromSetupAction(game: GameStateDto, action: AvailableActionDto): Action
 }
 
 function fromRoundsAction(playerId: string, game: GameStateDto, action: AvailableActionDto): ActionWorkflow {
-	const player = _.find(game.players, p => p.id === playerId)!;
+	const player = game.players.find(p => p.id === playerId)!;
 	switch (action.type) {
 		case ActionType.ColonizePlanet:
 			return new ColonizePlanetWorkflow(action.interactionState);
@@ -99,7 +99,7 @@ function fromRoundsAction(playerId: string, game: GameStateDto, action: Availabl
 		case ActionType.ResearchTechnology:
 			return new ResearchTechnologyWorkflow(action.interactionState, true);
 		case ActionType.Pass:
-			const activePlayer = _.find(game.players, p => p.id === game.activePlayer.id)!;
+			const activePlayer = game.players.find(p => p.id === game.activePlayer.id)!;
 			const { available } = countActivatableActions(activePlayer, true);
 			return new PassWorkflow(action.interactionState, available > 0, game.currentRound === 6);
 		case ActionType.Conversions:
