@@ -4,12 +4,12 @@ import { noop } from "lodash";
 import { get } from "svelte/store";
 import type { GameStateDto } from "../dto/interfaces";
 import type { Nullable } from "../utils/miscellanea";
-import type { GamePageService } from "./GamePage.service";
+import type { GamePageStore } from "./store/GamePage.store";
 
 export class GamePageSignalRConnectionService {
 	constructor(
 		private readonly hub: HubClient,
-		private readonly store: GamePageService,
+		private readonly store: GamePageStore,
 		private readonly closeWorkflowCallback: () => void
 	) {}
 

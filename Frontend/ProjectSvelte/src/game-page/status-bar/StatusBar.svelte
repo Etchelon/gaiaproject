@@ -7,10 +7,9 @@
 
 	export let isMobile: boolean;
 	export let playerId: string | null;
-	export let isSpectator: boolean;
 
 	const { store } = getGamePageContext();
-	const { game } = store;
+	const { game, isSpectator } = store;
 
 	const isExecutingAction = random(true) > 0.95;
 	const statusMessage = "TODO: from the store";
@@ -59,7 +58,7 @@
 	class:flex-col={useVerticalLayout}
 >
 	<div class="flex-initial text-xs md:text-sm text-center text-gray-900 gaia-font">{statusBarMessage}</div>
-	{#if !isSpectator}
+	{#if !$isSpectator}
 		{#if isIdle}
 			<div class="flex flex-shrink-0 gap-1 md:gap-3">
 				{#each commands as cmd (`${cmd.nextState}§${cmd.text}`)}

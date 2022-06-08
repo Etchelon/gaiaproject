@@ -1,11 +1,11 @@
 import type { ActionDto, AvailableActionDto, GameStateDto, MapDto } from "$dto/interfaces";
 import type { HttpClient } from "$utils/http-client";
-import type { Nullable } from "$utils/miscellanea";
+import { isLastRound, Nullable } from "$utils/miscellanea";
 import { ActiveView, LoadingStatus } from "$utils/types";
 import { HubConnectionState } from "@microsoft/signalr";
-import { chain, cloneDeep, isNil, without } from "lodash";
-import { get, Writable, writable } from "svelte/store";
-import type { Command, InteractiveElement, WorkflowState } from "./workflows/types";
+import { chain, cloneDeep, every, findIndex, isNil, partition, sortBy, without } from "lodash";
+import { derived, get, Writable, writable } from "svelte/store";
+import type { Command, InteractiveElement, WorkflowState } from "../workflows/types";
 
 interface IHubState {
 	connectionState: HubConnectionState;
@@ -18,7 +18,7 @@ interface ExecuteActionResult {
 	errorMessage?: string;
 }
 
-export interface IGamePageState {
+interface IGamePageStore {
 	currentUserId: Writable<Nullable<string>>;
 	game: Writable<Nullable<GameStateDto>>;
 	statusMessage: Writable<string>;
@@ -35,7 +35,7 @@ export interface IGamePageState {
 	playerSettings?: Writable<any>;
 }
 
-export class GamePageService implements IGamePageState {
+export class GamePageStore implements IGamePageStore {
 	currentUserId = writable<Nullable<string>>(null);
 	game = writable<GameStateDto>();
 	statusMessage = writable("");
@@ -54,6 +54,84 @@ export class GamePageService implements IGamePageState {
 	playerNotes = writable<Nullable<string>>(null);
 	saveNotesProgress = writable<LoadingStatus>("idle");
 	playerSettings?: Writable<any> | undefined;
+
+	//#region Derived stores
+
+	currentPlayer = derived([this.game, this.currentUserId], ([$game, $uId]) => $game?.players.find(p => p.id === $uId));
+	activePlayer = derived(this.game, $game => $game?.activePlayer);
+	isSpectator = derived([this.game, this.currentPlayer], ([$game, $currentPlayer]) => $game !== null && $currentPlayer === null);
+	players = derived([this.game, this.currentPlayer, this.isSpectator], ([$game, $currentPlayer, $isSpectator]) => {
+		if (isNil($game)) {
+			return [];
+		}
+
+		if ($isSpectator) {
+			return $game.players;
+		}
+
+		const currentPlayerIndex = findIndex($game.players, p => p.id === $currentPlayer?.id);
+		if (currentPlayerIndex === 0) {
+			return $game.players;
+		}
+
+		// Until all players have selected a race and have the state object, keep the initial order
+		const allPlayersAreSetup = every($game.players, p => !isNil(p.state));
+		if (!allPlayersAreSetup) {
+			return $game.players;
+		}
+
+		// Assume players are already sorted by turn order in the current round
+		const allPlayers = sortBy($game.players, p => p.state.currentRoundTurnOrder);
+		const [active, havePassed] = partition(allPlayers, p => $game.players.indexOf(p) < currentPlayerIndex);
+		const playerHasPassed = $currentPlayer?.state.hasPassed ? havePassed : active;
+		const playersToPartition = playerHasPassed ? havePassed : active;
+		const [before, fromCurrentPlayer] = partition(playersToPartition, p => $game.players.indexOf(p) < currentPlayerIndex);
+		return [...fromCurrentPlayer, ...before, ...(playerHasPassed ? active : havePassed)];
+	});
+	sortedPlayers = derived(this.players, $players => sortBy($players, (p, index) => p.state?.currentRoundTurnOrder ?? index));
+	sortedActivePlayers = derived(this.players, $players =>
+		chain($players)
+			.filter(p => !p.state?.hasPassed)
+			.sortBy((p, index) => p.state?.currentRoundTurnOrder ?? index)
+			.value()
+	);
+	sortedPassedPlayers = derived([this.game, this.players], ([$game, $players]) => {
+		const isLastRound_ = isLastRound($game);
+		return chain($players)
+			.filter(p => p.state?.hasPassed ?? false)
+			.sortBy((p, index) => (isLastRound_ ? p.state?.currentRoundTurnOrder : p.state?.nextRoundTurnOrder) ?? index)
+			.value();
+	});
+	allRoundBoosters = derived([this.game, this.currentPlayer], ([$game, $currentPlayer]) => {
+		if (isNil($game)) {
+			return [];
+		}
+
+		const available = $game.boardState.availableRoundBoosters;
+		const playersBoosters = chain($game.players)
+			.filter(p => !isNil(p.state?.roundBooster))
+			.sortBy(p => (p.id === $currentPlayer?.id ? 0 : 1))
+			.map(p => ({
+				id: p.state.roundBooster.id,
+				isTaken: true,
+				player: {
+					id: p.id,
+					username: p.username,
+					avatarUrl: "",
+					raceId: p.raceId,
+					raceName: null,
+					color: null,
+					points: p.state?.points,
+					isActive: p.isActive,
+					placement: null,
+				},
+				used: p.state.roundBooster.used,
+			}))
+			.value();
+		return [...playersBoosters, ...available];
+	});
+
+	//#endregion
 
 	constructor(private readonly http: HttpClient) {
 		console.log("Creating game page store");

@@ -28,8 +28,7 @@
 	}
 
 	const { store } = getGamePageContext();
-	const { game } = store;
-	const isSpectator = false;
+	const { activeView, currentPlayer, game, players } = store;
 	let isMobile = false;
 
 	const checkIsMobile = () => {
@@ -47,13 +46,19 @@
 	<Page title={$game.name}>
 		<div id={GAMEVIEW_WRAPPER_ID} class="game-page h-full bg-gray-900">
 			<div id={STATUSBAR_ID} class="status-bar" class:desktop={!isMobile} class:mobile={isMobile}>
-				<StatusBar playerId={null} {isSpectator} {isMobile} />
+				<StatusBar playerId={null} {isMobile} />
 			</div>
 			<div class="game-view" class:desktop={!isMobile} class:mobile={isMobile}>
 				{#if isMobile}
-					<MobileView currentPlayerId="" {isSpectator} />
+					<MobileView game={$game} players={$players} activeView={$activeView} currentPlayerId={$currentPlayer?.id} />
 				{:else}
-					<DesktopView currentPlayerId="" {isSpectator} />
+					<DesktopView
+						game={$game}
+						players={$players}
+						activeView={$activeView}
+						currentPlayerId={$currentPlayer?.id}
+						on:setActiveView={evt => store.setActiveView(evt.detail)}
+					/>
 				{/if}
 			</div>
 		</div>

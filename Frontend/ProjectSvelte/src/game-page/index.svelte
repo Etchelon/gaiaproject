@@ -4,14 +4,14 @@
 	import { getAppContext } from "../app/App.context";
 	import { GamePageSignalRConnectionService } from "./GamePageSignalRConnection.service";
 	import { IGamePageContext, setGamePageContext } from "./GamePage.context";
-	import { GamePageService } from "./GamePage.service";
+	import { GamePageStore } from "./store/GamePage.store";
 	import GamePage from "./GamePage.svelte";
 
 	export let params: { id: string };
 
 	const { id } = params;
 	const { http, hub } = getAppContext();
-	const store = new GamePageService(http);
+	const store = new GamePageStore(http);
 	const signalR = new GamePageSignalRConnectionService(hub, store, noop);
 	const ctx: IGamePageContext = {
 		id,

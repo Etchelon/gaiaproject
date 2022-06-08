@@ -12,28 +12,27 @@
 
 <script lang="ts">
 	import { GamePhase } from "$dto/enums";
+	import type { GameStateDto, PlayerInGameDto } from "$dto/interfaces";
 	import { noop } from "lodash";
 	import { onMount } from "svelte";
 	import GameMap from "../game-board/map/Map.svelte";
-	import { getGamePageContext } from "../GamePage.context";
 	import { GAMEVIEW_WRAPPER_ID, STATUSBAR_ID } from "../GamePage.svelte";
 	import ResearchBoard from "../game-board/research-board/ResearchBoard.svelte";
 	import ScoringBoard from "../game-board/scoring-board/ScoringBoard.svelte";
+	import GameLog from "../logs/GameLog.svelte";
 	import TurnOrderMinimap from "../turn-order/TurnOrderMinimap.svelte";
 	import PlayerBoxOrArea from "./PlayerBoxOrArea.svelte";
-	import GameLog from "../logs/GameLog.svelte";
 
+	export let game: GameStateDto;
+	export let players: PlayerInGameDto[];
+	export let activeView: ActiveView;
 	export let currentPlayerId = "";
-	export let isSpectator = false;
 
-	const { store } = getGamePageContext();
-	const { activeView, game } = store;
-
-	$: map = $game.boardState.map;
-	$: isGameCreator = $game.createdBy.id === currentPlayerId;
-	$: canRollback = isGameCreator && $game.currentPhase === GamePhase.Rounds;
+	$: map = game.boardState.map;
+	$: isGameCreator = game.createdBy.id === currentPlayerId;
+	$: canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
 	$: {
-		const elementId = viewsAnchors.get($activeView) ?? "";
+		const elementId = viewsAnchors.get(activeView) ?? "";
 		const element = document.getElementById(elementId);
 		if (element) {
 			const gameViewWrapper = document.getElementById(GAMEVIEW_WRAPPER_ID)!;
@@ -61,35 +60,35 @@
 	</div>
 	<div class="w-full mt-2" />
 	<div id="researchBoard">
-		<ResearchBoard board={$game.boardState.researchBoard} {width} />
+		<ResearchBoard board={game.boardState.researchBoard} {width} />
 	</div>
 	<div class="w-full mt-2" />
 	<div id="scoringBoard">
 		<ScoringBoard
-			board={$game.boardState.scoringBoard}
-			roundBoosters={$game.boardState.availableRoundBoosters}
-			federationTokens={$game.boardState.availableFederations}
+			board={game.boardState.scoringBoard}
+			roundBoosters={game.boardState.availableRoundBoosters}
+			federationTokens={game.boardState.availableFederations}
 		/>
 	</div>
 	<div class="w-full mt-2" />
 	<div id="turnOrder">
-		<TurnOrderMinimap game={$game} direction="horizontal" />
+		<TurnOrderMinimap {game} direction="horizontal" />
 	</div>
 	<div class="w-full mt-2" />
 	<div id="boxesAndLogs" class="h-full overflow-x-hidden overflow-y-auto">
 		<div class="w-full flex flex-col gap-2 relative">
-			{#each $game.players as player, index (player.id)}
+			{#each players as player, index (player.id)}
 				<div class="contents">
 					<PlayerBoxOrArea
 						{player}
 						{index}
-						forcePlayerAreaView={player.id === currentPlayerId && $activeView === ActiveView.PlayerArea}
+						forcePlayerAreaView={player.id === currentPlayerId && activeView === ActiveView.PlayerArea}
 					/>
 				</div>
 			{/each}
 		</div>
 		<div class="w-full mt-2 flex flex-col gap-2">
-			{#each $game.gameLogs as log}
+			{#each game.gameLogs as log}
 				<GameLog {log} {canRollback} doRollback={noop} />
 			{/each}
 		</div>

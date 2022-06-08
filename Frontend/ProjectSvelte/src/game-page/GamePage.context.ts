@@ -1,12 +1,12 @@
 import { getContext, setContext } from "svelte";
 import type { GamePageSignalRConnectionService } from "./GamePageSignalRConnection.service";
-import type { GamePageService } from "./GamePage.service";
+import type { GamePageStore } from "./store/GamePage.store";
 
 const key = Symbol.for("GamePageContext");
 
 export interface IGamePageContext {
 	id: string;
-	store: GamePageService;
+	store: GamePageStore;
 	signalR: GamePageSignalRConnectionService;
 	activeWorkflow: any;
 }

@@ -11,29 +11,31 @@
 
 <script lang="ts">
 	import { GamePhase } from "$dto/enums";
-	import type { PlayerInGameDto } from "$dto/interfaces";
+	import type { GameStateDto, PlayerInGameDto } from "$dto/interfaces";
 	import { noop } from "lodash";
-	import { onMount } from "svelte";
+	import { createEventDispatcher, onMount } from "svelte";
 	import PlayerArea from "../game-board/players/PlayerArea.svelte";
 	import PlayerBox from "../game-board/players/PlayerBox.svelte";
 	import ResearchBoard from "../game-board/research-board/ResearchBoard.svelte";
 	import ScoringBoard from "../game-board/scoring-board/ScoringBoard.svelte";
 	import GameLog from "../logs/GameLog.svelte";
 	import MainView from "./MainView.svelte";
-	import { getGamePageContext } from "../GamePage.context";
 
+	export let game: GameStateDto;
+	export let players: PlayerInGameDto[];
+	export let activeView: ActiveView;
 	export let currentPlayerId = "";
-	export let isSpectator = false;
 
-	const { store } = getGamePageContext();
-	const { activeView, game } = store;
+	const dispatch = createEventDispatcher();
+	const setActiveView = (activeView: ActiveView) => {
+		dispatch("setActiveView", activeView);
+	};
 
-	$: players = $game.players;
-	$: isGameCreator = $game.createdBy.id === currentPlayerId;
-	$: canRollback = isGameCreator && $game.currentPhase === GamePhase.Rounds;
-	$: actualView = $activeView === ActiveView.Map || $activeView === ActiveView.PlayerArea ? ActiveView.Map : activeView;
+	$: isGameCreator = game.createdBy.id === currentPlayerId;
+	$: canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
+	$: actualView = activeView === ActiveView.Map || activeView === ActiveView.PlayerArea ? ActiveView.Map : activeView;
 	$: {
-		if ($activeView !== ActiveView.PlayerArea) {
+		if (activeView !== ActiveView.PlayerArea) {
 			hidePlayerArea();
 		} else {
 			showPlayerArea(currentPlayerId);
@@ -93,14 +95,14 @@
 		<div class="col-span-3 h-full flex flex-col gap-2">
 			<div class="flex justify-center items-center flex-auto relative" bind:this={container}>
 				{#if actualView === ActiveView.Map}
-					<MainView game={$game} {width} {height} showMinimaps={true} minimapClicked={noop} />
+					<MainView {game} {width} {height} showMinimaps={true} minimapClicked={noop} />
 				{:else if actualView === ActiveView.ResearchBoard}
-					<ResearchBoard board={$game.boardState.researchBoard} {width} {height} />
+					<ResearchBoard board={game.boardState.researchBoard} {width} {height} />
 				{:else if actualView === ActiveView.ScoringBoard}
 					<ScoringBoard
-						board={$game.boardState.scoringBoard}
-						roundBoosters={$game.boardState.availableRoundBoosters}
-						federationTokens={$game.boardState.availableFederations}
+						board={game.boardState.scoringBoard}
+						roundBoosters={game.boardState.availableRoundBoosters}
+						federationTokens={game.boardState.availableFederations}
 					/>
 				{:else if actualView === ActiveView.NotesAndSettings}
 					<!-- <PlayerConfig gameId={game.id} /> -->
@@ -116,7 +118,7 @@
 					<div
 						class="tab text-center text-gray-900 cursor-pointer gaia-font"
 						class:active={actualView === av.view}
-						on:click={() => store.setActiveView(av.view)}
+						on:click={() => setActiveView(av.view)}
 					>
 						{av.label}
 					</div>
@@ -125,14 +127,14 @@
 		</div>
 		<div class="h-full overflow-x-hidden overflow-y-auto">
 			<div class="w-full flex flex-col gap-2">
-				{#each $game.players as player, index (player.id)}
+				{#each players as player, index (player.id)}
 					<div class="contents" on:click={() => showPlayerArea(player.id)}>
 						<PlayerBox {player} {index} />
 					</div>
 				{/each}
 			</div>
 			<div class="w-full mt-2 flex flex-col gap-2">
-				{#each $game.gameLogs as log}
+				{#each game.gameLogs as log}
 					<GameLog {log} {canRollback} doRollback={noop} />
 				{/each}
 			</div>
