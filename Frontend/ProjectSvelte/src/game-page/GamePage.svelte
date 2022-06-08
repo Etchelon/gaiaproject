@@ -26,8 +26,9 @@
 		});
 		await actionSheet.present();
 	}
-	const { store } = getGamePageContext();
 
+	const { store } = getGamePageContext();
+	const { game } = store;
 	const isSpectator = false;
 	let isMobile = false;
 
@@ -42,8 +43,8 @@
 
 <svelte:window on:resize={checkIsMobile} />
 
-{#if $store.game}
-	<Page title={$store.game.name}>
+{#if $game}
+	<Page title={$game.name}>
 		<div id={GAMEVIEW_WRAPPER_ID} class="game-page h-full bg-gray-900">
 			<div id={STATUSBAR_ID} class="status-bar" class:desktop={!isMobile} class:mobile={isMobile}>
 				<StatusBar playerId={null} {isSpectator} {isMobile} />

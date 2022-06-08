@@ -10,7 +10,7 @@
 	const actualBaseUrl = import.meta.env.VITE_API_BASE_URL;
 	const http = new HttpClient(actualBaseUrl);
 	const hub = new HubClient(actualBaseUrl);
-	const auth = new AuthService(http);
+	const auth = new AuthService(http, hub);
 	const { isLoading } = auth;
 	const ctx: IAppContext = {
 		http,

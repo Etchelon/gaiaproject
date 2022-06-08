@@ -26,15 +26,14 @@
 	export let isSpectator = false;
 
 	const { store } = getGamePageContext();
+	const { activeView, game } = store;
 
-	$: game = $store.game;
-	$: players = game.players;
-	$: isGameCreator = game.createdBy.id === currentPlayerId;
-	$: canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
-	$: activeView = $store.activeView;
-	$: actualView = activeView === ActiveView.Map || activeView === ActiveView.PlayerArea ? ActiveView.Map : activeView;
+	$: players = $game.players;
+	$: isGameCreator = $game.createdBy.id === currentPlayerId;
+	$: canRollback = isGameCreator && $game.currentPhase === GamePhase.Rounds;
+	$: actualView = $activeView === ActiveView.Map || $activeView === ActiveView.PlayerArea ? ActiveView.Map : activeView;
 	$: {
-		if (activeView !== ActiveView.PlayerArea) {
+		if ($activeView !== ActiveView.PlayerArea) {
 			hidePlayerArea();
 		} else {
 			showPlayerArea(currentPlayerId);
@@ -75,13 +74,6 @@
 
 	let playerAreaToShow: PlayerInGameDto | null = null;
 
-	const setActiveView = (view: ActiveView) => {
-		store.update(gamePageStore => ({
-			...gamePageStore,
-			activeView: view,
-		}));
-	};
-
 	const showPlayerArea = (playerId: string) => {
 		if (playerId === playerAreaToShow?.id) {
 			hidePlayerArea();
@@ -101,14 +93,14 @@
 		<div class="col-span-3 h-full flex flex-col gap-2">
 			<div class="flex justify-center items-center flex-auto relative" bind:this={container}>
 				{#if actualView === ActiveView.Map}
-					<MainView {game} {width} {height} showMinimaps={true} minimapClicked={noop} />
+					<MainView game={$game} {width} {height} showMinimaps={true} minimapClicked={noop} />
 				{:else if actualView === ActiveView.ResearchBoard}
-					<ResearchBoard board={game.boardState.researchBoard} {width} {height} />
+					<ResearchBoard board={$game.boardState.researchBoard} {width} {height} />
 				{:else if actualView === ActiveView.ScoringBoard}
 					<ScoringBoard
-						board={game.boardState.scoringBoard}
-						roundBoosters={game.boardState.availableRoundBoosters}
-						federationTokens={game.boardState.availableFederations}
+						board={$game.boardState.scoringBoard}
+						roundBoosters={$game.boardState.availableRoundBoosters}
+						federationTokens={$game.boardState.availableFederations}
 					/>
 				{:else if actualView === ActiveView.NotesAndSettings}
 					<!-- <PlayerConfig gameId={game.id} /> -->
@@ -124,7 +116,7 @@
 					<div
 						class="tab text-center text-gray-900 cursor-pointer gaia-font"
 						class:active={actualView === av.view}
-						on:click={() => setActiveView(av.view)}
+						on:click={() => store.setActiveView(av.view)}
 					>
 						{av.label}
 					</div>
@@ -133,14 +125,14 @@
 		</div>
 		<div class="h-full overflow-x-hidden overflow-y-auto">
 			<div class="w-full flex flex-col gap-2">
-				{#each game.players as player, index (player.id)}
+				{#each $game.players as player, index (player.id)}
 					<div class="contents" on:click={() => showPlayerArea(player.id)}>
 						<PlayerBox {player} {index} />
 					</div>
 				{/each}
 			</div>
 			<div class="w-full mt-2 flex flex-col gap-2">
-				{#each game.gameLogs as log}
+				{#each $game.gameLogs as log}
 					<GameLog {log} {canRollback} doRollback={noop} />
 				{/each}
 			</div>

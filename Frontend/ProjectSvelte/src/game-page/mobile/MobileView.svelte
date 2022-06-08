@@ -27,14 +27,13 @@
 	export let isSpectator = false;
 
 	const { store } = getGamePageContext();
+	const { activeView, game } = store;
 
-	$: game = $store.game;
-	$: map = game.boardState.map;
-	$: isGameCreator = game.createdBy.id === currentPlayerId;
-	$: canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
-	$: activeView = $store.activeView;
+	$: map = $game.boardState.map;
+	$: isGameCreator = $game.createdBy.id === currentPlayerId;
+	$: canRollback = isGameCreator && $game.currentPhase === GamePhase.Rounds;
 	$: {
-		const elementId = viewsAnchors.get(activeView) ?? "";
+		const elementId = viewsAnchors.get($activeView) ?? "";
 		const element = document.getElementById(elementId);
 		if (element) {
 			const gameViewWrapper = document.getElementById(GAMEVIEW_WRAPPER_ID)!;
@@ -62,35 +61,35 @@
 	</div>
 	<div class="w-full mt-2" />
 	<div id="researchBoard">
-		<ResearchBoard board={game.boardState.researchBoard} {width} />
+		<ResearchBoard board={$game.boardState.researchBoard} {width} />
 	</div>
 	<div class="w-full mt-2" />
 	<div id="scoringBoard">
 		<ScoringBoard
-			board={game.boardState.scoringBoard}
-			roundBoosters={game.boardState.availableRoundBoosters}
-			federationTokens={game.boardState.availableFederations}
+			board={$game.boardState.scoringBoard}
+			roundBoosters={$game.boardState.availableRoundBoosters}
+			federationTokens={$game.boardState.availableFederations}
 		/>
 	</div>
 	<div class="w-full mt-2" />
 	<div id="turnOrder">
-		<TurnOrderMinimap {game} direction="horizontal" />
+		<TurnOrderMinimap game={$game} direction="horizontal" />
 	</div>
 	<div class="w-full mt-2" />
 	<div id="boxesAndLogs" class="h-full overflow-x-hidden overflow-y-auto">
 		<div class="w-full flex flex-col gap-2 relative">
-			{#each game.players as player, index (player.id)}
+			{#each $game.players as player, index (player.id)}
 				<div class="contents">
 					<PlayerBoxOrArea
 						{player}
 						{index}
-						forcePlayerAreaView={player.id === currentPlayerId && activeView === ActiveView.PlayerArea}
+						forcePlayerAreaView={player.id === currentPlayerId && $activeView === ActiveView.PlayerArea}
 					/>
 				</div>
 			{/each}
 		</div>
 		<div class="w-full mt-2 flex flex-col gap-2">
-			{#each game.gameLogs as log}
+			{#each $game.gameLogs as log}
 				<GameLog {log} {canRollback} doRollback={noop} />
 			{/each}
 		</div>

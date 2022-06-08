@@ -1,5 +1,6 @@
 import type { UserInfoDto } from "$dto/interfaces";
 import type { HttpClient } from "$utils/http-client";
+import type { HubClient } from "$utils/hub-client";
 import type {
 	Auth0Client,
 	Auth0ClientOptions,
@@ -38,7 +39,7 @@ export class AuthService {
 	error = writable<Error | null>(null);
 	private _auth0Client!: Auth0Client;
 
-	constructor(private readonly http: HttpClient) {}
+	constructor(private readonly http: HttpClient, private readonly hub: HubClient) {}
 
 	initializeAuth0 = async (onRedirectCallback: OnRedirectCallback = defaultOnRedirectCallback) => {
 		if (this._auth0Client) {
@@ -146,12 +147,14 @@ export class AuthService {
 
 	private async handleAuthenticated(client: Auth0Client) {
 		this.http.setBearerTokenFactory(() => this.getAccessToken({}));
+		this.hub.setBearerTokenFactory(() => this.getAccessToken({}));
 		this.auth0User.set(await client.getUser());
 		await this.fetchUserInfo();
 	}
 
 	private async handleNotAuthenticated() {
 		this.http.setBearerTokenFactory(async () => null);
+		this.hub.setBearerTokenFactory(async () => null);
 		this.auth0User.set(void 0);
 		this.user.set(void 0);
 		this.clearFromSessionStorage();

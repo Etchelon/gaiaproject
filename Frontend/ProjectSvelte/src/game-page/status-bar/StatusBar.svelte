@@ -10,8 +10,7 @@
 	export let isSpectator: boolean;
 
 	const { store } = getGamePageContext();
-
-	$: game = $store.game;
+	const { game } = store;
 
 	const isExecutingAction = random(true) > 0.95;
 	const statusMessage = "TODO: from the store";
@@ -50,7 +49,7 @@
 	const selectAction = (action: any) => {};
 
 	$: useVerticalLayout = isMobile && commands.length > 1;
-	$: isActivePlayer = game.activePlayer?.id === playerId;
+	$: isActivePlayer = $game?.activePlayer?.id === playerId;
 	$: showActionSelector = true; //isActivePlayer && !activeWorkflow;
 </script>
 
