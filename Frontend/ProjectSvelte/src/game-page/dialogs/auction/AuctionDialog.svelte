@@ -1,8 +1,6 @@
 <script lang="ts" context="module">
 	import type { CurrentAuction } from "../../workflows/setup-phase/bid-for-race.workflow";
 
-	const boardVersion = "rework";
-
 	interface ActionType {
 		type: "select" | "increase" | "decrease";
 		selection?: CurrentAuction;
@@ -27,15 +25,15 @@
 </script>
 
 <script lang="ts">
-	import Button from "$components/Button.svelte";
 	import type { Race } from "$dto/enums";
-	import { assetUrl } from "$utils/miscellanea";
-	import { getRaceBoard, getRaceName } from "$utils/race-utils";
-	import { chain, isNil, isNull } from "lodash";
+	import { getRaceName } from "$utils/race-utils";
+	import { chain, isNil } from "lodash";
 	import { writable } from "svelte/store";
 	import { getGamePageContext } from "../../GamePage.context";
 	import type { BidForRaceWorkflow } from "../../workflows/setup-phase/bid-for-race.workflow";
 	import { CommonWorkflowStates } from "../../workflows/types";
+	import DialogHeader from "../DialogHeader.svelte";
+	import RaceBoard from "../RaceBoard.svelte";
 	import AuctionedRace from "./AuctionedRace.svelte";
 
 	export let gameId: string;
@@ -85,20 +83,18 @@
 </script>
 
 <div class="overflow-x-hidden overflow-y-auto p-1 md:p-2">
-	<h6 class="header pt-1 pb-2 gaia-font text-center">Bid for a race</h6>
+	<DialogHeader title="Bid for a race" />
 	<div class="race-list flex w-hull overflow-x-auto overflow-y-hidden">
 		{#each auctions as auction (auction.race)}
-			<div class="contents">
-				<AuctionedRace {auction} selected={auction.race === selectedRace} onSelected={select} />
-				<div class="mr-2" />
-			</div>
+			<AuctionedRace {auction} selected={auction.race === selectedRace} onSelected={select} />
+			<div class="mr-2" />
 		{/each}
 	</div>
 	<div class="w-100 my-2">
-		{#if isNull(selectedRace)}
+		{#if isNil(selectedRace)}
 			<h5>Select a race to view its board</h5>
 		{:else}
-			<img class="w-100" src={assetUrl(`Races/Boards_${boardVersion}/${getRaceBoard(selectedRace)}`)} alt="" />
+			<RaceBoard race={selectedRace} />
 		{/if}
 	</div>
 	{#if selectedRace}
@@ -108,33 +104,29 @@
 					Play {getRaceName(selectedRace)} for 0 VP
 				</h6>
 			{:else}
-				<Button size="small" disabled={currentBid === minimumBidForSelectedRace} on:clicked={() => bidLess(1)}>
+				<ion-button size="small" disabled={currentBid === minimumBidForSelectedRace} on:click={() => bidLess(1)}>
 					<span class="gaia-font">-1</span>
-				</Button>
+				</ion-button>
 				<h6 class="mx-2 gaia-font">
 					Bid {currentBid} VP for {getRaceName(selectedRace)}
 				</h6>
-				<Button size="small" on:clicked={() => bidMore(1)}>
+				<ion-button size="small" on:click={() => bidMore(1)}>
 					<span class="gaia-font">+1</span>
-				</Button>
+				</ion-button>
 			{/if}
 		</div>
 	{/if}
 	<div class="mt-auto flex justify-end">
-		<Button size="small" on:clicked={closeDialog}>
+		<ion-button size="small" on:click={closeDialog}>
 			<span class="gaia-font">Close</span>
-		</Button>
-		<Button variant="primary" disabled={isNil(selectedRace) || isBidding} on:clicked={doBid}>
+		</ion-button>
+		<ion-button size="small" color="primary" disabled={isNil(selectedRace) || isBidding} on:click={doBid}>
 			<span class="gaia-font">Confirm</span>
-		</Button>
+		</ion-button>
 	</div>
 </div>
 
 <style>
-	.header {
-		min-width: 300px;
-	}
-
 	.race-list {
 		scrollbar-width: none;
 	}

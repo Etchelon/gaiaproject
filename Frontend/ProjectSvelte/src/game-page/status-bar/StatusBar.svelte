@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Button from "$components/Button.svelte";
 	import ListItem from "$components/list/ListItem.svelte";
 	import ListItemText from "$components/list/ListItemText.svelte";
 	import type { AvailableActionDto } from "$dto/interfaces";
@@ -13,6 +12,14 @@
 	const { store, activeWorkflow, startWorkflow } = getGamePageContext();
 	const { availableActions, availableCommands, currentPlayer, game, isExecutingAction, isSpectator, statusMessage } = store;
 
+	let showMenu = false;
+	const openMenu = () => {
+		showMenu = true;
+	};
+	const closeMenu = () => {
+		showMenu = false;
+	};
+
 	const handleCommand = (command: Command) => {
 		const wf = get(activeWorkflow);
 		if (!wf) {
@@ -25,14 +32,6 @@
 		}
 
 		store.executePlayerAction(get(game).id, action);
-	};
-
-	let showMenu = false;
-	const openMenu = () => {
-		showMenu = true;
-	};
-	const closeMenu = () => {
-		showMenu = false;
 	};
 
 	const selectAction = (action: AvailableActionDto) => {
@@ -62,21 +61,21 @@
 		{#if isIdle}
 			<div class="flex flex-shrink-0 gap-1 md:gap-3">
 				{#each $availableCommands as cmd (`${cmd.nextState}§${cmd.text}`)}
-					<Button
-						size={isMobile ? "small" : "normal"}
-						variant={cmd.isPrimary ? "primary" : "default"}
-						on:clicked={() => handleCommand(cmd)}
+					<ion-button
+						size={isMobile ? "small" : "default"}
+						color={cmd.isPrimary ? "primary" : undefined}
+						on:click={() => handleCommand(cmd)}
 					>
 						<span class="gaia-font">{cmd.text}</span>
-					</Button>
+					</ion-button>
 				{/each}
 			</div>
 		{/if}
 		{#if showActionSelector}
 			<div class="flex-shrink-0 ml-1 md:ml-3 relative">
-				<Button size={isMobile ? "small" : "normal"} variant="primary" on:clicked={openMenu}>
+				<ion-button size={isMobile ? "small" : "default"} color="primary" on:click={openMenu}>
 					<span class="gaia-font">Actions</span>
-				</Button>
+				</ion-button>
 				{#if showMenu}
 					<div class="action-selector absolute top-0 right-0 p-2 border-2 rounded-lg border-gray-300 bg-white shadow-xl">
 						{#each $availableActions as action (action.type)}

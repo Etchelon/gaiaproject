@@ -13,6 +13,7 @@
 	import { onMount } from "svelte";
 	import DesktopView from "./desktop/DesktopView.svelte";
 	import AuctionDialog from "./dialogs/auction/AuctionDialog.svelte";
+	import SelectRaceDialog from "./dialogs/select-race/SelectRaceDialog.svelte";
 	import { getGamePageContext } from "./GamePage.context";
 	import MobileView from "./mobile/MobileView.svelte";
 	import StatusBar from "./status-bar/StatusBar.svelte";
@@ -32,7 +33,19 @@
 
 	$: showModal = isDialogView($activeView);
 	$: {
-		console.log({ activeView: $activeView });
+		// For some reason, after the modal closes there remain spurious div.ion-page
+		// elements inside, which will eat up all clicks the next time the modal is reopened
+		// and these need to be removed
+		(() => {
+			if (showModal || !modal) {
+				return;
+			}
+
+			const ionPages = modal.getElementsByClassName("ion-page");
+			for (const ionPage of ionPages) {
+				ionPage.remove();
+			}
+		})();
 	}
 	$: {
 		(() => {
@@ -112,7 +125,10 @@
 </div>
 
 {#if !$isSpectator && $currentPlayer}
-	<ion-modal bind:this={modal} is-open={showModal}>
+	<ion-modal class="dialog" class:mobile={isMobile} bind:this={modal} is-open={showModal}>
+		{#if $activeView === ActiveView.RaceSelectionDialog}
+			<SelectRaceDialog gameId={$game.id} />
+		{/if}
 		{#if $activeView === ActiveView.AuctionDialog}
 			<AuctionDialog gameId={$game.id} />
 		{/if}
@@ -148,5 +164,10 @@
 		&.mobile {
 			overflow: auto;
 		}
+	}
+
+	.dialog:not(.mobile) {
+		--width: 75vw;
+		--height: 75vh;
 	}
 </style>
