@@ -2,41 +2,30 @@
 	import Button from "$components/Button.svelte";
 	import ListItem from "$components/list/ListItem.svelte";
 	import ListItemText from "$components/list/ListItemText.svelte";
-	import { noop, random } from "lodash";
+	import type { AvailableActionDto } from "$dto/interfaces";
+	import { get } from "svelte/store";
 	import { getGamePageContext } from "../GamePage.context";
+	import type { Command } from "../workflows/types";
+	import { fromAction } from "../workflows/utils";
 
 	export let isMobile: boolean;
-	export let playerId: string | null;
 
-	const { store } = getGamePageContext();
-	const { game, isSpectator } = store;
+	const { store, activeWorkflow, startWorkflow } = getGamePageContext();
+	const { availableActions, availableCommands, currentPlayer, game, isExecutingAction, isSpectator, statusMessage } = store;
 
-	const isExecutingAction = random(true) > 0.95;
-	const statusMessage = "TODO: from the store";
-	const statusBarMessage = isExecutingAction ? "Executing..." : statusMessage;
-	const isIdle = random(true) > 0.05;
-	const activeWorkflow = random(true) > 0.5;
-	const commands: any[] = [
-		{
-			text: "Build",
-			isPrimary: true,
-		},
-		{
-			text: "Form a Federation",
-		},
-	];
-	const availableActions: any[] = [
-		{
-			type: 0,
-			description: "Build",
-		},
-		{
-			type: 1,
-			description: "Form a Federation",
-		},
-	];
+	const handleCommand = (command: Command) => {
+		const wf = get(activeWorkflow);
+		if (!wf) {
+			throw new Error("How can you issue a command without an active workflow?!");
+		}
 
-	const handleCommand = noop;
+		const action = wf.handleCommand(command);
+		if (!action) {
+			return;
+		}
+
+		store.executePlayerAction(get(game).id, action);
+	};
 
 	let showMenu = false;
 	const openMenu = () => {
@@ -45,11 +34,22 @@
 	const closeMenu = () => {
 		showMenu = false;
 	};
-	const selectAction = (action: any) => {};
 
-	$: useVerticalLayout = isMobile && commands.length > 1;
-	$: isActivePlayer = $game?.activePlayer?.id === playerId;
-	$: showActionSelector = true; //isActivePlayer && !activeWorkflow;
+	const selectAction = (action: AvailableActionDto) => {
+		if ($isSpectator) {
+			return;
+		}
+
+		const workflow = fromAction($currentPlayer!.id, $game, action, store);
+		startWorkflow(workflow);
+		closeMenu();
+	};
+
+	$: useVerticalLayout = isMobile && $availableCommands.length > 1;
+	$: isActivePlayer = $game?.activePlayer?.id === $currentPlayer?.id;
+	$: showActionSelector = isActivePlayer && !$activeWorkflow;
+	$: statusBarMessage = $isExecutingAction ? "Executing..." : $statusMessage;
+	$: isIdle = !$isExecutingAction;
 </script>
 
 <svelte:window on:click={closeMenu} />
@@ -61,11 +61,11 @@
 	{#if !$isSpectator}
 		{#if isIdle}
 			<div class="flex flex-shrink-0 gap-1 md:gap-3">
-				{#each commands as cmd (`${cmd.nextState}§${cmd.text}`)}
+				{#each $availableCommands as cmd (`${cmd.nextState}§${cmd.text}`)}
 					<Button
 						size={isMobile ? "small" : "normal"}
 						variant={cmd.isPrimary ? "primary" : "default"}
-						on:click={() => handleCommand(cmd)}
+						on:clicked={() => handleCommand(cmd)}
 					>
 						<span class="gaia-font">{cmd.text}</span>
 					</Button>
@@ -79,8 +79,8 @@
 				</Button>
 				{#if showMenu}
 					<div class="action-selector absolute top-0 right-0 p-2 border-2 rounded-lg border-gray-300 bg-white shadow-xl">
-						{#each availableActions as action (action.type)}
-							<ListItem on:click={selectAction}>
+						{#each $availableActions as action (action.type)}
+							<ListItem on:click={() => selectAction(action)}>
 								<ListItemText text={action.description} size="sm" />
 							</ListItem>
 						{/each}

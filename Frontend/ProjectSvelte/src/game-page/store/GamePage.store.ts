@@ -128,6 +128,7 @@ export class GamePageStore implements IGamePageStore {
 			.value();
 		return [...playersBoosters, ...available];
 	});
+	isExecutingAction = derived(this.actionProgress, $actionProgress => $actionProgress === "loading");
 
 	//#endregion
 
