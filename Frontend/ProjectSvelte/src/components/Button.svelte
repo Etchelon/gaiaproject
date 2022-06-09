@@ -3,6 +3,7 @@
 
 	export let size: "normal" | "small" = "normal";
 	export let variant: "primary" | "default" = "default";
+	export let disabled = false;
 
 	const dispatch = createEventDispatcher();
 
@@ -20,6 +21,6 @@
 	}
 </script>
 
-<button type="button" class={`rounded-md hover:scale-105 ${classes}`} on:click={handleClick}>
+<button type="button" class={`rounded-md hover:scale-105 ${classes}`} {disabled} on:click={handleClick}>
 	<slot />
 </button>

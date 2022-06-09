@@ -1,6 +1,6 @@
 import { first } from "lodash";
 import { ActionType } from "../../../dto/enums";
-import { ActionDto, MapDto } from "../../../dto/interfaces";
+import type { ActionDto, MapDto } from "../../../dto/interfaces";
 import { CENTRAL_HEX_INDEX, Identifier, Nullable } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";

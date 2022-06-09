@@ -7,31 +7,17 @@
 </script>
 
 <script lang="ts">
-	import { isDialogView } from "$utils/types";
-	import { actionSheetController } from "@ionic/core/components";
+	import { ActiveView, isDialogView } from "$utils/types";
 	import type { IonModal } from "@ionic/core/components/ion-modal";
-	import { airplane } from "ionicons/icons";
 	import { chain, isNil, noop, size } from "lodash";
 	import { onMount } from "svelte";
 	import DesktopView from "./desktop/DesktopView.svelte";
+	import AuctionDialog from "./dialogs/auction/AuctionDialog.svelte";
 	import { getGamePageContext } from "./GamePage.context";
 	import MobileView from "./mobile/MobileView.svelte";
 	import StatusBar from "./status-bar/StatusBar.svelte";
 	import type { ActionWorkflow } from "./workflows/action-workflow.base";
 	import { fromAction, fromDecision } from "./workflows/utils";
-
-	async function showActionSheet() {
-		console.log({ actionSheetController, airplane });
-		const actionSheet = await actionSheetController.create({
-			buttons: [
-				{
-					text: "Yay",
-					icon: airplane,
-				},
-			],
-		});
-		await actionSheet.present();
-	}
 
 	const { store, activeWorkflow, startWorkflow } = getGamePageContext();
 	const { activeView, currentPlayer, game, isSpectator, players } = store;
@@ -43,9 +29,11 @@
 	onMount(checkIsMobile);
 
 	let modal: IonModal;
-	let showModal = false;
 
-	$: showDialog = isDialogView($activeView);
+	$: showModal = isDialogView($activeView);
+	$: {
+		console.log({ activeView: $activeView });
+	}
 	$: {
 		(() => {
 			// With the adjust-sectors action I'm introducing a new feature: a workflow that dispatches
@@ -123,16 +111,13 @@
 	</div>
 </div>
 
-<ion-modal
-	bind:this={modal}
-	is-open={showModal}
-	on:click={async () => {
-		await modal.dismiss();
-		showModal = false;
-	}}
->
-	<h1 on:click={showActionSheet}>Hello Ionic modal!</h1>
-</ion-modal>
+{#if !$isSpectator && $currentPlayer}
+	<ion-modal bind:this={modal} is-open={showModal}>
+		{#if $activeView === ActiveView.AuctionDialog}
+			<AuctionDialog gameId={$game.id} />
+		{/if}
+	</ion-modal>
+{/if}
 
 <style lang="scss">
 	.status-bar {

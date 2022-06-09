@@ -1,8 +1,8 @@
-import _ from "lodash";
+import { first, isNil, reject } from "lodash";
 import { ActionType, RoundBoosterType } from "../../../dto/enums";
-import { ActionDto } from "../../../dto/interfaces";
+import type { ActionDto } from "../../../dto/interfaces";
 import { localizeRoundBooster } from "../../../utils/localization";
-import { Identifier, Nullable } from "../../../utils/miscellanea";
+import type { Identifier, Nullable } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";
 import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../types";
@@ -32,7 +32,7 @@ export class SelectStartingRoundBoosterWorkflow extends ActionWorkflow {
 				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
@@ -74,9 +74,9 @@ export class SelectStartingRoundBoosterWorkflow extends ActionWorkflow {
 
 	protected getInteractiveElements() {
 		const elements = super.getInteractiveElements();
-		if (!_.isNil(this._selectedBooster)) {
+		if (!isNil(this._selectedBooster)) {
 			return [
-				..._.reject(elements, el => el.type === InteractiveElementType.RoundBooster && el.id === this._selectedBooster),
+				...reject(elements, el => el.type === InteractiveElementType.RoundBooster && el.id === this._selectedBooster),
 				{ id: this._selectedBooster, type: InteractiveElementType.RoundBooster, state: InteractiveElementState.Selected },
 			];
 		}

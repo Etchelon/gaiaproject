@@ -1,6 +1,6 @@
-import _ from "lodash";
+import { first } from "lodash";
 import { ActionType, Race } from "../../../dto/enums";
-import { ActionDto } from "../../../dto/interfaces";
+import type { ActionDto } from "../../../dto/interfaces";
 import { ActionWorkflow } from "../action-workflow.base";
 import { ActiveView, Command, CommonWorkflowStates } from "../types";
 
@@ -43,7 +43,7 @@ export class SelectRaceWorkflow extends ActionWorkflow {
 				view: ActiveView.RaceSelectionDialog,
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	handleCommand(command: Command): ActionDto | null {

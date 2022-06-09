@@ -1,7 +1,7 @@
-import _ from "lodash";
+import { first } from "lodash";
 import { ActionType, Race } from "../../../dto/enums";
-import { ActionDto, AuctionStateDto } from "../../../dto/interfaces";
-import { Nullable } from "../../../utils/miscellanea";
+import type { ActionDto, AuctionStateDto } from "../../../dto/interfaces";
+import type { Nullable } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { ActiveView, Command, CommonWorkflowStates } from "../types";
 
@@ -43,7 +43,7 @@ export class BidForRaceWorkflow extends ActionWorkflow {
 				view: ActiveView.AuctionDialog,
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	handleCommand(command: Command): ActionDto | null {

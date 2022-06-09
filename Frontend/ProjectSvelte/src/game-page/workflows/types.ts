@@ -1,5 +1,5 @@
-import { Identifier } from "../../utils/miscellanea";
-import { InteractiveElementState, InteractiveElementType } from "./enums";
+import type { Identifier } from "../../utils/miscellanea";
+import type { InteractiveElementState, InteractiveElementType } from "./enums";
 
 export enum ActiveView {
 	Map,
