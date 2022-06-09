@@ -15,6 +15,15 @@ export enum ActiveView {
 	TerransConversionsDialog,
 }
 
+const DIALOG_VIEWS = [
+	ActiveView.RaceSelectionDialog,
+	ActiveView.AuctionDialog,
+	ActiveView.ConversionDialog,
+	ActiveView.SortIncomesDialog,
+	ActiveView.TerransConversionsDialog,
+];
+export const isDialogView = (view: ActiveView) => DIALOG_VIEWS.includes(view);
+
 export interface ElementSize {
 	width: number;
 	height: number;

@@ -1,4 +1,7 @@
 <script lang="ts">
+	import LoadingSpinner from "$components/LoadingSpinner.svelte";
+	import Page from "$components/Page.svelte";
+	import { asyncDelay } from "$utils/miscellanea";
 	import { isNil, noop } from "lodash";
 	import type { Subscription } from "rxjs";
 	import { onDestroy, onMount } from "svelte";
@@ -71,17 +74,20 @@
 	};
 	setGamePageContext(ctx);
 
-	let isLoading = true;
+	let gameName$: Promise<string> = Promise.reject();
+	let pageTitle = "Loading...";
 	onMount(async () => {
 		try {
-			await store.loadGame(id);
-			isLoading = false;
+			gameName$ = store.loadGame(id).then(name => {
+				console.log("game$ resolved");
+				signalR.connectToHub();
+				pageTitle = name;
+				return name;
+			});
 		} catch {
 			console.error(`Failed to load game ${id}.`);
 			push("#/not-found");
 		}
-
-		await signalR.connectToHub();
 	});
 
 	onDestroy(async () => {
@@ -93,8 +99,10 @@
 	}
 </script>
 
-{#if isLoading}
-	<h2 class="w-full p-4 text-center">Loading...</h2>
-{:else}
-	<GamePage />
-{/if}
+<Page title={pageTitle}>
+	{#await gameName$}
+		<LoadingSpinner />
+	{:then}
+		<GamePage />
+	{/await}
+</Page>
