@@ -1,4 +1,3 @@
-import { partialRight } from "lodash";
 import {
 	AdvancedTechnologyTileType,
 	BuildingType,
@@ -162,4 +161,4 @@ export function localizeEnum(value: number, enumName: LocalizableEnum): string {
 	return dictionary?.get(value) ?? "NOT LOCALIZED";
 }
 
-export const localizeRoundBooster = partialRight(localizeEnum, "RoundBoosterType");
+export const localizeRoundBooster = (value: number) => localizeEnum(value, "RoundBoosterType");

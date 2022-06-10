@@ -4,15 +4,13 @@
 
 <script lang="ts">
 	import type { PlayerFinalScoringStatusDto } from "$dto/interfaces";
-	import { getContrastColor } from "$utils/colors";
-	import { getRaceColor } from "$utils/race-utils";
+	import { getRaceColors } from "$utils/race-utils";
 
 	export let playerStatus: PlayerFinalScoringStatusDto;
 
 	let cubeStyle: string;
 	$: {
-		const color = getRaceColor(playerStatus.player.raceId!);
-		const borderColor = getContrastColor(color);
+		const [color, borderColor] = getRaceColors(playerStatus.player?.raceId);
 		cubeStyle = `border-color: ${borderColor}; background-color: ${color}; `;
 	}
 </script>

@@ -1,4 +1,5 @@
 import type { Race } from "../dto/enums";
+import { getContrastColor } from "./colors";
 import type { Nullable } from "./miscellanea";
 
 const raceNames = new Map<Race, string>([
@@ -17,9 +18,6 @@ const raceNames = new Map<Race, string>([
 	[13, "Nevlas"],
 	[14, "Itars"],
 ]);
-export function getRaceName(raceId: Race | null): string {
-	return raceId === null ? "" : raceNames.get(raceId)!;
-}
 
 const raceColors = new Map<Race, string>([
 	[1, "#02509E"],
@@ -37,8 +35,19 @@ const raceColors = new Map<Race, string>([
 	[13, "#FFFFFF"],
 	[14, "#FFFFFF"],
 ]);
+
+export function getRaceName(raceId: Race | null): string {
+	return raceId === null ? "" : raceNames.get(raceId)!;
+}
+
 export function getRaceColor(raceId: Nullable<Race>): string {
 	return raceId === null ? "#000" : raceColors.get(raceId)!;
+}
+
+export function getRaceColors(raceId: Nullable<Race>): [string, string] {
+	const color = raceId === null ? "#000" : raceColors.get(raceId)!;
+	const contrast = getContrastColor(color);
+	return [color, contrast];
 }
 
 export function getRaceImage(raceId: Nullable<Race>): string {

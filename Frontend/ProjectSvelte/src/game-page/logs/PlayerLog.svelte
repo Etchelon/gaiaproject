@@ -3,9 +3,8 @@
 	import ListItemAvatar from "$components/list/ListItemAvatar.svelte";
 	import ListItemText from "$components/list/ListItemText.svelte";
 	import type { GameLogDto } from "$dto/interfaces";
-	import { getContrastColor } from "$utils/colors";
 	import { assetUrl } from "$utils/miscellanea";
-	import { getRaceColor, getRaceImage } from "$utils/race-utils";
+	import { getRaceColors, getRaceImage } from "$utils/race-utils";
 	import PlayerSubLog from "./PlayerSubLog.svelte";
 
 	export let log: GameLogDto;
@@ -13,8 +12,7 @@
 	export let doRollback: (actionId: number) => void;
 
 	const imgUrl = assetUrl(`Races/${getRaceImage(log.race)}`);
-	const playerColor = getRaceColor(log.race);
-	const textColor = getContrastColor(playerColor);
+	const [playerColor, textColor] = getRaceColors(log.race);
 </script>
 
 <ListItem --background-color={playerColor} --color={textColor}>

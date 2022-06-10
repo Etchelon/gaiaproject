@@ -1,15 +1,13 @@
 <script lang="ts">
 	import type { Race } from "$dto/enums";
-	import { getContrastColor } from "$utils/colors";
 	import { assetUrl } from "$utils/miscellanea";
-	import { getRaceColor, getRaceImage, getRaceName } from "$utils/race-utils";
+	import { getRaceColors, getRaceImage, getRaceName } from "$utils/race-utils";
 
 	export let race: Race;
 	export let selected: boolean;
 	export let onSelected: (r: Race) => void;
 
-	$: background = getRaceColor(race);
-	$: color = getContrastColor(background);
+	$: [background, color] = getRaceColors(race);
 	$: imgUrl = assetUrl(`Races/${getRaceImage(race)}`);
 	$: raceName = getRaceName(race);
 </script>

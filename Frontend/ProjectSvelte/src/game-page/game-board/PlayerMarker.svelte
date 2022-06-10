@@ -1,19 +1,18 @@
 <script lang="ts">
 	import type { Race } from "$dto/enums";
-	import { getContrastColor } from "$utils/colors";
 	import { withAspectRatioW } from "$utils/miscellanea";
-	import { getRaceColor } from "$utils/race-utils";
+	import { getRaceColors } from "$utils/race-utils";
 
 	export let race: Race;
 	export let shape: "circle" | "octagon" = "circle";
 
 	let style = "";
 	$: {
-		const raceColor = getRaceColor(race);
+		const [raceColor, borderColor] = getRaceColors(race);
 		style = `
 	${withAspectRatioW(1)};
 	background-color: ${raceColor};
-	border-color: ${getContrastColor(raceColor)}
+	border-color: ${borderColor}
 	`;
 	}
 </script>

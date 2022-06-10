@@ -4,7 +4,7 @@
  * @returns {string} A CSS rgb color string
  */
 function hexToRgb(color: string): string {
-	color = color.substr(1);
+	color = color.substring(1);
 	const re = new RegExp(`.{1,${color.length >= 6 ? 2 : 1}}`, "g");
 	let colors = color.match(re);
 

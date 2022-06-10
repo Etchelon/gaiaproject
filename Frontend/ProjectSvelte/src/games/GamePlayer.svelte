@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { PlayerInfoDto } from "$dto/interfaces";
-	import { getContrastColor } from "$utils/colors";
 	import { assetUrl, playerInitials } from "$utils/miscellanea";
-	import { getRaceColor, getRaceImage } from "$utils/race-utils";
+	import { getRaceColors, getRaceImage } from "$utils/race-utils";
 	import { isNil } from "lodash";
 
 	export let player: PlayerInfoDto;
@@ -14,8 +13,7 @@
 	$: playerLabel = `${!isNil(player.placement) ? `${player.placement}° - ` : ""}${player.username}`;
 	$: {
 		if (!isNil(player.raceId)) {
-			const background = getRaceColor(player.raceId);
-			const color = getContrastColor(background);
+			const [background, color] = getRaceColors(player.raceId);
 			chipColorsStyle = `--color: ${color}; --background: ${background}`;
 		}
 	}

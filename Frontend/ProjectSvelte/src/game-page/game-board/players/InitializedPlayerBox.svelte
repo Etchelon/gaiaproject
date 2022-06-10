@@ -23,8 +23,7 @@
 	import type { PlayerInGameDto } from "$dto/interfaces";
 	import { assetUrl, countActivatableActions } from "$utils/miscellanea";
 	import { isNil } from "lodash";
-	import { getRaceColor, getRaceImage, getRaceName } from "$utils/race-utils";
-	import { getContrastColor } from "$utils/colors";
+	import { getRaceColors, getRaceImage, getRaceName } from "$utils/race-utils";
 	import ResourceToken from "../ResourceToken.svelte";
 	import Building from "../map/hex/Building.svelte";
 
@@ -32,8 +31,7 @@
 	export let index: number;
 	export let isOnline = false;
 
-	const color = getRaceColor(player.raceId);
-	const textColor = getContrastColor(color);
+	$: [color, textColor] = getRaceColors(player.raceId);
 	const { available: availableSpecialActions, all: allSpecialActions } = countActivatableActions(player, false);
 	const playerState = player.state!;
 	const hasLostPlanet = playerState.researchAdvancements.navigation === MAX_RESEARCH_STEPS;

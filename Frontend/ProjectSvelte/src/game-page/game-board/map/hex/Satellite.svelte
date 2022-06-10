@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Race } from "$dto/enums";
-	import { getRaceColor } from "$utils/race-utils";
+	import { getRaceColors } from "$utils/race-utils";
 
 	export let raceId: Race;
 	export let width: number;
 
-	$: style = `width: ${width}px; height: ${width}px; background-color: ${getRaceColor(raceId)}`;
+	$: style = `width: ${width}px; height: ${width}px; background-color: ${getRaceColors(raceId)[0]}`;
 </script>
 
 <div class="satellite" {style} />

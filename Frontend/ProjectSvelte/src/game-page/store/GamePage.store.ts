@@ -1,6 +1,6 @@
 import type { ActionDto, AvailableActionDto, GameStateDto, MapDto } from "$dto/interfaces";
 import type { HttpClient } from "$utils/http-client";
-import { asyncDelay, isLastRound, Nullable } from "$utils/miscellanea";
+import { isLastRound, Nullable } from "$utils/miscellanea";
 import { ActiveView, LoadingStatus } from "$utils/types";
 import { HubConnectionState } from "@microsoft/signalr";
 import { chain, cloneDeep, every, findIndex, isNil, partition, sortBy, without } from "lodash";
