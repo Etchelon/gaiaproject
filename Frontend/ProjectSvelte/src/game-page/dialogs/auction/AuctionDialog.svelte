@@ -32,7 +32,6 @@
 	import { getGamePageContext } from "../../GamePage.context";
 	import type { BidForRaceWorkflow } from "../../workflows/setup-phase/bid-for-race.workflow";
 	import { CommonWorkflowStates } from "../../workflows/types";
-	import DialogHeader from "../DialogHeader.svelte";
 	import RaceBoard from "../RaceBoard.svelte";
 	import AuctionedRace from "./AuctionedRace.svelte";
 

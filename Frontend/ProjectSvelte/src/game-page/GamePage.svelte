@@ -8,7 +8,6 @@
 
 <script lang="ts">
 	import { ActiveView, isDialogView } from "$utils/types";
-	import type { IonModal } from "@ionic/core/components/ion-modal";
 	import { chain, isNil, noop, size } from "lodash";
 	import { onDestroy, onMount } from "svelte";
 	import DesktopView from "./desktop/DesktopView.svelte";
@@ -31,43 +30,12 @@
 	onMount(async () => {
 		checkIsMobile();
 		await signalR.connectToHub();
-		activeView.subscribe(v => console.log(">>> ", { v }));
 	});
 
 	onDestroy(async () => {
 		await signalR.disconnectFromHub();
 	});
 
-	let modal: IonModal;
-
-	$: view = $activeView;
-	$: showModal = isDialogView(view);
-	$: {
-		console.log({ activeView: ActiveView[view] });
-		console.log({ showModal });
-	}
-	$: {
-		// For some reason, after the modal closes there remain spurious div.ion-page
-		// elements inside, which will eat up all clicks the next time the modal is reopened
-		// and these need to be removed
-		(() => {
-			if (!modal) {
-				return;
-			}
-
-			if (showModal && !modal.isOpen) {
-				modal.present();
-				return;
-			} else if (!showModal && modal.isOpen) {
-				modal.dismiss().then(() => {
-					const ionPages = modal.getElementsByClassName("ion-page");
-					for (const ionPage of ionPages) {
-						ionPage.remove();
-					}
-				});
-			}
-		})();
-	}
 	$: {
 		(() => {
 			// With the adjust-sectors action I'm introducing a new feature: a workflow that dispatches
@@ -133,12 +101,12 @@
 	</div>
 	<div class="game-view" class:desktop={!isMobile} class:mobile={isMobile}>
 		{#if isMobile}
-			<MobileView game={$game} players={$players} activeView={view} currentPlayerId={$currentPlayer?.id} />
+			<MobileView game={$game} players={$players} activeView={$activeView} currentPlayerId={$currentPlayer?.id} />
 		{:else}
 			<DesktopView
 				game={$game}
 				players={$players}
-				activeView={view}
+				activeView={$activeView}
 				currentPlayerId={$currentPlayer?.id}
 				on:setActiveView={evt => store.setActiveView(evt.detail)}
 			/>
@@ -147,11 +115,11 @@
 </div>
 
 {#if !$isSpectator && $currentPlayer}
-	<ion-modal class="dialog" class:mobile={isMobile} bind:this={modal} is-open={showModal}>
-		{#if view === ActiveView.RaceSelectionDialog}
+	<ion-modal class="dialog" class:mobile={isMobile} is-open={isDialogView($activeView)}>
+		{#if $activeView === ActiveView.RaceSelectionDialog}
 			<SelectRaceDialog gameId={$game.id} />
 		{/if}
-		{#if view === ActiveView.AuctionDialog}
+		{#if $activeView === ActiveView.AuctionDialog}
 			<AuctionDialog gameId={$game.id} />
 		{/if}
 	</ion-modal>
