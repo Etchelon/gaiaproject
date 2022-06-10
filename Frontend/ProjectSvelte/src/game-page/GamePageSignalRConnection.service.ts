@@ -60,7 +60,7 @@ export class GamePageSignalRConnectionService {
 	private onGameStateChanged = (newState: string) => {
 		this.closeWorkflowCallback();
 		const newGameState = JSON.parse(newState) as GameStateDto;
-		this.store.updateGameState(newGameState);
+		this.store.gameUpdated(newGameState);
 	};
 
 	private onUserJoined = (userId: string) => {

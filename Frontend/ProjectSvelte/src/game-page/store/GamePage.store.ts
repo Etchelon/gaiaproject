@@ -250,10 +250,6 @@ export class GamePageStore implements IGamePageStore {
 		!isNil(actions) && this.availableActions.set(actions);
 	};
 
-	updateGameState = (newGameState: GameStateDto) => {
-		this.game.set(newGameState);
-	};
-
 	saveNotesFeedbackDisplayed = () => {
 		this.saveNotesProgress.set("idle");
 	};

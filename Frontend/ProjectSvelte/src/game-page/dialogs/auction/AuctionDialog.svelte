@@ -60,7 +60,7 @@
 		$activeWorkflow?.handleCommand({ nextState: CommonWorkflowStates.CANCEL });
 	};
 	const doBid = () => {
-		const action = $activeWorkflow?.handleCommand({ nextState: CommonWorkflowStates.PERFORM_ACTION, data: currentAuction })!;
+		const action = $activeWorkflow?.handleCommand({ nextState: CommonWorkflowStates.PERFORM_ACTION, data: $currentAuction })!;
 		isBidding = true;
 		store.executePlayerAction(gameId, action);
 	};
@@ -82,49 +82,59 @@
 	$: canBid0Points = isLastRace || !isOngoingAuction;
 </script>
 
-<div class="overflow-x-hidden overflow-y-auto p-1 md:p-2">
-	<DialogHeader title="Bid for a race" />
-	<div class="race-list flex w-hull overflow-x-auto overflow-y-hidden">
-		{#each auctions as auction (auction.race)}
-			<AuctionedRace {auction} selected={auction.race === selectedRace} onSelected={select} />
-			<div class="mr-2" />
-		{/each}
-	</div>
-	<div class="w-100 my-2">
-		{#if isNil(selectedRace)}
-			<h5>Select a race to view its board</h5>
-		{:else}
-			<RaceBoard race={selectedRace} />
-		{/if}
-	</div>
-	{#if selectedRace}
-		<div class="mb-2 flex justify-center">
-			{#if canBid0Points}
-				<h6 class="gaia-font">
-					Play {getRaceName(selectedRace)} for 0 VP
-				</h6>
+<ion-header>
+	<ion-toolbar>
+		<ion-title class="gaia-font">Select a race</ion-title>
+	</ion-toolbar>
+</ion-header>
+<ion-content scroll-y={false}>
+	<div class="p-1 md:p-2">
+		<div class="race-list flex w-hull overflow-x-auto overflow-y-hidden">
+			{#each auctions as auction (auction.race)}
+				<AuctionedRace {auction} selected={auction.race === selectedRace} onSelected={select} />
+				<div class="mr-2" />
+			{/each}
+		</div>
+		<div class="w-100 my-2">
+			{#if isNil(selectedRace)}
+				<h5>Select a race to view its board</h5>
 			{:else}
-				<ion-button size="small" disabled={currentBid === minimumBidForSelectedRace} on:click={() => bidLess(1)}>
-					<span class="gaia-font">-1</span>
-				</ion-button>
-				<h6 class="mx-2 gaia-font">
-					Bid {currentBid} VP for {getRaceName(selectedRace)}
-				</h6>
-				<ion-button size="small" on:click={() => bidMore(1)}>
-					<span class="gaia-font">+1</span>
-				</ion-button>
+				<RaceBoard race={selectedRace} />
 			{/if}
 		</div>
-	{/if}
-	<div class="mt-auto flex justify-end">
-		<ion-button size="small" on:click={closeDialog}>
-			<span class="gaia-font">Close</span>
-		</ion-button>
-		<ion-button size="small" color="primary" disabled={isNil(selectedRace) || isBidding} on:click={doBid}>
-			<span class="gaia-font">Confirm</span>
-		</ion-button>
+		{#if selectedRace}
+			<div class="mb-2 flex justify-center">
+				{#if canBid0Points}
+					<h6 class="gaia-font">
+						Play {getRaceName(selectedRace)} for 0 VP
+					</h6>
+				{:else}
+					<ion-button size="small" disabled={currentBid === minimumBidForSelectedRace} on:click={() => bidLess(1)}>
+						<span class="gaia-font">-1</span>
+					</ion-button>
+					<h6 class="pt-1 mx-2 gaia-font">
+						Bid {currentBid} VP for {getRaceName(selectedRace)}
+					</h6>
+					<ion-button size="small" on:click={() => bidMore(1)}>
+						<span class="gaia-font">+1</span>
+					</ion-button>
+				{/if}
+			</div>
+		{/if}
 	</div>
-</div>
+</ion-content>
+<ion-footer>
+	<ion-toolbar>
+		<ion-buttons slot="end">
+			<ion-button size="small" on:click={closeDialog}>
+				<span class="gaia-font">Close</span>
+			</ion-button>
+			<ion-button size="small" color="primary" disabled={isNil(selectedRace) || isBidding} on:click={doBid}>
+				<span class="gaia-font">Confirm</span>
+			</ion-button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-footer>
 
 <style>
 	.race-list {

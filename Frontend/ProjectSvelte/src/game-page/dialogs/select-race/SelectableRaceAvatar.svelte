@@ -20,7 +20,7 @@
 	</ion-avatar>
 	{#if selected}
 		<div class="absolute -bottom-1 right-0">
-			<ion-checkbox checked={true} disabled={true} />
+			<ion-checkbox checked={selected} />
 		</div>
 	{/if}
 </div>

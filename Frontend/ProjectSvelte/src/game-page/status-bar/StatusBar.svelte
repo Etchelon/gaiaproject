@@ -48,6 +48,9 @@
 	$: isActivePlayer = $game?.activePlayer?.id === $currentPlayer?.id;
 	$: showActionSelector = isActivePlayer && !$activeWorkflow;
 	$: statusBarMessage = $isExecutingAction ? "Executing..." : $statusMessage;
+	$: {
+		console.log({ statusBarMessage, isExecutingAction: $isExecutingAction });
+	}
 	$: isIdle = !$isExecutingAction;
 </script>
 

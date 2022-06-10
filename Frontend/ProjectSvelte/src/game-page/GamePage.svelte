@@ -10,7 +10,7 @@
 	import { ActiveView, isDialogView } from "$utils/types";
 	import type { IonModal } from "@ionic/core/components/ion-modal";
 	import { chain, isNil, noop, size } from "lodash";
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import DesktopView from "./desktop/DesktopView.svelte";
 	import AuctionDialog from "./dialogs/auction/AuctionDialog.svelte";
 	import SelectRaceDialog from "./dialogs/select-race/SelectRaceDialog.svelte";
@@ -20,30 +20,51 @@
 	import type { ActionWorkflow } from "./workflows/action-workflow.base";
 	import { fromAction, fromDecision } from "./workflows/utils";
 
-	const { store, activeWorkflow, startWorkflow } = getGamePageContext();
+	const { store, signalR, activeWorkflow, startWorkflow } = getGamePageContext();
 	const { activeView, currentPlayer, game, isSpectator, players } = store;
 	let isMobile = false;
 
 	const checkIsMobile = () => {
 		isMobile = window.innerWidth <= 600;
 	};
-	onMount(checkIsMobile);
+
+	onMount(async () => {
+		checkIsMobile();
+		await signalR.connectToHub();
+		activeView.subscribe(v => console.log(">>> ", { v }));
+	});
+
+	onDestroy(async () => {
+		await signalR.disconnectFromHub();
+	});
 
 	let modal: IonModal;
 
-	$: showModal = isDialogView($activeView);
+	$: view = $activeView;
+	$: showModal = isDialogView(view);
+	$: {
+		console.log({ activeView: ActiveView[view] });
+		console.log({ showModal });
+	}
 	$: {
 		// For some reason, after the modal closes there remain spurious div.ion-page
 		// elements inside, which will eat up all clicks the next time the modal is reopened
 		// and these need to be removed
 		(() => {
-			if (showModal || !modal) {
+			if (!modal) {
 				return;
 			}
 
-			const ionPages = modal.getElementsByClassName("ion-page");
-			for (const ionPage of ionPages) {
-				ionPage.remove();
+			if (showModal && !modal.isOpen) {
+				modal.present();
+				return;
+			} else if (!showModal && modal.isOpen) {
+				modal.dismiss().then(() => {
+					const ionPages = modal.getElementsByClassName("ion-page");
+					for (const ionPage of ionPages) {
+						ionPage.remove();
+					}
+				});
 			}
 		})();
 	}
@@ -56,6 +77,8 @@
 			if (!isNil($activeWorkflow)) {
 				return;
 			}
+
+			store.clearStatus();
 
 			const gameIsOver = !isNil($game.ended);
 			if (gameIsOver) {
@@ -70,7 +93,6 @@
 
 			const activePlayer = $game.activePlayer;
 			if (!activePlayer) {
-				store.clearStatus();
 				return;
 			}
 
@@ -111,12 +133,12 @@
 	</div>
 	<div class="game-view" class:desktop={!isMobile} class:mobile={isMobile}>
 		{#if isMobile}
-			<MobileView game={$game} players={$players} activeView={$activeView} currentPlayerId={$currentPlayer?.id} />
+			<MobileView game={$game} players={$players} activeView={view} currentPlayerId={$currentPlayer?.id} />
 		{:else}
 			<DesktopView
 				game={$game}
 				players={$players}
-				activeView={$activeView}
+				activeView={view}
 				currentPlayerId={$currentPlayer?.id}
 				on:setActiveView={evt => store.setActiveView(evt.detail)}
 			/>
@@ -126,10 +148,10 @@
 
 {#if !$isSpectator && $currentPlayer}
 	<ion-modal class="dialog" class:mobile={isMobile} bind:this={modal} is-open={showModal}>
-		{#if $activeView === ActiveView.RaceSelectionDialog}
+		{#if view === ActiveView.RaceSelectionDialog}
 			<SelectRaceDialog gameId={$game.id} />
 		{/if}
-		{#if $activeView === ActiveView.AuctionDialog}
+		{#if view === ActiveView.AuctionDialog}
 			<AuctionDialog gameId={$game.id} />
 		{/if}
 	</ion-modal>

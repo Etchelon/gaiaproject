@@ -1,7 +1,6 @@
 <script lang="ts">
 	import LoadingSpinner from "$components/LoadingSpinner.svelte";
 	import Page from "$components/Page.svelte";
-	import { asyncDelay } from "$utils/miscellanea";
 	import { isNil, noop } from "lodash";
 	import type { Subscription } from "rxjs";
 	import { onDestroy, onMount } from "svelte";
@@ -25,7 +24,6 @@
 	} = getAppContext();
 
 	const store = new GamePageStore(http);
-	const signalR = new GamePageSignalRConnectionService(hub, store, noop);
 
 	//#region Workflow management
 
@@ -63,6 +61,8 @@
 	};
 
 	//#endregion
+
+	const signalR = new GamePageSignalRConnectionService(hub, store, closeWorkflow);
 
 	const ctx: IGamePageContext = {
 		id,
