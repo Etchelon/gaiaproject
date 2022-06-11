@@ -1,6 +1,4 @@
 <script lang="ts">
-	import ListItem from "$components/list/ListItem.svelte";
-	import ListItemText from "$components/list/ListItemText.svelte";
 	import type { AvailableActionDto } from "$dto/interfaces";
 	import { get } from "svelte/store";
 	import { getGamePageContext } from "../GamePage.context";
@@ -48,13 +46,9 @@
 	$: isActivePlayer = $game?.activePlayer?.id === $currentPlayer?.id;
 	$: showActionSelector = isActivePlayer && !$activeWorkflow;
 	$: statusBarMessage = $isExecutingAction ? "Executing..." : $statusMessage;
-	$: {
-		console.log({ statusBarMessage, isExecutingAction: $isExecutingAction });
-	}
 	$: isIdle = !$isExecutingAction;
 </script>
 
-<svelte:window on:click={closeMenu} />
 <div
 	class="flex items-center justify-center h-full gap-1 md:gap-3 py-1 px-2 md:py-2 md:px-4 bg-white shadow-sm shadow-gray-500"
 	class:flex-col={useVerticalLayout}
@@ -76,20 +70,33 @@
 		{/if}
 		{#if showActionSelector}
 			<div class="flex-shrink-0 ml-1 md:ml-3 relative">
-				<ion-button size={isMobile ? "small" : "default"} color="primary" on:click={openMenu}>
+				<ion-button size={isMobile ? "small" : "default"} color="primary" disabled={showMenu} on:click={openMenu}>
 					<span class="gaia-font">Actions</span>
 				</ion-button>
-				{#if showMenu}
-					<div class="action-selector absolute top-0 right-0 p-2 border-2 rounded-lg border-gray-300 bg-white shadow-xl">
-						{#each $availableActions as action (action.type)}
-							<ListItem on:click={() => selectAction(action)}>
-								<ListItemText text={action.description} size="sm" />
-							</ListItem>
-						{/each}
-					</div>
-				{/if}
 			</div>
 		{/if}
+
+		<ion-modal breakpoints={[0, 0.5, 0.75]} initial-breakpoint={0.5} is-open={showMenu}>
+			<ion-header translucent>
+				<ion-toolbar>
+					<ion-title class="gaia-font">Available Actions</ion-title>
+					<ion-buttons slot="end">
+						<ion-button on:click={closeMenu}>Close</ion-button>
+					</ion-buttons>
+				</ion-toolbar>
+			</ion-header>
+			<ion-content fullscreen>
+				<ion-list>
+					{#each $availableActions as action, index (action.type)}
+						<ion-item on:click={() => selectAction(action)} lines={index < $availableActions.length - 1 ? "full" : "none"}>
+							<ion-label>
+								{action.description}
+							</ion-label>
+						</ion-item>
+					{/each}
+				</ion-list>
+			</ion-content>
+		</ion-modal>
 	{/if}
 </div>
 
