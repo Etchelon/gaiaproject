@@ -2,13 +2,6 @@
 	import { chain } from "lodash";
 	import { hexHeight, hexSide } from "../shape-utils";
 
-	interface HexStyles {
-		width: number;
-		height: number;
-		top: number;
-		left: number;
-	}
-
 	interface HexSizingProps {
 		index: number;
 		width: number;
@@ -80,37 +73,36 @@
 </script>
 
 <script lang="ts">
-	import { isEmpty, isNil } from "lodash";
+	import { isEmpty, isNil, noop } from "lodash";
 	import { BuildingType, PlanetType, Race } from "$dto/enums";
 	import type { HexDto } from "$dto/interfaces";
 	import { assetUrl } from "$utils/miscellanea";
+	import { InteractiveElementType } from "$utils/types";
+	import { getGamePageContext } from "../../../GamePage.context";
+	import { deriveHexInteractionState } from "../../../store/selectors";
 	import Building from "./Building.svelte";
-	import Satellite from "./Satellite.svelte";
 	import LostPlanet from "./LostPlanet.svelte";
-	import { random } from "lodash";
+	import Satellite from "./Satellite.svelte";
 	import Selector from "./Selector.svelte";
 
 	export let hex: HexDto;
 	export let width = 100;
-	export let onClicked = () => {
-		console.info(`Hex ${hex.id} clicked!!`);
-	};
 
-	let clickable = random(true) > 0.5 && false;
-	let selected = random(true) > 0.75 && false;
-	let notes = random(true) > 0.85 && false;
+	const { store, activeWorkflow } = getGamePageContext();
+	const interactionState = deriveHexInteractionState(hex.id)(store);
+	$: ({ clickable, selected, notes } = $interactionState);
+	$: hexClicked = clickable
+		? () => {
+				$activeWorkflow?.elementSelected(hex.id, InteractiveElementType.Hex);
+		  }
+		: noop;
 
-	let hexStyles: HexStyles;
+	let style: string;
 	let hexSizing: HexSizingProps;
 	$: {
 		const index = hex.index;
 		const { height, side } = getHexDimensions(width);
-		hexStyles = {
-			width,
-			height,
-			top: getY(index, height),
-			left: getX(index, width, side),
-		};
+		style = `width: ${width}px; height: ${height}px; top: ${getY(index, height)}px; left: ${getX(index, width, side)}px`;
 		hexSizing = {
 			width,
 			height,
@@ -127,7 +119,7 @@
 	$: hasSatellites = !isEmpty(hex.satellites);
 </script>
 
-<div class="hex" style:width={`${hexStyles.width}px`} style:height={`${hexStyles.height}px`} style:top={`${hexStyles.top}px`} style:left={`${hexStyles.left}px`}>
+<div class="hex" {style}>
 	{#if hasGaiaMarker}
 		<img class="gaia-marker" src={assetUrl("/GaiaMarker.png")} alt="" />
 	{/if}
@@ -161,11 +153,11 @@
 	{/if}
 	{#if clickable || selected}
 		<div class="selector-wrapper">
-			<Selector radius={hexSizing.height} {selected} withQic={notes} />
+			<Selector radius={hexSizing.height} {selected} withQic={!isNil(notes)} />
 		</div>
 	{/if}
 	<svg class="clicker">
-		<polygon class:clickable points={hexCorners(hexSizing)} onClick={onClicked} />
+		<polygon class:clickable points={hexCorners(hexSizing)} on:click={hexClicked} />
 	</svg>
 </div>
 

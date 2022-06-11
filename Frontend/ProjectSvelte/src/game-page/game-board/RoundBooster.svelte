@@ -1,9 +1,5 @@
 <script lang="ts" context="module">
 	import { RoundBoosterType } from "$dto/enums";
-	import type { RoundBoosterDto, RoundBoosterTileDto } from "$dto/interfaces";
-	import { assetUrl, interactiveElementClass, withAspectRatioW } from "$utils/miscellanea";
-	import { InteractiveElementType } from "$utils/types";
-	import { random } from "lodash";
 
 	const WIDTH_TO_HEIGHT_RATIO = 0.3423;
 	const roundBoosterNames = new Map<RoundBoosterType, string>([
@@ -21,6 +17,12 @@
 </script>
 
 <script lang="ts">
+	import type { RoundBoosterDto, RoundBoosterTileDto } from "$dto/interfaces";
+	import { assetUrl, interactiveElementClass, withAspectRatioW } from "$utils/miscellanea";
+	import { InteractiveElementType } from "$utils/types";
+	import { noop } from "lodash";
+	import { getGamePageContext } from "../GamePage.context";
+	import { deriveRoundBoosterInteractionState } from "../store/selectors";
 	import ActionToken from "./ActionToken.svelte";
 	import PlayerMarker from "./PlayerMarker.svelte";
 
@@ -30,8 +32,14 @@
 
 	let availableBooster = booster as RoundBoosterTileDto;
 	let actualType = withPlayerInfo ? InteractiveElementType.OwnRoundBooster : InteractiveElementType.RoundBooster;
-	let clickable = random(true) > 0.5 && !nonInteractive;
-	let selected = random(true) > 0.75 && !nonInteractive;
+	const { store, activeWorkflow } = getGamePageContext();
+	const interactionState = deriveRoundBoosterInteractionState(actualType)(booster.id)(store);
+	$: ({ clickable, selected } = $interactionState);
+	$: boosterClicked = clickable
+		? () => {
+				$activeWorkflow?.elementSelected(booster.id, actualType);
+		  }
+		: noop;
 </script>
 
 <div style={withAspectRatioW(WIDTH_TO_HEIGHT_RATIO)}>
@@ -46,7 +54,7 @@
 			<PlayerMarker race={availableBooster.player.raceId ?? 0} />
 		</div>
 	{/if}
-	<div class={interactiveElementClass(clickable, selected)} on:click />
+	<div class={interactiveElementClass(clickable, selected)} on:click={boosterClicked} />
 </div>
 
 <style>

@@ -23,15 +23,24 @@
 
 <script lang="ts">
 	import { assetUrl, interactiveElementClass, withAspectRatioW } from "$utils/miscellanea";
-	import { random } from "lodash";
+	import { noop } from "lodash";
+	import { getGamePageContext } from "../GamePage.context";
+	import { deriveAdvancedTileInteractionState } from "../store/selectors";
+	import { InteractiveElementType } from "../workflows/enums";
 
 	export let type: AdvancedTechnologyTileType;
 
-	let clickable = random(true) > 0.5;
-	let selected = random(true) > 0.75;
+	const { store, activeWorkflow } = getGamePageContext();
+	const interactionState = deriveAdvancedTileInteractionState(type)(store);
+	$: ({ clickable, selected } = $interactionState);
+	$: tileClicked = clickable
+		? () => {
+				$activeWorkflow?.elementSelected(type, InteractiveElementType.AdvancedTile);
+		  }
+		: noop;
 </script>
 
 <div style={withAspectRatioW(WIDTH_TO_HEIGHT_RATIO)}>
 	<img class="wh-full absolute top-0 left-0" src={assetUrl(`Boards/TechTiles/${advancedTileImages.get(type)}.png`)} alt="" />
-	<div class={interactiveElementClass(clickable, selected)} on:click />
+	<div class={interactiveElementClass(clickable, selected)} on:click={tileClicked} />
 </div>

@@ -1,7 +1,11 @@
 <script lang="ts">
 	import type { TechnologyTileDto } from "$dto/interfaces";
 	import { interactiveElementClass } from "$utils/miscellanea";
-	import { isNil, random } from "lodash";
+	import { InteractiveElementType } from "$utils/types";
+	import { isNil, noop } from "lodash";
+	import { get } from "svelte/store";
+	import { getGamePageContext } from "../../GamePage.context";
+	import { deriveOwnAdvancedTileInteractionState, deriveOwnStandardTileInteractionState } from "../../store/selectors";
 	import ActionToken from "../ActionToken.svelte";
 	import AdvancedTechnologyTile from "../AdvancedTechnologyTile.svelte";
 	import StandardTechnologyTile from "../StandardTechnologyTile.svelte";
@@ -9,11 +13,30 @@
 	export let tile: TechnologyTileDto;
 	export let playerId: string;
 
-	let clickable = random(true) > 0.5;
-	let selected = random(true) > 0.75;
+	const { store, activeWorkflow } = getGamePageContext();
 
-	$: covered = !isNil(tile.coveredByAdvancedTile);
-	$: tileId = covered ? tile.coveredByAdvancedTile! : tile.id;
+	let clickable = false;
+	let selected = false;
+	let tileClicked = noop;
+	$: {
+		const covered = !isNil(tile.coveredByAdvancedTile);
+		const tileId = covered ? tile.coveredByAdvancedTile! : tile.id;
+		const selector = covered
+			? deriveOwnAdvancedTileInteractionState(tile.coveredByAdvancedTile!)
+			: deriveOwnStandardTileInteractionState(tile.id);
+		const interactionState = selector(store, playerId);
+		const state = get(interactionState);
+		clickable = state.clickable;
+		selected = state.selected;
+		tileClicked = clickable
+			? () => {
+					$activeWorkflow?.elementSelected(
+						tileId,
+						covered ? InteractiveElementType.OwnAdvancedTile : InteractiveElementType.OwnStandardTile
+					);
+			  }
+			: noop;
+	}
 </script>
 
 <div class="player-technology-tile w-full relative" class:interactive={clickable || selected}>
@@ -34,7 +57,7 @@
 			{/if}
 		</div>
 	{/if}
-	<div class={interactiveElementClass(clickable, selected)} style:pointer-events="all" on:click />
+	<div class={interactiveElementClass(clickable, selected)} style:pointer-events="all" on:click|stopPropagation={tileClicked} />
 </div>
 
 <style>

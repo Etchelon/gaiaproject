@@ -1,7 +1,10 @@
 <script lang="ts">
 	import type { ResearchTrackDto } from "$dto/interfaces";
 	import { assetUrl, interactiveElementClass } from "$utils/miscellanea";
-	import { isNil, random } from "lodash";
+	import { InteractiveElementType } from "$utils/types";
+	import { isNil, noop } from "lodash";
+	import { getGamePageContext } from "../../../GamePage.context";
+	import { deriveResearchTrackInteractionState } from "../../../store/selectors";
 	import AdvancedTechnologyTile from "../../AdvancedTechnologyTile.svelte";
 	import FederationToken from "../../FederationToken.svelte";
 	import TechnologyTileStack from "../TechnologyTileStack.svelte";
@@ -11,8 +14,14 @@
 	export let width: number;
 	export let height: number;
 
-	let clickable = random(true) > 0.5;
-	let selected = random(true) > 0.75;
+	const { store, activeWorkflow } = getGamePageContext();
+	const interactionState = deriveResearchTrackInteractionState(track.id)(store);
+	$: ({ clickable, selected } = $interactionState);
+	$: trackClicked = clickable
+		? () => {
+				$activeWorkflow?.elementSelected(track.id, InteractiveElementType.ResearchStep);
+		  }
+		: noop;
 	$: style = `width: ${width}px; height: ${height}px`;
 </script>
 
@@ -38,7 +47,7 @@
 	<div class="standard-tiles">
 		<TechnologyTileStack stack={track.standardTiles} />
 	</div>
-	<div class={interactiveElementClass(clickable, selected)} on:click />
+	<div class={interactiveElementClass(clickable, selected)} on:click={trackClicked} />
 </div>
 
 <style>

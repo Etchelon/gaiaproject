@@ -15,13 +15,13 @@ import type { GamePageStore } from "./GamePage.store";
 const deriveInteractionState = (type: InteractiveElementType) => (id: Identifier) => (store: GamePageStore, playerId?: string) =>
 	derived([store.currentUserId, store.interactiveElements], ([$currentUserId, $interactiveElements]) => {
 		if (!isNil(playerId) && playerId !== $currentUserId) {
-			return { isClickable: false, isSelected: false };
+			return { clickable: false, selected: false };
 		}
 		const interactiveElement = $interactiveElements.find(el => el.type === type && el.id === id);
 		const interactionState = interactiveElement?.state ?? InteractiveElementState.Disabled;
-		const isClickable = interactionState === InteractiveElementState.Enabled;
-		const isSelected = interactionState === InteractiveElementState.Selected;
-		return { isClickable, isSelected, notes: interactiveElement?.notes };
+		const clickable = interactionState === InteractiveElementState.Enabled;
+		const selected = interactionState === InteractiveElementState.Selected;
+		return { clickable, selected, notes: interactiveElement?.notes };
 	});
 export const deriveHexInteractionState = (hexId: string) => deriveInteractionState(InteractiveElementType.Hex)(hexId);
 export const deriveAdvancedTileInteractionState = (type: AdvancedTechnologyTileType) =>

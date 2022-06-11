@@ -15,14 +15,23 @@
 
 <script lang="ts">
 	import { assetUrl, interactiveElementClass, withAspectRatioW } from "$utils/miscellanea";
-	import { isUndefined, random } from "lodash";
+	import { isUndefined, noop } from "lodash";
+	import { getGamePageContext } from "../GamePage.context";
+	import { deriveOwnFederationTokenInteractionState } from "../store/selectors";
+	import { InteractiveElementType } from "../workflows/enums";
 
 	export let type: FederationTokenType;
 	export let playerId: string | undefined = undefined;
 	export let used = false;
 
-	let clickable = random(true) > 0.5;
-	let selected = random(true) > 0.75;
+	const { store, activeWorkflow } = getGamePageContext();
+	const interactionState = deriveOwnFederationTokenInteractionState(type)(store);
+	$: ({ clickable, selected } = $interactionState);
+	$: tokenClicked = clickable
+		? () => {
+				$activeWorkflow?.elementSelected(type, InteractiveElementType.OwnFederationToken);
+		  }
+		: noop;
 	$: inPlayerArea = !isUndefined(playerId);
 </script>
 
@@ -33,7 +42,7 @@
 		alt=""
 	/>
 	{#if inPlayerArea}
-		<div class={interactiveElementClass(clickable, selected)} on:click />
+		<div class={interactiveElementClass(clickable, selected)} on:click={tokenClicked} />
 	{/if}
 </div>
 

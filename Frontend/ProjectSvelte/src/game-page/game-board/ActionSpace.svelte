@@ -2,15 +2,15 @@
 	import type { ActionSpaceDto } from "$dto/interfaces";
 	import { interactiveElementClass } from "$utils/miscellanea";
 	import { InteractiveElementType } from "$utils/types";
-	import { random } from "lodash";
+	import { noop } from "lodash";
+	import { getGamePageContext } from "../GamePage.context";
+	import { deriveActionSpaceInteractionState } from "../store/selectors";
 	import ActionToken from "./ActionToken.svelte";
 
 	export let space: ActionSpaceDto;
 
-	let clickable = random(true) > 0.5;
-	let selected = random(true) > 0.75;
-	let notes = false;
-	$: elementType =
+	const { store, activeWorkflow } = getGamePageContext();
+	const elementType =
 		space.kind === "power"
 			? InteractiveElementType.PowerAction
 			: space.kind === "qic"
@@ -20,6 +20,13 @@
 			: space.kind === "right-academy"
 			? InteractiveElementType.RightAcademy
 			: InteractiveElementType.RaceAction;
+	const interactionState = deriveActionSpaceInteractionState(elementType)(space.type)(store);
+	$: ({ clickable, selected, notes } = $interactionState);
+	$: actionSpaceClicked = clickable
+		? () => {
+				$activeWorkflow?.elementSelected(space.type, elementType);
+		  }
+		: noop;
 </script>
 
 <div class="action-space">
@@ -28,9 +35,9 @@
 			<ActionToken />
 		</div>
 	{/if}
-	<div class={interactiveElementClass(clickable, selected)} on:click />
+	<div class={interactiveElementClass(clickable, selected)} on:click={actionSpaceClicked} />
 	{#if notes}
-		<!-- <Tooltip title={notes}>
+		<!-- TODO <Tooltip title={notes}>
 			<div class="warning">
 				<WarningIcon />
 			</div>
