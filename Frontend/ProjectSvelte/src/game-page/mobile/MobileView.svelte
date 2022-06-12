@@ -1,24 +1,38 @@
 <script lang="ts" context="module">
 	import { ActiveView } from "$utils/types";
 
-	const TOOLBAR_HEIGHT = 48;
 	const viewsAnchors = new Map<ActiveView, string>([
 		[ActiveView.Map, "map"],
 		[ActiveView.ResearchBoard, "researchBoard"],
 		[ActiveView.ScoringBoard, "scoringBoard"],
 		[ActiveView.PlayerArea, "boxesAndLogs"],
 	]);
+
+	const getIonContent = (node: HTMLElement): IonContent | null => {
+		if (!node) {
+			return null;
+		}
+
+		let parent = node.parentElement;
+		if (!parent) {
+			return null;
+		}
+
+		console.log(parent.tagName.toLowerCase());
+		return parent.tagName.toLowerCase() === "ion-content" ? (parent as IonContent) : getIonContent(parent);
+	};
 </script>
 
 <script lang="ts">
 	import { GamePhase } from "$dto/enums";
 	import type { GameStateDto, PlayerInGameDto } from "$dto/interfaces";
-	import { noop } from "lodash";
+	import type { IonContent } from "@ionic/core/components/ion-content";
+	import { noop, reverse } from "lodash";
 	import { onMount } from "svelte";
 	import GameMap from "../game-board/map/Map.svelte";
-	import { GAMEVIEW_WRAPPER_ID, STATUSBAR_ID } from "../GamePage.svelte";
 	import ResearchBoard from "../game-board/research-board/ResearchBoard.svelte";
 	import ScoringBoard from "../game-board/scoring-board/ScoringBoard.svelte";
+	import { STATUSBAR_ID } from "../GamePage.svelte";
 	import GameLog from "../logs/GameLog.svelte";
 	import TurnOrderMinimap from "../turn-order/TurnOrderMinimap.svelte";
 	import PlayerBoxOrArea from "./PlayerBoxOrArea.svelte";
@@ -34,11 +48,13 @@
 	$: {
 		const elementId = viewsAnchors.get(activeView) ?? "";
 		const element = document.getElementById(elementId);
-		if (element) {
-			const gameViewWrapper = document.getElementById(GAMEVIEW_WRAPPER_ID)!;
+		const ionContent = getIonContent(container);
+		if (element && ionContent) {
+			const ionHeader = ionContent.getElementsByTagName("ion-header")[0];
 			const statusBar = document.getElementById(STATUSBAR_ID)!;
-			const top = element.offsetTop - TOOLBAR_HEIGHT - 3 - statusBar.clientHeight - 3; // 3px spacing below the toolbar and status bar
-			gameViewWrapper.scrollTo({ top, behavior: "smooth" });
+			const combinedHeadersHeight = ionHeader.clientHeight + statusBar.clientHeight;
+			const top = element.offsetTop >= combinedHeadersHeight ? element.offsetTop - statusBar.clientHeight : ionHeader.clientHeight;
+			ionContent.scrollToPoint(undefined, top, 250);
 		}
 	}
 
@@ -88,7 +104,7 @@
 			{/each}
 		</div>
 		<div class="w-full mt-2 flex flex-col gap-2">
-			{#each game.gameLogs as log}
+			{#each reverse(game.gameLogs) as log}
 				<GameLog {log} {canRollback} doRollback={noop} />
 			{/each}
 		</div>

@@ -12,7 +12,7 @@
 <script lang="ts">
 	import { GamePhase } from "$dto/enums";
 	import type { GameStateDto, PlayerInGameDto } from "$dto/interfaces";
-	import { noop } from "lodash";
+	import { noop, reverse } from "lodash";
 	import { createEventDispatcher, onMount } from "svelte";
 	import PlayerArea from "../game-board/players/PlayerArea.svelte";
 	import PlayerBox from "../game-board/players/PlayerBox.svelte";
@@ -134,7 +134,7 @@
 				{/each}
 			</div>
 			<div class="w-full mt-2 flex flex-col gap-2">
-				{#each game.gameLogs as log}
+				{#each reverse(game.gameLogs) as log}
 					<GameLog {log} {canRollback} doRollback={noop} />
 				{/each}
 			</div>

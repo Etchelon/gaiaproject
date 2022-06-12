@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
 	import { assetUrl } from "$utils/miscellanea";
-	export const GAMEVIEW_WRAPPER_ID = "gameViewWrapper";
 	export const STATUSBAR_ID = "statusBar";
 
 	const playersTurnAudioUrl = assetUrl("Sounds/PlayersTurn.wav");
@@ -95,7 +94,7 @@
 
 <svelte:window on:resize={checkIsMobile} />
 
-<div id={GAMEVIEW_WRAPPER_ID} class="game-page h-full bg-gray-900">
+<div class="game-page bg-gray-900" class:h-full={!isMobile}>
 	<div id={STATUSBAR_ID} class="status-bar" class:desktop={!isMobile} class:mobile={isMobile}>
 		<StatusBar {isMobile} />
 	</div>

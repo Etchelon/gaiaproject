@@ -76,10 +76,10 @@
 			</div>
 		{/if}
 
-		<ion-modal breakpoints={[0, 0.5, 0.75]} initial-breakpoint={0.5} is-open={showMenu}>
+		<ion-modal breakpoints={[0, 0.5]} initial-breakpoint={0.5} is-open={showMenu}>
 			<ion-header translucent>
 				<ion-toolbar>
-					<ion-title class="gaia-font">Available Actions</ion-title>
+					<ion-title class="gaia-font">Actions</ion-title>
 					<ion-buttons slot="end">
 						<ion-button on:click={closeMenu}>Close</ion-button>
 					</ion-buttons>
@@ -89,7 +89,7 @@
 				<ion-list>
 					{#each $availableActions as action, index (action.type)}
 						<ion-item on:click={() => selectAction(action)} lines={index < $availableActions.length - 1 ? "full" : "none"}>
-							<ion-label>
+							<ion-label class="gaia-font">
 								{action.description}
 							</ion-label>
 						</ion-item>
