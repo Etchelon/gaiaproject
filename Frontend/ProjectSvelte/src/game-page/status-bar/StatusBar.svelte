@@ -76,7 +76,7 @@
 			</div>
 		{/if}
 
-		<ion-modal breakpoints={[0, 0.5]} initial-breakpoint={0.5} is-open={showMenu}>
+		<ion-modal breakpoints={[0, 0.5]} initial-breakpoint={0.5} is-open={showMenu} on:didDismiss={closeMenu}>
 			<ion-header translucent>
 				<ion-toolbar>
 					<ion-title class="gaia-font">Actions</ion-title>
@@ -88,7 +88,11 @@
 			<ion-content fullscreen>
 				<ion-list>
 					{#each $availableActions as action, index (action.type)}
-						<ion-item on:click={() => selectAction(action)} lines={index < $availableActions.length - 1 ? "full" : "none"}>
+						<ion-item
+							class="cursor-pointer"
+							on:click={() => selectAction(action)}
+							lines={index < $availableActions.length - 1 ? "full" : "none"}
+						>
 							<ion-label class="gaia-font">
 								{action.description}
 							</ion-label>

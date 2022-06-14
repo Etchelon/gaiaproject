@@ -7,10 +7,10 @@
 	const MAX_CREDITS = 30;
 
 	const sizeAndPosition = (width: number, height: number, top: number, left: number) => `
-		width: ${width}px;
-		height: ${height}px;
-		top: ${top}px;
-		left: ${left}px;
+		width: ${width}%;
+		height: ${height}%;
+		top: ${top}%;
+		left: ${left}%;
 	`;
 
 	const ores = (resources: ResourcesDto) => resources.ores;
@@ -73,7 +73,7 @@
 	import type { PlayerInGameDto } from "$dto/interfaces";
 	import { assetUrl } from "$utils/miscellanea";
 	import { isEmpty } from "lodash";
-	import { writable } from "svelte/store";
+	import { get, writable } from "svelte/store";
 	import ResourceToken from "../../game-board/ResourceToken.svelte";
 	import { getGamePageContext } from "../../GamePage.context";
 	import type { TerransDecideIncomeWorkflow } from "../../workflows/rounds-phase/terrans-decide-income.workflow";
@@ -84,7 +84,7 @@
 
 	let isPerformingConversion = false;
 	const { store, activeWorkflow } = getGamePageContext();
-	const tdiWorkflow = $activeWorkflow as TerransDecideIncomeWorkflow;
+	const tdiWorkflow = get(activeWorkflow) as TerransDecideIncomeWorkflow;
 	const powerToConvert = tdiWorkflow?.powerToConvert ?? 0;
 	const conversionsState = writable<PlayerWithConversions>({
 		resources: cloneDeep(currentPlayer.state.resources),
@@ -121,9 +121,9 @@
 		<ion-title class="gaia-font">Convert power from Bowl 2</ion-title>
 	</ion-toolbar>
 </ion-header>
-<ion-content scroll-y={false}>
-	<div class="grid gap-2">
-		<div class="col-span-12 md:col-span-6">
+<ion-content fullscreen scroll-y={false}>
+	<div class="grid grid-cols-2 gap-2 p-1 md:p-3">
+		<div class="col-span-2 md:col-span-1">
 			<div class="relative">
 				<img class="w-full object-contain" src={assetUrl("TerransConversions.png")} alt="" />
 				<ClickableRectangle
@@ -148,7 +148,7 @@
 				/>
 			</div>
 		</div>
-		<div class="col-span-12 md:col-span-6">
+		<div class="col-span-2 md:col-span-1">
 			<div class="flex flex-col items-stretch h-full">
 				<div class="player-data">
 					<h6 class="gaia-font text-center">Remaining Power</h6>

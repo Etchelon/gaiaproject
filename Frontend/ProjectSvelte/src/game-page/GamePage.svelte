@@ -12,6 +12,8 @@
 	import DesktopView from "./desktop/DesktopView.svelte";
 	import AuctionDialog from "./dialogs/auction/AuctionDialog.svelte";
 	import SelectRaceDialog from "./dialogs/select-race/SelectRaceDialog.svelte";
+	import SortIncomesDialog from "./dialogs/sort-incomes/SortIncomesDialog.svelte";
+	import TerransDecideIncomeDialog from "./dialogs/terrans-decide-income/TerransDecideIncomeDialog.svelte";
 	import { getGamePageContext } from "./GamePage.context";
 	import MobileView from "./mobile/MobileView.svelte";
 	import StatusBar from "./status-bar/StatusBar.svelte";
@@ -120,6 +122,12 @@
 		{/if}
 		{#if $activeView === ActiveView.AuctionDialog}
 			<AuctionDialog gameId={$game.id} />
+		{/if}
+		{#if $activeView === ActiveView.SortIncomesDialog}
+			<SortIncomesDialog gameId={$game.id} currentPlayer={$currentPlayer} />
+		{/if}
+		{#if $activeView === ActiveView.TerransConversionsDialog}
+			<TerransDecideIncomeDialog gameId={$game.id} currentPlayer={$currentPlayer} />
 		{/if}
 	</ion-modal>
 {/if}
