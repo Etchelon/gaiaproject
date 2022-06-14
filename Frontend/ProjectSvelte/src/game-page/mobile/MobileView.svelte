@@ -42,19 +42,28 @@
 	export let activeView: ActiveView;
 	export let currentPlayerId = "";
 
+	let nUpdates = 0;
 	$: map = game.boardState.map;
 	$: isGameCreator = game.createdBy.id === currentPlayerId;
 	$: canRollback = isGameCreator && game.currentPhase === GamePhase.Rounds;
 	$: {
-		const elementId = viewsAnchors.get(activeView) ?? "";
-		const element = document.getElementById(elementId);
-		const ionContent = getIonContent(container);
-		if (element && ionContent) {
-			const ionHeader = ionContent.getElementsByTagName("ion-header")[0];
-			const statusBar = document.getElementById(STATUSBAR_ID)!;
-			const combinedHeadersHeight = ionHeader.clientHeight + statusBar.clientHeight;
-			const top = element.offsetTop >= combinedHeadersHeight ? element.offsetTop - statusBar.clientHeight : ionHeader.clientHeight;
-			ionContent.scrollToPoint(undefined, top, 250);
+		// This snippet is called twice on page mount.
+		// First time container is undefined; second time when it's bound in onMount
+		// From that moment on, we'll enter here due to user interaction, so we'll actually want to handle scrolling
+		// If we handle scrolling at the beginning, we'll instantly hide the ion-header inside the page, so
+		// it wouldn't even make sense to have it in the first place
+		if (++nUpdates > 2) {
+			const elementId = viewsAnchors.get(activeView) ?? "";
+			const element = document.getElementById(elementId);
+			const ionContent = getIonContent(container);
+			if (element && ionContent) {
+				const ionHeader = ionContent.getElementsByTagName("ion-header")[0];
+				const statusBar = document.getElementById(STATUSBAR_ID)!;
+				const combinedHeadersHeight = ionHeader.clientHeight + statusBar.clientHeight;
+				const top =
+					element.offsetTop >= combinedHeadersHeight ? element.offsetTop - statusBar.clientHeight : ionHeader.clientHeight;
+				ionContent.scrollToPoint(undefined, top, 250);
+			}
 		}
 	}
 

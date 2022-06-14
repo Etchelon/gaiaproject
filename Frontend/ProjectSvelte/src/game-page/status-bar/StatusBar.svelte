@@ -81,7 +81,7 @@
 				<ion-toolbar>
 					<ion-title class="gaia-font">Actions</ion-title>
 					<ion-buttons slot="end">
-						<ion-button on:click={closeMenu}>Close</ion-button>
+						<ion-button on:click={closeMenu}> <span class="gaia-font">Close</span></ion-button>
 					</ion-buttons>
 				</ion-toolbar>
 			</ion-header>
@@ -99,9 +99,3 @@
 		</ion-modal>
 	{/if}
 </div>
-
-<style>
-	.action-selector {
-		min-width: 250px;
-	}
-</style>

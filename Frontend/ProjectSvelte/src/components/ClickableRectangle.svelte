@@ -1,9 +1,10 @@
 <script lang="ts">
 	export let active: boolean;
 	export let style: string;
+	export let absolute = true;
 </script>
 
-<div class="border-2 rounded-md pointer-events-none" class:active {style} on:click />
+<div class="border-2 rounded-md pointer-events-none" class:absolute class:active {style} on:click />
 
 <style>
 	.active {
