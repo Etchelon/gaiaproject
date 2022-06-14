@@ -11,6 +11,7 @@
 	import { onDestroy, onMount } from "svelte";
 	import DesktopView from "./desktop/DesktopView.svelte";
 	import AuctionDialog from "./dialogs/auction/AuctionDialog.svelte";
+	import ConversionsDialog from "./dialogs/conversions/ConversionsDialog.svelte";
 	import SelectRaceDialog from "./dialogs/select-race/SelectRaceDialog.svelte";
 	import SortIncomesDialog from "./dialogs/sort-incomes/SortIncomesDialog.svelte";
 	import TerransDecideIncomeDialog from "./dialogs/terrans-decide-income/TerransDecideIncomeDialog.svelte";
@@ -122,6 +123,9 @@
 		{/if}
 		{#if $activeView === ActiveView.AuctionDialog}
 			<AuctionDialog gameId={$game.id} />
+		{/if}
+		{#if $activeView === ActiveView.ConversionDialog}
+			<ConversionsDialog gameId={$game.id} currentPlayer={$currentPlayer} />
 		{/if}
 		{#if $activeView === ActiveView.SortIncomesDialog}
 			<SortIncomesDialog gameId={$game.id} currentPlayer={$currentPlayer} />

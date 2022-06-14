@@ -133,17 +133,17 @@
 				/>
 				<ClickableRectangle
 					style={sizeAndPosition(16, 16, 34, 60)}
-					active={remainingPower >= 3}
+					active={ores(resources) < MAX_ORES_KNOWLEDGE && remainingPower >= 3}
 					on:click={() => dispatch({ type: Conversion.PowerToOre })}
 				/>
 				<ClickableRectangle
 					style={sizeAndPosition(16, 16, 55, 60)}
-					active={remainingPower >= 4}
+					active={knowledge(resources) < MAX_ORES_KNOWLEDGE && remainingPower >= 4}
 					on:click={() => dispatch({ type: Conversion.PowerToKnowledge })}
 				/>
 				<ClickableRectangle
 					style={sizeAndPosition(16, 16, 76, 60)}
-					active={remainingPower >= 1}
+					active={credits(resources) < MAX_CREDITS && remainingPower >= 1}
 					on:click={() => dispatch({ type: Conversion.PowerToCredit })}
 				/>
 			</div>
