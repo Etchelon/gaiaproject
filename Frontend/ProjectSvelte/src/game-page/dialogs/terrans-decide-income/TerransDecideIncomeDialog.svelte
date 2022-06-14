@@ -3,12 +3,20 @@
 	import type { ResourcesDto } from "$dto/interfaces";
 	import { cloneDeep } from "lodash";
 
+	const MAX_ORES_KNOWLEDGE = 15;
+	const MAX_CREDITS = 30;
+
 	const sizeAndPosition = (width: number, height: number, top: number, left: number) => `
 		width: ${width}px;
 		height: ${height}px;
 		top: ${top}px;
 		left: ${left}px;
 	`;
+
+	const ores = (resources: ResourcesDto) => resources.ores;
+	const credits = (resources: ResourcesDto) => resources.credits;
+	const knowledge = (resources: ResourcesDto) => resources.knowledge;
+	const qic = (resources: ResourcesDto) => resources.qic;
 
 	interface PlayerWithConversions {
 		resources: ResourcesDto;
@@ -64,7 +72,9 @@
 	import ClickableRectangle from "$components/ClickableRectangle.svelte";
 	import type { PlayerInGameDto } from "$dto/interfaces";
 	import { assetUrl } from "$utils/miscellanea";
+	import { isEmpty } from "lodash";
 	import { writable } from "svelte/store";
+	import ResourceToken from "../../game-board/ResourceToken.svelte";
 	import { getGamePageContext } from "../../GamePage.context";
 	import type { TerransDecideIncomeWorkflow } from "../../workflows/rounds-phase/terrans-decide-income.workflow";
 	import { CommonWorkflowStates } from "../../workflows/types";
@@ -83,6 +93,10 @@
 	});
 	const dispatch = (action: ActionType) => {
 		conversionsState.update(state => reducer(state, action));
+	};
+
+	const reset = () => {
+		dispatch({ type: "reset", data: { resources: currentPlayer.state.resources, remainingPower: powerToConvert } });
 	};
 
 	const closeDialog = () => {
@@ -136,55 +150,33 @@
 		</div>
 		<div class="col-span-12 md:col-span-6">
 			<div class="flex flex-col items-stretch h-full">
-				<div class={`${styles.playerData} ${classes.playerData}`}>
-					<Typography variant="h6" class="gaia-font text-center">Remaining Power</Typography>
-					<div class={`${styles.row} ${classes.statusRow}`}>
-						<div class={styles.resourceIndicator}>
+				<div class="player-data">
+					<h6 class="gaia-font text-center">Remaining Power</h6>
+					<div class="row mb-1">
+						<div class="resource-indicator">
 							<ResourceToken type="Power" />
 							<span class="gaia-font">{remainingPower}</span>
 						</div>
 					</div>
-					<Typography variant="h6" class="gaia-font text-center">Resources</Typography>
-					<div class={`${styles.row} ${classes.statusRow}`}>
-						<div class={styles.resourceIndicator}>
+					<h6 class="gaia-font text-center">Resources</h6>
+					<div class="row">
+						<div class="resource-indicator" class:maxed-out={ores(resources) === MAX_ORES_KNOWLEDGE}>
 							<ResourceToken type="Ores" />
 							<span class="gaia-font">{ores(resources)}</span>
 						</div>
-						<div class={styles.resourceIndicator}>
+						<div class="resource-indicator" class:maxed-out={credits(resources) === MAX_CREDITS}>
 							<ResourceToken type="Credits" />
 							<span class="gaia-font">{credits(resources)}</span>
 						</div>
-						<div class={styles.resourceIndicator}>
+						<div class="resource-indicator" class:maxed-out={knowledge(resources) === MAX_ORES_KNOWLEDGE}>
 							<ResourceToken type="Knowledge" />
 							<span class="gaia-font">{knowledge(resources)}</span>
 						</div>
-						<div class={styles.resourceIndicator}>
+						<div class="resource-indicator">
 							<ResourceToken type="Qic" />
 							<span class="gaia-font">{qic(resources)}</span>
 						</div>
 					</div>
-				</div>
-				<div class={classes.commands}>
-					<Button
-						variant="contained"
-						class="command"
-						onClick={() =>
-							dispatch({ type: "reset", data: { resources: currentPlayer.state.resources, remainingPower: powerToConvert } })}
-					>
-						<span class="gaia-font">Reset</span>
-					</Button>
-					<Button variant="contained" class="command" onClick={closeDialog}>
-						<span class="gaia-font">Close</span>
-					</Button>
-					<Button
-						variant="contained"
-						color="primary"
-						class="command"
-						disabled={isPerformingConversion || isEmpty(conversionsState.conversions)}
-						onClick={convert}
-					>
-						<span class="gaia-font">Confirm</span>
-					</Button>
 				</div>
 			</div>
 		</div>
@@ -193,12 +185,57 @@
 <ion-footer>
 	<ion-toolbar>
 		<ion-buttons slot="end">
+			<ion-button size="small" color="warning" on:click={reset}>
+				<span class="gaia-font">Reset</span>
+			</ion-button>
 			<ion-button size="small" on:click={closeDialog}>
 				<span class="gaia-font">Close</span>
 			</ion-button>
-			<ion-button size="small" color="primary" disabled={isNil(selectedRace) || isSelecting} on:click={confirmSelection}>
+			<ion-button
+				size="small"
+				color="primary"
+				disabled={isPerformingConversion || isEmpty($conversionsState.conversions)}
+				on:click={convert}
+			>
 				<span class="gaia-font">Confirm</span>
 			</ion-button>
 		</ion-buttons>
 	</ion-toolbar>
 </ion-footer>
+
+<style lang="scss">
+	$spacingHalf: 4px;
+	$spacing1: 8px;
+
+	.player-data {
+		padding: $spacingHalf $spacing1;
+		background-color: white;
+		color: black;
+
+		.row {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			height: 30px;
+		}
+
+		.resource-indicator {
+			display: flex;
+			align-items: center;
+
+			> :global(img),
+			> :global(.building) {
+				width: 35px;
+				margin-right: $spacingHalf;
+			}
+
+			> span {
+				font-size: 0.75rem;
+			}
+		}
+
+		.maxed-out > span {
+			color: rgb(210, 19, 24);
+		}
+	}
+</style>
