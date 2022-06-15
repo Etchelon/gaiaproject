@@ -11,8 +11,10 @@
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"android": "pnpm build && pnpm cap run android",
 		"android:copy": "cap copy android",
+		"android:dev": "ionic cap run android --livereload --external --port=3000 --ssl",
 		"android:open": "cap open android",
-		"android:sync": "cap sync android"
+		"android:sync": "cap sync android",
+		"ionic:serve": "vite"
 	},
 	"dependencies": {
 		"@auth0/auth0-spa-js": "^1.22.0",
@@ -30,6 +32,7 @@
 	},
 	"devDependencies": {
 		"@capacitor/cli": "^3.5.1",
+		"@ionic/cli": "^6.19.1",
 		"@rollup/plugin-commonjs": "^17.0.0",
 		"@rollup/plugin-node-resolve": "^11.0.0",
 		"@rollup/plugin-typescript": "^8.0.0",

@@ -1,0 +1,7 @@
+{
+	"name": "ProjectSvelte",
+	"integrations": {
+		"capacitor": {}
+	},
+	"type": "custom"
+}
