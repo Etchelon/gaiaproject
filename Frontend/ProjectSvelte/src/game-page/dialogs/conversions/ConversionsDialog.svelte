@@ -245,7 +245,7 @@
 
 	const convert = () => {
 		const action = activeWorkflow?.handleCommand({
-			nextState: CommonWorkflowStates.PERFORM_ACTION,
+			nextState: CommonWorkflowStates.PERFORM_CONVERSION,
 			data: $conversionsState.conversions,
 		})!;
 		store.executePlayerAction(gameId, action);

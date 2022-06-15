@@ -1,8 +1,8 @@
-import _ from "lodash";
+import { first } from "lodash";
 import { ActionType, PendingDecisionType, ResearchTrackType } from "../../../dto/enums";
-import { ActionDto, PendingDecisionDto } from "../../../dto/interfaces";
+import type { ActionDto, PendingDecisionDto } from "../../../dto/interfaces";
 import { ActionWorkflow } from "../action-workflow.base";
-import { Command } from "../types";
+import type { Command } from "../types";
 
 const WaitingForDecision = 0;
 const AcceptLastStep = 1;
@@ -46,7 +46,7 @@ export class AcceptOrDeclineLastStepWorkflow extends ActionWorkflow {
 				],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	handleCommand(command: Command): ActionDto | null {

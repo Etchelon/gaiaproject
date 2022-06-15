@@ -1,7 +1,7 @@
-import _ from "lodash";
+import { first } from "lodash";
 import { ActionType, Race } from "../../../dto/enums";
-import { ActionDto } from "../../../dto/interfaces";
-import { Nullable } from "../../../utils/miscellanea";
+import type { ActionDto } from "../../../dto/interfaces";
+import type { Nullable } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { Command, CommonCommands, CommonWorkflowStates } from "../types";
 
@@ -19,7 +19,11 @@ const getMessage = (type: ActionType, race: Race): string => {
 };
 
 export class GenericActionWorkflow extends ActionWorkflow {
-	constructor(private readonly _actionType: ActionType, private readonly _race: Race, private readonly _message: Nullable<string> = null) {
+	constructor(
+		private readonly _actionType: ActionType,
+		private readonly _race: Race,
+		private readonly _message: Nullable<string> = null
+	) {
 		super(null);
 		this.init();
 	}
@@ -32,7 +36,7 @@ export class GenericActionWorkflow extends ActionWorkflow {
 				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	handleCommand(command: Command): ActionDto | null {

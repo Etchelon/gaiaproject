@@ -1,7 +1,7 @@
-import _ from "lodash";
+import { find, first, isNil, reject } from "lodash";
 import { ActionType } from "../../../dto/enums";
-import { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
-import { Identifier, Nullable } from "../../../utils/miscellanea";
+import type { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
+import type { Identifier, Nullable } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";
 import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../types";
@@ -51,7 +51,7 @@ export class ColonizePlanetWorkflow extends ActionWorkflow {
 				],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
@@ -63,7 +63,7 @@ export class ColonizePlanetWorkflow extends ActionWorkflow {
 		}
 		this._selectedHexId = id as string;
 		let message: Nullable<string> = null;
-		const hexDto = _.find(this.interactionState?.clickableHexes, h => h.id === id)!;
+		const hexDto = find(this.interactionState?.clickableHexes, h => h.id === id)!;
 		if (hexDto.requiredQics) {
 			message = `Spend ${hexDto.requiredQics} QICs to boost range and colonize the selected hex?`;
 		}
@@ -100,9 +100,9 @@ export class ColonizePlanetWorkflow extends ActionWorkflow {
 
 	protected getInteractiveElements() {
 		const elements = super.getInteractiveElements();
-		if (!_.isNil(this._selectedHexId)) {
+		if (!isNil(this._selectedHexId)) {
 			return [
-				..._.reject(elements, el => el.type === InteractiveElementType.Hex && el.id === this._selectedHexId),
+				...reject(elements, el => el.type === InteractiveElementType.Hex && el.id === this._selectedHexId),
 				{ id: this._selectedHexId, type: InteractiveElementType.Hex, state: InteractiveElementState.Selected },
 			];
 		}

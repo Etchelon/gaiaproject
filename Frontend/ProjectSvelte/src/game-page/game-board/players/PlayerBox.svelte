@@ -18,5 +18,5 @@
 {#if !isInitialized}
 	<UninitializedPlayerBox {player} {index} isOnline={$isOnline} />
 {:else}
-	<InitializedPlayerBox {player} {index} isOnline={$isOnline} />
+	<InitializedPlayerBox {player} isOnline={$isOnline} />
 {/if}

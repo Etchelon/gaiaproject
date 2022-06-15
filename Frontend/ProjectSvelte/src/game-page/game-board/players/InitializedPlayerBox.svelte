@@ -28,15 +28,14 @@
 	import Building from "../map/hex/Building.svelte";
 
 	export let player: PlayerInGameDto;
-	export let index: number;
 	export let isOnline = false;
 
 	$: [color, textColor] = getRaceColors(player.raceId);
-	const { available: availableSpecialActions, all: allSpecialActions } = countActivatableActions(player, false);
-	const playerState = player.state!;
-	const hasLostPlanet = playerState.researchAdvancements.navigation === MAX_RESEARCH_STEPS;
-	const showNextRoundTurnOrder = playerState.hasPassed && playerState.nextRoundTurnOrder !== null;
-	const imgUrl = assetUrl(`Races/${getRaceImage(player.raceId)}`);
+	$: ({ available: availableSpecialActions, all: allSpecialActions } = countActivatableActions(player, false));
+	$: playerState = player.state!;
+	$: hasLostPlanet = playerState.researchAdvancements.navigation === MAX_RESEARCH_STEPS;
+	$: showNextRoundTurnOrder = playerState.hasPassed && playerState.nextRoundTurnOrder !== null;
+	$: imgUrl = assetUrl(`Races/${getRaceImage(player.raceId)}`);
 </script>
 
 <div class="player-box" class:has-passed={player.state.hasPassed} style:background-color={color}>

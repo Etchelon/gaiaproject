@@ -1,6 +1,6 @@
-import _ from "lodash";
+import { first } from "lodash";
 import { ActionType, PendingDecisionType } from "../../../dto/enums";
-import { ActionDto, PendingDecisionDto, SortableIncomeDto } from "../../../dto/interfaces";
+import type { ActionDto, PendingDecisionDto, SortableIncomeDto } from "../../../dto/interfaces";
 import { ActionWorkflow } from "../action-workflow.base";
 import { ActiveView, Command, CommonWorkflowStates } from "../types";
 
@@ -40,7 +40,7 @@ export class SortIncomesWorkflow extends ActionWorkflow {
 				},
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	handleCommand(command: Command): ActionDto | null {

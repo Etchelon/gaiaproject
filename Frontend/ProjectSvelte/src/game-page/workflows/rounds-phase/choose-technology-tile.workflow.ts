@@ -1,8 +1,8 @@
-import _ from "lodash";
+import { first, isEmpty, isNil, reject } from "lodash";
 import { ActionType, AdvancedTechnologyTileType, StandardTechnologyTileType } from "../../../dto/enums";
-import { ActionDto, InteractionStateDto, PlayerInGameDto } from "../../../dto/interfaces";
+import type { ActionDto, InteractionStateDto, PlayerInGameDto } from "../../../dto/interfaces";
 import { localizeEnum } from "../../../utils/localization";
-import { Identifier } from "../../../utils/miscellanea";
+import type { Identifier } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";
 import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../types";
@@ -46,7 +46,7 @@ export class ChooseTechnologyTileWorkflow extends ActionWorkflow {
 				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
@@ -64,18 +64,21 @@ export class ChooseTechnologyTileWorkflow extends ActionWorkflow {
 		if (this.stateId === WaitingForTile) {
 			if (type === InteractiveElementType.StandardTile) {
 				this._selectedStandardTile = id as StandardTechnologyTileType;
-				this.advanceState(WaitingForConfirmation, `Select tile ${localizeEnum(this._selectedStandardTile, "StandardTechnologyTileType")}?`);
+				this.advanceState(
+					WaitingForConfirmation,
+					`Select tile ${localizeEnum(this._selectedStandardTile, "StandardTechnologyTileType")}?`
+				);
 				return;
 			}
 
 			this._selectedAdvancedTile = id as AdvancedTechnologyTileType;
-			const coverableTiles = _.filter(this._player.state.technologyTiles, st => !st.coveredByAdvancedTile);
-			if (_.isEmpty(coverableTiles)) {
+			const coverableTiles = this._player.state.technologyTiles.filter(st => !st.coveredByAdvancedTile);
+			if (isEmpty(coverableTiles)) {
 				throw new Error("You have no tiles to cover");
 			}
 
 			this.interactionState = {
-				clickableOwnStandardTiles: _.map(coverableTiles, st => st.id),
+				clickableOwnStandardTiles: coverableTiles.map(st => st.id),
 			};
 			this.advanceState(ChooseStandardTileToCover);
 		} else {
@@ -94,7 +97,7 @@ export class ChooseTechnologyTileWorkflow extends ActionWorkflow {
 		switch (command.nextState) {
 			case CommonWorkflowStates.RESET:
 			case CommonWorkflowStates.CANCEL:
-				if (command.nextState === CommonWorkflowStates.CANCEL && !_.isNil(this._selectedStandardTileToCover)) {
+				if (command.nextState === CommonWorkflowStates.CANCEL && !isNil(this._selectedStandardTileToCover)) {
 					this._selectedStandardTileToCover = null;
 					this.advanceState(ChooseStandardTileToCover);
 					return null;
@@ -104,7 +107,7 @@ export class ChooseTechnologyTileWorkflow extends ActionWorkflow {
 				this.advanceState(WaitingForTile);
 				return null;
 			case CommonWorkflowStates.PERFORM_ACTION:
-				const action: ChooseTechnologyTileActionDto = !_.isNil(this._selectedAdvancedTile)
+				const action: ChooseTechnologyTileActionDto = !isNil(this._selectedAdvancedTile)
 					? {
 							Type: ActionType.ChooseTechnologyTile,
 							TileId: this._selectedAdvancedTile,
@@ -124,22 +127,29 @@ export class ChooseTechnologyTileWorkflow extends ActionWorkflow {
 
 	protected getInteractiveElements() {
 		let elements = super.getInteractiveElements();
-		if (!_.isNil(this._selectedStandardTile)) {
+		if (!isNil(this._selectedStandardTile)) {
 			elements = [
-				..._.reject(elements, el => el.type === InteractiveElementType.StandardTile && el.id === this._selectedStandardTile),
+				...reject(elements, el => el.type === InteractiveElementType.StandardTile && el.id === this._selectedStandardTile),
 				{ id: this._selectedStandardTile, type: InteractiveElementType.StandardTile, state: InteractiveElementState.Selected },
 			];
 		}
-		if (!_.isNil(this._selectedAdvancedTile)) {
+		if (!isNil(this._selectedAdvancedTile)) {
 			elements = [
-				..._.reject(elements, el => el.type === InteractiveElementType.AdvancedTile && el.id === this._selectedAdvancedTile),
+				...reject(elements, el => el.type === InteractiveElementType.AdvancedTile && el.id === this._selectedAdvancedTile),
 				{ id: this._selectedAdvancedTile, type: InteractiveElementType.AdvancedTile, state: InteractiveElementState.Selected },
 			];
 		}
-		if (!_.isNil(this._selectedStandardTileToCover)) {
+		if (!isNil(this._selectedStandardTileToCover)) {
 			elements = [
-				..._.reject(elements, el => el.type === InteractiveElementType.OwnStandardTile && el.id === this._selectedStandardTileToCover),
-				{ id: this._selectedStandardTileToCover, type: InteractiveElementType.OwnStandardTile, state: InteractiveElementState.Selected },
+				...reject(
+					elements,
+					el => el.type === InteractiveElementType.OwnStandardTile && el.id === this._selectedStandardTileToCover
+				),
+				{
+					id: this._selectedStandardTileToCover,
+					type: InteractiveElementType.OwnStandardTile,
+					state: InteractiveElementState.Selected,
+				},
 			];
 		}
 		return elements;

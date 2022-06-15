@@ -1,7 +1,7 @@
-import _ from "lodash";
+import { find, first, isNil, reject } from "lodash";
 import { ActionType, Race } from "../../../dto/enums";
-import { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
-import { Identifier, Nullable } from "../../../utils/miscellanea";
+import type { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
+import type { Identifier, Nullable } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";
 import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../types";
@@ -9,7 +9,10 @@ import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../ty
 const WaitingForSelection = 0;
 const WaitingForConfirmation = 1;
 
-type GenericPlanetaryActionType = ActionType.AmbasSwapPlanetaryInstituteAndMine | ActionType.FiraksDowngradeResearchLab | ActionType.IvitsPlaceSpaceStation;
+type GenericPlanetaryActionType =
+	| ActionType.AmbasSwapPlanetaryInstituteAndMine
+	| ActionType.FiraksDowngradeResearchLab
+	| ActionType.IvitsPlaceSpaceStation;
 interface GenericPlanetaryInstituteActionDto extends ActionDto {
 	Type: GenericPlanetaryActionType;
 	HexId: string;
@@ -32,7 +35,12 @@ const getPlanetaryInstituteAction = (race: Race, hexId: string): GenericPlanetar
 export class PlanetaryInstituteActionWorkflow extends ActionWorkflow {
 	private _selectedHexId: Nullable<string> = null;
 
-	constructor(interaction: InteractionStateDto, private readonly _race: Race, private readonly _selectionMessage: string, private readonly _confirmationMessage: string) {
+	constructor(
+		interaction: InteractionStateDto,
+		private readonly _race: Race,
+		private readonly _selectionMessage: string,
+		private readonly _confirmationMessage: string
+	) {
 		super(interaction);
 		this.init();
 	}
@@ -51,7 +59,7 @@ export class PlanetaryInstituteActionWorkflow extends ActionWorkflow {
 				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
@@ -64,7 +72,7 @@ export class PlanetaryInstituteActionWorkflow extends ActionWorkflow {
 
 		this._selectedHexId = id as string;
 		let message: Nullable<string> = null;
-		const hexDto = _.find(this.interactionState?.clickableHexes, h => h.id === id)!;
+		const hexDto = find(this.interactionState?.clickableHexes, h => h.id === id)!;
 		if (hexDto.requiredQics) {
 			message = `Spend ${hexDto.requiredQics} QICs to boost range and ${this._confirmationMessage}`;
 		}
@@ -95,9 +103,9 @@ export class PlanetaryInstituteActionWorkflow extends ActionWorkflow {
 
 	protected getInteractiveElements() {
 		const elements = super.getInteractiveElements();
-		if (!_.isNil(this._selectedHexId)) {
+		if (!isNil(this._selectedHexId)) {
 			return [
-				..._.reject(elements, el => el.type === InteractiveElementType.Hex && el.id === this._selectedHexId),
+				...reject(elements, el => el.type === InteractiveElementType.Hex && el.id === this._selectedHexId),
 				{ id: this._selectedHexId, type: InteractiveElementType.Hex, state: InteractiveElementState.Selected },
 			];
 		}
@@ -114,7 +122,12 @@ export class PlanetaryInstituteActionWorkflow extends ActionWorkflow {
 					"Swap the Planetary institute with the selected mine?"
 				);
 			case Race.Firaks:
-				return new PlanetaryInstituteActionWorkflow(interaction, race, "Select a Research Lab to downgrade to Trading Station", "Downgrade the selected Research Lab?");
+				return new PlanetaryInstituteActionWorkflow(
+					interaction,
+					race,
+					"Select a Research Lab to downgrade to Trading Station",
+					"Downgrade the selected Research Lab?"
+				);
 			case Race.Ivits:
 				return new PlanetaryInstituteActionWorkflow(
 					interaction,

@@ -1,8 +1,8 @@
-import _ from "lodash";
+import { first, isNil, reject } from "lodash";
 import { ActionType, RoundBoosterType } from "../../../dto/enums";
-import { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
+import type { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
 import { localizeRoundBooster } from "../../../utils/localization";
-import { Identifier, Nullable } from "../../../utils/miscellanea";
+import type { Identifier, Nullable } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";
 import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../types";
@@ -55,7 +55,7 @@ export class PassWorkflow extends ActionWorkflow {
 			});
 		}
 
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
@@ -67,7 +67,10 @@ export class PassWorkflow extends ActionWorkflow {
 		}
 
 		this._selectedBooster = id as RoundBoosterType;
-		this.advanceState(WaitingForConfirmation, `Take booster ${localizeRoundBooster(this._selectedBooster)} and pass the rest of the round?`);
+		this.advanceState(
+			WaitingForConfirmation,
+			`Take booster ${localizeRoundBooster(this._selectedBooster)} and pass the rest of the round?`
+		);
 	}
 
 	handleCommand(command: Command): ActionDto | null {
@@ -101,9 +104,9 @@ export class PassWorkflow extends ActionWorkflow {
 
 	protected getInteractiveElements() {
 		const elements = super.getInteractiveElements();
-		if (!_.isNil(this._selectedBooster)) {
+		if (!isNil(this._selectedBooster)) {
 			return [
-				..._.reject(elements, el => el.type === InteractiveElementType.RoundBooster && el.id === this._selectedBooster),
+				...reject(elements, el => el.type === InteractiveElementType.RoundBooster && el.id === this._selectedBooster),
 				{ id: this._selectedBooster, type: InteractiveElementType.RoundBooster, state: InteractiveElementState.Selected },
 			];
 		}

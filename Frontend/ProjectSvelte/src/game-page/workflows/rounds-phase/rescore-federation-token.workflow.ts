@@ -1,8 +1,8 @@
-import _ from "lodash";
+import { first, isNil, partialRight, reject } from "lodash";
 import { ActionType, FederationTokenType } from "../../../dto/enums";
-import { ActionDto } from "../../../dto/interfaces";
+import type { ActionDto } from "../../../dto/interfaces";
 import { localizeEnum } from "../../../utils/localization";
-import { Identifier, Nullable } from "../../../utils/miscellanea";
+import type { Identifier, Nullable } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";
 import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../types";
@@ -10,7 +10,7 @@ import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../ty
 const WaitingForToken = 0;
 const WaitingForConfirmation = 1;
 
-const localizeFederationToken = _.partialRight(localizeEnum, "FederationTokenType");
+const localizeFederationToken = partialRight(localizeEnum, "FederationTokenType");
 
 interface RescoreFederationTokenActionDto extends ActionDto {
 	Type: ActionType.RescoreFederationToken;
@@ -34,7 +34,7 @@ export class RescoreFederationTokenWorkflow extends ActionWorkflow {
 				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
@@ -76,9 +76,9 @@ export class RescoreFederationTokenWorkflow extends ActionWorkflow {
 
 	protected getInteractiveElements() {
 		const elements = super.getInteractiveElements();
-		if (!_.isNil(this._selectedToken)) {
+		if (!isNil(this._selectedToken)) {
 			return [
-				..._.reject(elements, el => el.type === InteractiveElementType.OwnFederationToken && el.id === this._selectedToken),
+				...reject(elements, el => el.type === InteractiveElementType.OwnFederationToken && el.id === this._selectedToken),
 				{ id: this._selectedToken, type: InteractiveElementType.OwnFederationToken, state: InteractiveElementState.Selected },
 			];
 		}

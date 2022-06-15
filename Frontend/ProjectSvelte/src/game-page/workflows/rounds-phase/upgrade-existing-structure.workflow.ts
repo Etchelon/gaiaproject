@@ -1,6 +1,6 @@
-import _ from "lodash";
+import { first, isEmpty, isNil, partialRight, reject, remove, size, some } from "lodash";
 import { ActionType, BuildingType, Race } from "../../../dto/enums";
-import { ActionDto, GameStateDto, InteractionStateDto, PlayerInGameDto } from "../../../dto/interfaces";
+import type { ActionDto, GameStateDto, InteractionStateDto, PlayerInGameDto } from "../../../dto/interfaces";
 import { localizeEnum } from "../../../utils/localization";
 import { getHex, Identifier, Nullable } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
@@ -11,7 +11,7 @@ const WaitingForHex = 0;
 const WaitingForChoice = 1;
 const WaitingForConfirmation = 2;
 
-const localizeBuilding = _.partialRight(localizeEnum, "BuildingType");
+const localizeBuilding = partialRight(localizeEnum, "BuildingType");
 
 interface UpgradeExistingStructureActionDto extends ActionDto {
 	Type: ActionType.UpgradeExistingStructure;
@@ -63,7 +63,7 @@ export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
 				],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
@@ -78,7 +78,7 @@ export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
 		if (!hexId) {
 			throw new Error("Hex id is empty");
 		}
-		if (!_.some(this.interactionState?.clickableHexes, h => h.id === hexId)) {
+		if (!some(this.interactionState?.clickableHexes, h => h.id === hexId)) {
 			throw new Error("The selected hex is not clickable!");
 		}
 
@@ -131,15 +131,15 @@ export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
 				throw new Error(`Building of type ${localizeBuilding(this._sourceBuilding)} cannot be upgraded.`);
 		}
 
-		if (_.isEmpty(possibleTargets)) {
+		if (isEmpty(possibleTargets)) {
 			this._selectedHexId = null;
-			_.remove(this.interactionState!.clickableHexes!, hexId);
+			remove(this.interactionState!.clickableHexes!, hexId);
 			this.advanceState(WaitingForHex, "Choose another building, this cannot be upgraded any further.");
 			return;
 		}
 
-		if (_.size(possibleTargets) === 1) {
-			this._targetBuilding = _.first(possibleTargets)!;
+		if (size(possibleTargets) === 1) {
+			this._targetBuilding = first(possibleTargets)!;
 			const sourceBuilding = localizeBuilding(this._sourceBuilding);
 			const targetBuilding = localizeBuilding(this._targetBuilding);
 			this.advanceState(WaitingForConfirmation, `Upgrade ${sourceBuilding} to ${targetBuilding}?`);
@@ -147,7 +147,7 @@ export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
 		}
 
 		const message = "Upgrade to";
-		const commands = _.map(possibleTargets, type_ => ({
+		const commands = possibleTargets.map(type_ => ({
 			nextState: WaitingForConfirmation,
 			text: localizeBuilding(type_),
 			data: type_,
@@ -156,14 +156,14 @@ export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
 	}
 
 	advanceState(next: Nullable<number> = null, message: Nullable<string> = null, commands: Nullable<Command[]> = null): void {
-		if (next !== WaitingForConfirmation || _.isNil(this._targetBuilding)) {
+		if (next !== WaitingForConfirmation || isNil(this._targetBuilding)) {
 			super.advanceState(next, message, commands);
 			return;
 		}
 
-		const commands_ = [..._.find(this.states, s => s.id === WaitingForConfirmation)!.commands!];
+		const commands_ = [...this.states.find(s => s.id === WaitingForConfirmation)!.commands!];
 		if ([BuildingType.ResearchLab, BuildingType.AcademyLeft, BuildingType.AcademyRight].includes(this._targetBuilding!)) {
-			_.remove(commands_, c => c.nextState === CommonWorkflowStates.PERFORM_ACTION && c.data === true);
+			remove(commands_, c => c.nextState === CommonWorkflowStates.PERFORM_ACTION && c.data === true);
 		}
 		super.advanceState(next, message, commands_);
 	}
@@ -177,7 +177,10 @@ export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
 		switch (command.nextState) {
 			case WaitingForConfirmation:
 				this._targetBuilding = command.data as BuildingType;
-				this.advanceState(WaitingForConfirmation, `Upgrade ${localizeBuilding(this._sourceBuilding!)} to ${localizeBuilding(this._targetBuilding)}?`);
+				this.advanceState(
+					WaitingForConfirmation,
+					`Upgrade ${localizeBuilding(this._sourceBuilding!)} to ${localizeBuilding(this._targetBuilding)}?`
+				);
 				return null;
 			case CommonWorkflowStates.RESET:
 				this._selectedHexId = null;
@@ -204,12 +207,12 @@ export class UpgradeExistingStructureWorkflow extends ActionWorkflow {
 
 	protected getInteractiveElements() {
 		const elements = super.getInteractiveElements();
-		if (_.isNil(this._selectedHexId)) {
+		if (isNil(this._selectedHexId)) {
 			return elements;
 		}
 
 		return [
-			..._.reject(elements, el => el.type === InteractiveElementType.Hex && el.id === this._selectedHexId),
+			...reject(elements, el => el.type === InteractiveElementType.Hex && el.id === this._selectedHexId),
 			{ id: this._selectedHexId, type: InteractiveElementType.Hex, state: InteractiveElementState.Selected },
 		];
 	}

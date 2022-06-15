@@ -1,6 +1,6 @@
-import _ from "lodash";
+import { first } from "lodash";
 import { ActionType, Conversion } from "../../../dto/enums";
-import { ActionDto } from "../../../dto/interfaces";
+import type { ActionDto } from "../../../dto/interfaces";
 import { ActionWorkflow } from "../action-workflow.base";
 import { ActiveView, Command, CommonWorkflowStates } from "../types";
 
@@ -20,7 +20,7 @@ export class ConversionsWorkflow extends ActionWorkflow {
 				view: ActiveView.ConversionDialog,
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	handleCommand(command: Command): ActionDto | null {

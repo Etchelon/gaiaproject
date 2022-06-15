@@ -1,6 +1,13 @@
-import _ from "lodash";
+import { chain, cloneDeep, first, isEmpty, isNil, reject } from "lodash";
 import { ActionType, FederationTokenType, Race } from "../../../dto/enums";
-import { ActionDto, AvailableActionDto, GameStateDto, InteractionStateDto, IvitsExpandFederationInfoDto, PlayerInGameDto } from "../../../dto/interfaces";
+import type {
+	ActionDto,
+	AvailableActionDto,
+	GameStateDto,
+	InteractionStateDto,
+	IvitsExpandFederationInfoDto,
+	PlayerInGameDto,
+} from "../../../dto/interfaces";
 import { getHex, Identifier } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";
@@ -28,14 +35,14 @@ export class FormFederationWorkflow extends ActionWorkflow {
 
 	constructor(action: AvailableActionDto, private readonly _game: GameStateDto, private readonly _player: PlayerInGameDto) {
 		super(action.interactionState);
-		this._initialInteractionState = _.cloneDeep(this.interactionState!);
+		this._initialInteractionState = cloneDeep(this.interactionState!);
 		if (_player.raceId === Race.Xenos && _player.state.buildings.planetaryInstitute) {
 			this._requiredPower = 6;
 		}
 		this.init();
 
 		// Check if it's Ivits expanding, and if they don't need to attach other buildings they canjust skip to selecting the token
-		if (_player.raceId === Race.Ivits && !_.isEmpty(action.additionalData)) {
+		if (_player.raceId === Race.Ivits && !isEmpty(action.additionalData)) {
 			const ivitsInfo = JSON.parse(action.additionalData) as IvitsExpandFederationInfoDto;
 			this._requiredPower = ivitsInfo.CanTakeMoreTokens ? 0 : ivitsInfo.RequiredPower;
 			if (this._requiredPower === 0) {
@@ -44,7 +51,8 @@ export class FormFederationWorkflow extends ActionWorkflow {
 		}
 	}
 
-	private readonly getSelectBuildingMessage = () => `Select a building to include in the federation (current power = ${this._totalBuildingsPower})`;
+	private readonly getSelectBuildingMessage = () =>
+		`Select a building to include in the federation (current power = ${this._totalBuildingsPower})`;
 
 	protected init(): void {
 		this.states = [
@@ -70,7 +78,7 @@ export class FormFederationWorkflow extends ActionWorkflow {
 				commands: [CommonCommands.Reset, CommonCommands.Cancel, CommonCommands.Confirm],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
@@ -103,21 +111,22 @@ export class FormFederationWorkflow extends ActionWorkflow {
 		const buildingsPowerValue =
 			this._player.raceId === Race.Ivits && hex.ivitsSpaceStation !== null
 				? 1
-				: (this._player.raceId === Race.Lantids ? hex.lantidsParasiteBuilding ?? hex.building : hex.building).powerValueInFederation;
+				: (this._player.raceId === Race.Lantids ? hex.lantidsParasiteBuilding ?? hex.building : hex.building)
+						.powerValueInFederation;
 		this._totalBuildingsPower += buildingsPowerValue;
 		if (this._totalBuildingsPower < this._requiredPower) {
-			const newState = _.cloneDeep(this.currentState);
+			const newState = cloneDeep(this.currentState);
 			newState.message = this.getSelectBuildingMessage();
 			this.updateState(newState);
 			return;
 		}
 
-		const spaceHexes = _.chain(this._game.boardState.map.sectors)
+		const spaceHexes = chain(this._game.boardState.map.sectors)
 			.flatMap(s => s.hexes)
-			.filter(h => _.isNil(h.planetType))
+			.filter(h => isNil(h.planetType))
 			.value();
 		this.interactionState = {
-			clickableHexes: _.map(spaceHexes, h => ({ id: h.id, requiredQics: null })),
+			clickableHexes: spaceHexes.map(h => ({ id: h.id, requiredQics: null })),
 		};
 		this.advanceState(WaitingForSatellite);
 	}
@@ -149,7 +158,7 @@ export class FormFederationWorkflow extends ActionWorkflow {
 	private gotoTokenSelection(): void {
 		this._selectedFederationToken = null;
 		this.interactionState = {
-			clickableFederations: _.chain(this._game.boardState.availableFederations)
+			clickableFederations: chain(this._game.boardState.availableFederations)
 				.filter(fed => fed.remaining > 0)
 				.map(fed => fed.type)
 				.value(),
@@ -178,7 +187,7 @@ export class FormFederationWorkflow extends ActionWorkflow {
 				this._selectedBuildings = [];
 				this._selectedSatellites = [];
 				this._selectedFederationToken = null;
-				this.interactionState = _.cloneDeep(this._initialInteractionState);
+				this.interactionState = cloneDeep(this._initialInteractionState);
 				this.advanceState(WaitingForBuilding, this.getSelectBuildingMessage());
 				return null;
 			case CommonWorkflowStates.CANCEL:
@@ -199,17 +208,29 @@ export class FormFederationWorkflow extends ActionWorkflow {
 	}
 
 	protected getInteractiveElements() {
-		const isSelected = (hexId: string) => _.includes(this._selectedBuildings, hexId) || _.includes(this._selectedSatellites, hexId);
+		const isSelected = (hexId: string) => this._selectedBuildings.includes(hexId) || this._selectedSatellites.includes(hexId);
 
 		let elements = [
-			..._.reject(super.getInteractiveElements(), el => el.type === InteractiveElementType.Hex && isSelected(el.id! as string)),
-			..._.map(this._selectedBuildings, hexId => ({ id: hexId, type: InteractiveElementType.Hex, state: InteractiveElementState.Selected })),
-			..._.map(this._selectedSatellites, hexId => ({ id: hexId, type: InteractiveElementType.Hex, state: InteractiveElementState.Selected })),
+			...reject(super.getInteractiveElements(), el => el.type === InteractiveElementType.Hex && isSelected(el.id! as string)),
+			...this._selectedBuildings.map(hexId => ({
+				id: hexId,
+				type: InteractiveElementType.Hex,
+				state: InteractiveElementState.Selected,
+			})),
+			...this._selectedSatellites.map(hexId => ({
+				id: hexId,
+				type: InteractiveElementType.Hex,
+				state: InteractiveElementState.Selected,
+			})),
 		];
-		if (!_.isNil(this._selectedFederationToken)) {
+		if (!isNil(this._selectedFederationToken)) {
 			elements = [
-				..._.reject(elements, el => el.type === InteractiveElementType.FederationToken && el.id === this._selectedFederationToken),
-				{ id: this._selectedFederationToken, type: InteractiveElementType.FederationToken, state: InteractiveElementState.Selected },
+				...reject(elements, el => el.type === InteractiveElementType.FederationToken && el.id === this._selectedFederationToken),
+				{
+					id: this._selectedFederationToken,
+					type: InteractiveElementType.FederationToken,
+					state: InteractiveElementState.Selected,
+				},
 			];
 		}
 		return elements;

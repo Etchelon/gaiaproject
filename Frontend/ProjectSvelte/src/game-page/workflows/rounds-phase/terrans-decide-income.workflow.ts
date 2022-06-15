@@ -1,6 +1,6 @@
-import _ from "lodash";
+import { first } from "lodash";
 import { ActionType, Conversion, PendingDecisionType } from "../../../dto/enums";
-import { ActionDto, PendingDecisionDto } from "../../../dto/interfaces";
+import type { ActionDto, PendingDecisionDto } from "../../../dto/interfaces";
 import { ActionWorkflow } from "../action-workflow.base";
 import { ActiveView, Command, CommonWorkflowStates } from "../types";
 
@@ -49,7 +49,7 @@ export class TerransDecideIncomeWorkflow extends ActionWorkflow {
 				view: ActiveView.TerransConversionsDialog,
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	handleCommand(command: Command): ActionDto | null {
@@ -60,14 +60,14 @@ export class TerransDecideIncomeWorkflow extends ActionWorkflow {
 			case CommonWorkflowStates.CANCEL:
 				this.advanceState(BoardExamination);
 				return null;
-			case CommonWorkflowStates.PERFORM_ACTION:
+			case CommonWorkflowStates.PERFORM_CONVERSION:
 				const conversions = command.data as Conversion[];
 				const action: TerransDecideIncomeActionDto = {
 					Type: ActionType.TerransDecideIncome,
-					Credits: _.filter(conversions, c => c === Conversion.PowerToCredit).length,
-					Ores: _.filter(conversions, c => c === Conversion.PowerToOre).length,
-					Knowledge: _.filter(conversions, c => c === Conversion.PowerToKnowledge).length,
-					Qic: _.filter(conversions, c => c === Conversion.PowerToQic).length,
+					Credits: conversions.filter(c => c === Conversion.PowerToCredit).length,
+					Ores: conversions.filter(c => c === Conversion.PowerToOre).length,
+					Knowledge: conversions.filter(c => c === Conversion.PowerToKnowledge).length,
+					Qic: conversions.filter(c => c === Conversion.PowerToQic).length,
 				};
 				return action;
 			default:

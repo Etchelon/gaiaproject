@@ -1,6 +1,6 @@
-import _ from "lodash";
+import { first } from "lodash";
 import { ActionType, PendingDecisionType } from "../../../dto/enums";
-import { ActionDto, PendingDecisionDto } from "../../../dto/interfaces";
+import type { ActionDto, PendingDecisionDto } from "../../../dto/interfaces";
 import { ActionWorkflow } from "../action-workflow.base";
 import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../types";
 
@@ -29,7 +29,7 @@ export class ItarsBurnPowerForTechnologyTileWorkflow extends ActionWorkflow {
 				view: ActiveView.Map,
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	handleCommand(command: Command): ActionDto | null {

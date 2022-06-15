@@ -1,8 +1,8 @@
-import _ from "lodash";
+import { find, first, isNil, reject } from "lodash";
 import { ActionType, PowerActionType, QicActionType } from "../../../dto/enums";
-import { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
+import type { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
 import { localizeEnum } from "../../../utils/localization";
-import { Identifier } from "../../../utils/miscellanea";
+import type { Identifier } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";
 import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../types";
@@ -43,14 +43,17 @@ export class PowerOrQicActionWorkflow extends ActionWorkflow {
 				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
 			},
 		];
-		this.currentState = _.first(this.states)!;
+		this.currentState = first(this.states)!;
 	}
 
 	elementSelected(id: Identifier, type: InteractiveElementType): void {
 		if (this.stateId !== WaitingForAction) {
 			return;
 		}
-		if ((this._isPower && type !== InteractiveElementType.PowerAction) || (!this._isPower && type !== InteractiveElementType.QicAction)) {
+		if (
+			(this._isPower && type !== InteractiveElementType.PowerAction) ||
+			(!this._isPower && type !== InteractiveElementType.QicAction)
+		) {
 			return;
 		}
 
@@ -58,7 +61,7 @@ export class PowerOrQicActionWorkflow extends ActionWorkflow {
 		const action = localizeEnum(this._selectedAction, this._isPower ? "PowerActionType" : "QicActionType");
 		let message = `Take action ${action}?`;
 		if (this._isPower) {
-			const actionDto = _.find(this.interactionState?.clickablePowerActions, pa => pa.type === id)!;
+			const actionDto = find(this.interactionState?.clickablePowerActions, pa => pa.type === id)!;
 			if (actionDto.powerToBurn) {
 				message = `Burn ${actionDto.powerToBurn} and take action ${action}?`;
 			}
@@ -94,9 +97,9 @@ export class PowerOrQicActionWorkflow extends ActionWorkflow {
 
 	protected getInteractiveElements() {
 		const elements = super.getInteractiveElements();
-		if (!_.isNil(this._selectedAction)) {
+		if (!isNil(this._selectedAction)) {
 			return [
-				..._.reject(elements, el => el.type === this._actualInteractiveElementType && el.id === this._selectedAction),
+				...reject(elements, el => el.type === this._actualInteractiveElementType && el.id === this._selectedAction),
 				{ id: this._selectedAction, type: this._actualInteractiveElementType, state: InteractiveElementState.Selected },
 			];
 		}

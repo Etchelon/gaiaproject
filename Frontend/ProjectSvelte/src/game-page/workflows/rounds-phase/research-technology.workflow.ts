@@ -1,8 +1,8 @@
-import _ from "lodash";
+import { first, isNil, partialRight, reject } from "lodash";
 import { ActionType, ResearchTrackType } from "../../../dto/enums";
-import { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
+import type { ActionDto, InteractionStateDto } from "../../../dto/interfaces";
 import { localizeEnum } from "../../../utils/localization";
-import { Identifier } from "../../../utils/miscellanea";
+import type { Identifier } from "../../../utils/miscellanea";
 import { ActionWorkflow } from "../action-workflow.base";
 import { InteractiveElementState, InteractiveElementType } from "../enums";
 import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../types";
@@ -10,7 +10,7 @@ import { ActiveView, Command, CommonCommands, CommonWorkflowStates } from "../ty
 const WaitingForTrack = 0;
 const WaitingForConfirmation = 1;
 
-const localizeTrack = _.partialRight(localizeEnum, "ResearchTrackType");
+const localizeTrack = partialRight(localizeEnum, "ResearchTrackType");
 
 interface ResearchTechnologyActionDto extends ActionDto {
 	Type: ActionType.ResearchTechnology;
@@ -38,7 +38,7 @@ export class ResearchTechnologyWorkflow extends ActionWorkflow {
 				commands: [CommonCommands.Cancel, CommonCommands.Confirm],
 			},
 		];
-		const firstState = _.first(this.states)!;
+		const firstState = first(this.states)!;
 		if (this._isAction) {
 			firstState.commands = [CommonCommands.Abort];
 		}
@@ -85,9 +85,9 @@ export class ResearchTechnologyWorkflow extends ActionWorkflow {
 
 	protected getInteractiveElements() {
 		const elements = super.getInteractiveElements();
-		if (!_.isNil(this._selectedTrack)) {
+		if (!isNil(this._selectedTrack)) {
 			return [
-				..._.reject(elements, el => el.type === InteractiveElementType.ResearchStep && el.id === this._selectedTrack),
+				...reject(elements, el => el.type === InteractiveElementType.ResearchStep && el.id === this._selectedTrack),
 				{ id: this._selectedTrack, type: InteractiveElementType.ResearchStep, state: InteractiveElementState.Selected },
 			];
 		}
