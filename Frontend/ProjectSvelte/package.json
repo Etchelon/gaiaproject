@@ -14,6 +14,11 @@
 		"android:dev": "ionic cap run android --livereload --external --port=3000 --ssl",
 		"android:open": "cap open android",
 		"android:sync": "cap sync android",
+		"ios": "pnpm build && pnpm cap run ios",
+		"ios:copy": "cap copy ios",
+		"ios:dev": "ionic cap run ios --livereload --external --port=3000 --ssl",
+		"ios:open": "cap open ios",
+		"ios:sync": "cap sync ios",
 		"ionic:serve": "vite"
 	},
 	"dependencies": {
@@ -22,6 +27,7 @@
 		"@capacitor/app": "^1.1.1",
 		"@capacitor/browser": "^1.0.7",
 		"@capacitor/core": "^3.5.1",
+		"@capacitor/ios": "^3.5.1",
 		"@ionic/core": "^6.1.7",
 		"@microsoft/signalr": "^6.0.5",
 		"ionicons": "6.0.1",

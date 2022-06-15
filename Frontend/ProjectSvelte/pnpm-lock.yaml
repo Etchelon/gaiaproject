@@ -7,6 +7,7 @@ specifiers:
   '@capacitor/browser': ^1.0.7
   '@capacitor/cli': ^3.5.1
   '@capacitor/core': ^3.5.1
+  '@capacitor/ios': ^3.5.1
   '@ionic/cli': ^6.19.1
   '@ionic/core': ^6.1.7
   '@microsoft/signalr': ^6.0.5
@@ -44,6 +45,7 @@ dependencies:
   '@capacitor/app': 1.1.1_@capacitor+core@3.5.1
   '@capacitor/browser': 1.0.7_@capacitor+core@3.5.1
   '@capacitor/core': 3.5.1
+  '@capacitor/ios': 3.5.1_@capacitor+core@3.5.1
   '@ionic/core': 6.1.7
   '@microsoft/signalr': 6.0.5
   ionicons: 6.0.1
@@ -166,6 +168,14 @@ packages:
     resolution: {integrity: sha512-UTROxB7q/hZBnhDLcCN7mVsAX3SxXNMhVuPbtddsDOUCm4hExLXN62gPD7rjgmumhfHMjeXmkw/EfRzSjttL1g==}
     dependencies:
       tslib: 2.4.0
+    dev: false
+
+  /@capacitor/ios/3.5.1_@capacitor+core@3.5.1:
+    resolution: {integrity: sha512-295L9dHe/QaejUpGI8Pxwb1i2yVgick1ExIDK26xk+tk1km3B1HVjsIS8qkf2SOp7tuwP9+W5T5p7rLMNN4v5g==}
+    peerDependencies:
+      '@capacitor/core': ^3.5.0
+    dependencies:
+      '@capacitor/core': 3.5.1
     dev: false
 
   /@ionic/cli-framework-output/2.2.4:
