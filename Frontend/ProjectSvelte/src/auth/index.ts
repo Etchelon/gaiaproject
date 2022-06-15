@@ -10,7 +10,7 @@ import type {
 	User,
 } from "@auth0/auth0-spa-js";
 import auth0 from "@auth0/auth0-spa-js";
-import { App } from "@capacitor/app";
+import { App, URLOpenListener } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
 import { Capacitor } from "@capacitor/core";
 import { toastController } from "@ionic/core/components";
@@ -40,30 +40,41 @@ export class AuthService {
 		return $user as UserInfoDto;
 	});
 	error = writable<Error | null>(null);
-	initializeAuth0: (onRedirectCallback?: OnRedirectCallback) => Promise<void>;
 	login: (options?: RedirectLoginOptions) => Promise<void>;
 	logout: (options: LogoutOptions) => Promise<void>;
 	private _auth0Client!: Auth0Client;
+	private _platform: string;
 
 	constructor(private readonly http: HttpClient, private readonly hub: HubClient) {
-		const platform = Capacitor.getPlatform();
+		this._platform = Capacitor.getPlatform();
 		console.log(import.meta.env, { redirectUri });
-		this.initializeAuth0 = platform === "web" ? this.initializeAuth0Web : this.initializeAuth0App;
-		this.login = platform === "web" ? this.loginWeb : this.loginApp;
-		this.logout = platform === "web" ? this.logoutWeb : this.logoutApp;
+		this.login = this._platform === "web" ? this.loginWeb : this.loginApp;
+		this.logout = this._platform === "web" ? this.logoutWeb : this.logoutApp;
 	}
 
-	private initializeAuth0Web = async (onRedirectCallback: OnRedirectCallback = defaultOnRedirectCallback) => {
-		if (this._auth0Client) {
-			throw new Error("AuthService already initialized!");
+	initializeAuth0 = (): void => {
+		if (this._platform !== "web") {
+			App.addListener("appUrlOpen", ({ url }) => this.onCallback(url));
+			this.isLoading.set(false);
 		}
 
-		const client = await this.createAuth0Client(config);
+		this.createAuth0Client(config).then(() => {
+			if (this._platform === "web") {
+				this.onCallback(window.location.href);
+			}
+		});
+	};
+
+	private onCallback = async (url: string) => {
+		console.log({ url });
+		if (!url || !url.startsWith(redirectUri)) {
+			return;
+		}
 
 		try {
-			await this.handleAuth0RedirectCallback(new URLSearchParams(window.location.search), onRedirectCallback);
-			if (await client.isAuthenticated()) {
-				await this.handleAuthenticated(client);
+			await this.handleAuth0RedirectCallback(url);
+			if (await this._auth0Client.isAuthenticated()) {
+				await this.handleAuthenticated(this._auth0Client);
 			} else {
 				await this.handleNotAuthenticated();
 			}
@@ -71,39 +82,9 @@ export class AuthService {
 			this.error.set(err as Error);
 			await this.handleNotAuthenticated();
 		} finally {
+			Browser.close();
 			this.isLoading.set(false);
 		}
-	};
-
-	private initializeAuth0App = async () => {
-		if (this._auth0Client) {
-			throw new Error("AuthService already initialized!");
-		}
-
-		const client = await this.createAuth0Client(config);
-
-		App.addListener("appUrlOpen", async ({ url }) => {
-			if (!url || !url.startsWith(redirectUri)) {
-				return;
-			}
-
-			try {
-				const url_ = new URL(url);
-				await this.handleAuth0RedirectCallback(url_.searchParams);
-				if (await client.isAuthenticated()) {
-					await this.handleAuthenticated(client);
-				} else {
-					await this.handleNotAuthenticated();
-				}
-			} catch (err) {
-				this.error.set(err as Error);
-				await this.handleNotAuthenticated();
-			} finally {
-				Browser.close();
-				this.isLoading.set(false);
-			}
-		});
-		this.isLoading.set(false);
 	};
 
 	private loginWeb = async (options?: RedirectLoginOptions) => {
@@ -132,7 +113,8 @@ export class AuthService {
 
 	private createAuth0Client = async (config: Auth0ClientOptions) => (this._auth0Client = await auth0(config));
 
-	private handleAuth0RedirectCallback = async (params: URLSearchParams, onRedirectCallback?: OnRedirectCallback) => {
+	private handleAuth0RedirectCallback = async (url: string, onRedirectCallback?: OnRedirectCallback) => {
+		const params = new URL(url).searchParams;
 		const hasError = params.has("error");
 		const hasCode = params.has("code");
 		const hasState = params.has("state");
@@ -143,7 +125,7 @@ export class AuthService {
 		}
 
 		if (hasCode && hasState) {
-			const { appState } = await this._auth0Client.handleRedirectCallback();
+			const { appState } = await this._auth0Client.handleRedirectCallback(url);
 			onRedirectCallback?.(appState);
 		}
 	};

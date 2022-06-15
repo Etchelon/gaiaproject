@@ -18,10 +18,10 @@
 		auth,
 	};
 	initAppContext(ctx);
+	auth.initializeAuth0();
 
 	onMount(async () => {
 		setupIonic();
-		await auth.initializeAuth0();
 	});
 </script>
 
