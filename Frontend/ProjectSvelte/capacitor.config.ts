@@ -5,12 +5,6 @@ const config: CapacitorConfig = {
 	appName: "StarGate",
 	webDir: "dist",
 	bundledWebRuntime: false,
-	server: {
-		cleartext: true,
-		hostname: "localhost:3000",
-		androidScheme: "https",
-		iosScheme: "https",
-	},
 };
 
 export default config;

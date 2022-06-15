@@ -10,11 +10,13 @@
 
 <ion-menu content-id={contentId} type="overlay" swipe-gesture>
 	<ion-menu-toggle class="flex flex-col h-full" auto-hide={false}>
-		<ion-toolbar class="flex-shrink-0">
-			<ion-title class="gaia-font w-full px-2">
-				<a href="#/"> Gaia Project </a>
-			</ion-title>
-		</ion-toolbar>
+		<ion-header>
+			<ion-toolbar class="flex-shrink-0">
+				<ion-title class="gaia-font w-full px-2">
+					<a href="#/"> Gaia Project </a>
+				</ion-title>
+			</ion-toolbar>
+		</ion-header>
 		{#if $isAuthenticated}
 			<AuthenticatedUserMenu />
 		{:else}
