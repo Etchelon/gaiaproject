@@ -8,10 +8,18 @@
 		"dev": "vite",
 		"build": "tsc --noEmit && vite build",
 		"start": "sirv public --no-clear",
-		"check": "svelte-check --tsconfig ./tsconfig.json"
+		"check": "svelte-check --tsconfig ./tsconfig.json",
+		"android": "pnpm build && pnpm cap run android",
+		"android:dev": "cap run android -l --external",
+		"android:open": "cap open android",
+		"android:sync": "cap sync android"
 	},
 	"dependencies": {
 		"@auth0/auth0-spa-js": "^1.22.0",
+		"@capacitor/android": "^3.5.1",
+		"@capacitor/app": "^1.1.1",
+		"@capacitor/browser": "^1.0.7",
+		"@capacitor/core": "^3.5.1",
 		"@ionic/core": "^6.1.7",
 		"@microsoft/signalr": "^6.0.5",
 		"ionicons": "6.0.1",
@@ -21,6 +29,7 @@
 		"svelte-spa-router": "^3.2.0"
 	},
 	"devDependencies": {
+		"@capacitor/cli": "^3.5.1",
 		"@rollup/plugin-commonjs": "^17.0.0",
 		"@rollup/plugin-node-resolve": "^11.0.0",
 		"@rollup/plugin-typescript": "^8.0.0",

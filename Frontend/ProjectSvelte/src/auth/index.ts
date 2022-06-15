@@ -10,11 +10,14 @@ import type {
 	User,
 } from "@auth0/auth0-spa-js";
 import auth0 from "@auth0/auth0-spa-js";
+import { App } from "@capacitor/app";
+import { Browser } from "@capacitor/browser";
+import { Capacitor } from "@capacitor/core";
 import { toastController } from "@ionic/core/components";
 import { isNil } from "lodash";
 import { push } from "svelte-spa-router";
 import { derived, get, writable } from "svelte/store";
-import config from "./config";
+import config, { redirectUri } from "./config";
 
 const USER_INFO = "gp-user-info";
 
@@ -37,20 +40,28 @@ export class AuthService {
 		return $user as UserInfoDto;
 	});
 	error = writable<Error | null>(null);
+	initializeAuth0: (onRedirectCallback?: OnRedirectCallback) => Promise<void>;
+	login: (options?: RedirectLoginOptions) => Promise<void>;
+	logout: (options: LogoutOptions) => Promise<void>;
 	private _auth0Client!: Auth0Client;
 
-	constructor(private readonly http: HttpClient, private readonly hub: HubClient) {}
+	constructor(private readonly http: HttpClient, private readonly hub: HubClient) {
+		const platform = Capacitor.getPlatform();
+		console.log(import.meta.env, { redirectUri });
+		this.initializeAuth0 = platform === "web" ? this.initializeAuth0Web : this.initializeAuth0App;
+		this.login = platform === "web" ? this.loginWeb : this.loginApp;
+		this.logout = platform === "web" ? this.logoutWeb : this.logoutApp;
+	}
 
-	initializeAuth0 = async (onRedirectCallback: OnRedirectCallback = defaultOnRedirectCallback) => {
+	private initializeAuth0Web = async (onRedirectCallback: OnRedirectCallback = defaultOnRedirectCallback) => {
 		if (this._auth0Client) {
 			throw new Error("AuthService already initialized!");
 		}
 
 		const client = await this.createAuth0Client(config);
 
-		const cb = onRedirectCallback ?? (() => window.history.replaceState({}, document.title, window.location.pathname));
 		try {
-			await this.handleAuth0RedirectCallback(cb);
+			await this.handleAuth0RedirectCallback(new URLSearchParams(window.location.search), onRedirectCallback);
 			if (await client.isAuthenticated()) {
 				await this.handleAuthenticated(client);
 			} else {
@@ -64,23 +75,64 @@ export class AuthService {
 		}
 	};
 
-	login = async (options?: RedirectLoginOptions) => {
+	private initializeAuth0App = async () => {
+		if (this._auth0Client) {
+			throw new Error("AuthService already initialized!");
+		}
+
+		const client = await this.createAuth0Client(config);
+
+		App.addListener("appUrlOpen", async ({ url }) => {
+			if (!url || !url.startsWith(redirectUri)) {
+				return;
+			}
+
+			try {
+				const url_ = new URL(url);
+				await this.handleAuth0RedirectCallback(url_.searchParams);
+				if (await client.isAuthenticated()) {
+					await this.handleAuthenticated(client);
+				} else {
+					await this.handleNotAuthenticated();
+				}
+			} catch (err) {
+				this.error.set(err as Error);
+				await this.handleNotAuthenticated();
+			} finally {
+				Browser.close();
+				this.isLoading.set(false);
+			}
+		});
+		this.isLoading.set(false);
+	};
+
+	private loginWeb = async (options?: RedirectLoginOptions) => {
 		await this._auth0Client.loginWithRedirect(options);
 	};
 
-	logout = async (options: LogoutOptions) => {
+	private logoutWeb = async (options: LogoutOptions) => {
 		this._auth0Client.logout({
 			...options,
 			returnTo: window.location.origin,
 		});
 	};
 
+	private loginApp = async (options?: RedirectLoginOptions) => {
+		const url = await this._auth0Client.buildAuthorizeUrl(options);
+		Browser.open({ url, windowName: "_self" });
+	};
+
+	private logoutApp = async (options: LogoutOptions) => {
+		const url = await this._auth0Client.buildLogoutUrl(options);
+		this._auth0Client.logout({ localOnly: true });
+		Browser.open({ url });
+	};
+
 	getAccessToken = async (options: GetTokenSilentlyOptions) => await this._auth0Client.getTokenSilently(options);
 
 	private createAuth0Client = async (config: Auth0ClientOptions) => (this._auth0Client = await auth0(config));
 
-	private handleAuth0RedirectCallback = async (onRedirectCallback: OnRedirectCallback) => {
-		const params = new URLSearchParams(window.location.search);
+	private handleAuth0RedirectCallback = async (params: URLSearchParams, onRedirectCallback?: OnRedirectCallback) => {
 		const hasError = params.has("error");
 		const hasCode = params.has("code");
 		const hasState = params.has("state");
@@ -92,7 +144,7 @@ export class AuthService {
 
 		if (hasCode && hasState) {
 			const { appState } = await this._auth0Client.handleRedirectCallback();
-			onRedirectCallback(appState);
+			onRedirectCallback?.(appState);
 		}
 	};
 
