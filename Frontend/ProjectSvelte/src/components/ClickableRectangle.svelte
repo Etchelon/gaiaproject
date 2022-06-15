@@ -4,9 +4,13 @@
 	export let absolute = true;
 </script>
 
-<div class="border-2 rounded-md pointer-events-none" class:absolute class:active {style} on:click />
+<div class="rectangle border-2 rounded-md pointer-events-none" class:absolute class:active {style} on:click />
 
 <style>
+	.rectangle {
+		border-color: transparent;
+	}
+
 	.active {
 		border-color: var(--selectable-color);
 		pointer-events: all;

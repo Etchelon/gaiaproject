@@ -262,7 +262,7 @@
 	</ion-toolbar>
 </ion-header>
 <ion-content fullscreen>
-	<div class="grid grid-cols-2 gap-2 p-1 md:p-3">
+	<div class="grid grid-cols-4 gap-2 p-1 md:p-3">
 		<div class="col-span-2 md:col-span-1">
 			<div class="relative">
 				<img class="w-full object-contain" src={assetUrl("Conversions.png")} alt="" />
@@ -314,7 +314,7 @@
 				/>
 			</div>
 		</div>
-		<div class="overflow-x-hidden overflow-y-auto">
+		<div class="col-span-2 md:col-span-1 overflow-x-hidden overflow-y-auto">
 			<p class="gaia-font text-center">Other</p>
 			<ion-button class="w-full mt-1 py-1 px-2" disabled={!canBurn} on:click={() => dispatch({ type: Conversion.BurnPower })}>
 				<span class="gaia-font">Burn 1 Power</span>
@@ -379,7 +379,7 @@
 				</ion-button>
 			{/if}
 		</div>
-		<div class="col-span-2 md:col-span-1">
+		<div class="col-span-4 md:col-span-2">
 			<div class="flex flex-col items-stretch h-full">
 				<div class="player-data">
 					<h6 class="gaia-font text-center">Resources</h6>
@@ -499,7 +499,7 @@
 			}
 
 			> span {
-				font-size: 0.75rem;
+				font-size: 0.9rem;
 			}
 		}
 

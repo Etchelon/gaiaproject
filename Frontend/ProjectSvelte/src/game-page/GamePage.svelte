@@ -117,7 +117,7 @@
 </div>
 
 {#if !$isSpectator && $currentPlayer}
-	<ion-modal class="dialog" class:mobile={isMobile} is-open={isDialogView($activeView)}>
+	<ion-modal class="dialog auto-height" class:mobile={isMobile} is-open={isDialogView($activeView)}>
 		{#if $activeView === ActiveView.RaceSelectionDialog}
 			<SelectRaceDialog gameId={$game.id} />
 		{/if}

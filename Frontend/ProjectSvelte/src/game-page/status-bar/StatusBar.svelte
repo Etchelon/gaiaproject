@@ -76,7 +76,7 @@
 			</div>
 		{/if}
 
-		<ion-modal breakpoints={[0, 0.5]} initial-breakpoint={0.5} is-open={showMenu} on:didDismiss={closeMenu}>
+		<ion-modal class="action-sheet" breakpoints={[0, 1]} initial-breakpoint={1} is-open={showMenu} on:didDismiss={closeMenu}>
 			<ion-header translucent>
 				<ion-toolbar>
 					<ion-title class="gaia-font">Actions</ion-title>
@@ -103,3 +103,12 @@
 		</ion-modal>
 	{/if}
 </div>
+
+<style>
+	.action-sheet::part(content) {
+		position: relative;
+		--height: 50%;
+		bottom: 0px;
+		top: calc(var(--height) / 2);
+	}
+</style>
