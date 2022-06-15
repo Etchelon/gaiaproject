@@ -7,6 +7,7 @@
 
 <script lang="ts">
 	import { ActiveView, isDialogView } from "$utils/types";
+	import { Capacitor } from "@capacitor/core";
 	import { chain, isNil, noop, size } from "lodash";
 	import { onDestroy, onMount } from "svelte";
 	import DesktopView from "./desktop/DesktopView.svelte";
@@ -26,7 +27,7 @@
 	let isMobile = false;
 
 	const checkIsMobile = () => {
-		isMobile = window.innerWidth <= 600;
+		isMobile = Capacitor.getPlatform() !== "web" || window.innerWidth <= 600;
 	};
 
 	onMount(async () => {

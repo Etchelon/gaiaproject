@@ -10,7 +10,7 @@
 		"start": "sirv public --no-clear",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"android": "pnpm build && pnpm cap run android",
-		"android:dev": "cap run android -l --external",
+		"android:copy": "cap copy android",
 		"android:open": "cap open android",
 		"android:sync": "cap sync android"
 	},
