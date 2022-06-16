@@ -14,10 +14,11 @@
 		"android:dev": "ionic cap run android --livereload --external --port=3000 --ssl",
 		"android:open": "cap open android",
 		"android:sync": "cap sync android",
-		"ios": "pnpm build && pnpm cap run ios",
+		"ios": "pnpm build && pnpm ios:run",
 		"ios:copy": "cap copy ios",
 		"ios:dev": "ionic cap run ios --livereload --external --port=3000 --ssl",
 		"ios:open": "cap open ios",
+		"ios:run": "cap run ios --target=E179F2EF-3DD9-484B-860E-CC818B064CD4",
 		"ios:sync": "cap sync ios",
 		"ionic:serve": "vite"
 	},

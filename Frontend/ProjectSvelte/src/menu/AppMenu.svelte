@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getAppContext } from "../app/App.context";
+	import AuthButton from "../auth/AuthButton.svelte";
 	import AuthenticatedUserMenu from "./AuthenticatedUserMenu.svelte";
 	import UnauthenticatedUserMenu from "./UnauthenticatedUserMenu.svelte";
 
@@ -22,5 +23,10 @@
 		{:else}
 			<UnauthenticatedUserMenu />
 		{/if}
+		<ion-footer>
+			<ion-toolbar>
+				<AuthButton />
+			</ion-toolbar>
+		</ion-footer>
 	</ion-menu-toggle>
 </ion-menu>

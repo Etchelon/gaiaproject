@@ -18,7 +18,7 @@
 </script>
 
 {#if isAuctioning}
-	<div class="p-2 bg-black border-2 border-gray-400 border-solid rounded-lg">
+	<div class="p-2 bg-gray-900 border-2 border-gray-400 border-solid rounded-lg">
 		<div class="gaia-font">Auction</div>
 		<div class={direction === "vertical" ? "flex flex-col justify-center items-center" : "flex"}>
 			{#each auctionedRaces as auction, index (index)}
@@ -33,7 +33,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="p-2 bg-black border-2 border-gray-400 border-solid rounded-lg">
+	<div class="p-2 bg-gray-900 border-2 border-gray-400 border-solid rounded-lg">
 		<div>
 			<p class="m-0 text-white gaia-font">
 				Round {game.currentRound}

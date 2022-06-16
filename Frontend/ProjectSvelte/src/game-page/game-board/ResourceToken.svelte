@@ -6,4 +6,4 @@
 	export let scale = 1;
 </script>
 
-<img class="h-full object-cover" style:transform={`scale(${scale}`} src={assetUrl(imageUrl ?? `Markers/${type}.png`)} alt={type} />
+<img class="object-cover" style:transform={`scale(${scale}`} src={assetUrl(imageUrl ?? `Markers/${type}.png`)} alt={type} />

@@ -23,10 +23,7 @@ const USER_INFO = "gp-user-info";
 
 type OnRedirectCallback = (appState?: any) => void;
 
-const defaultOnRedirectCallback: OnRedirectCallback = (appState: any) => {
-	window.history.replaceState({}, document.title, appState && appState.targetUrl ? appState.targetUrl : window.location.pathname);
-};
-
+// TODO: extract interface and split implementation into 2: web and app
 export class AuthService {
 	isLoading = writable(true);
 	auth0User = writable<User | undefined>();
@@ -47,7 +44,6 @@ export class AuthService {
 
 	constructor(private readonly http: HttpClient, private readonly hub: HubClient) {
 		this._platform = Capacitor.getPlatform();
-		console.log(import.meta.env, { redirectUri });
 		this.login = this._platform === "web" ? this.loginWeb : this.loginApp;
 		this.logout = this._platform === "web" ? this.logoutWeb : this.logoutApp;
 	}
@@ -55,18 +51,19 @@ export class AuthService {
 	initializeAuth0 = (): void => {
 		if (this._platform !== "web") {
 			App.addListener("appUrlOpen", ({ url }) => this.onCallback(url));
-			this.isLoading.set(false);
 		}
 
 		this.createAuth0Client(config).then(() => {
+			this.isLoading.set(false);
 			if (this._platform === "web") {
 				this.onCallback(window.location.href);
+			} else {
+				this.tryLoadingFromLocalStorage();
 			}
 		});
 	};
 
 	private onCallback = async (url: string) => {
-		console.log({ url });
 		if (!url || !url.startsWith(redirectUri)) {
 			return;
 		}
@@ -100,18 +97,36 @@ export class AuthService {
 
 	private loginApp = async (options?: RedirectLoginOptions) => {
 		const url = await this._auth0Client.buildAuthorizeUrl(options);
-		Browser.open({ url, windowName: "_self" });
+		await Browser.open({ url, windowName: "_self" });
 	};
 
 	private logoutApp = async (options: LogoutOptions) => {
-		const url = await this._auth0Client.buildLogoutUrl(options);
-		this._auth0Client.logout({ localOnly: true });
-		Browser.open({ url });
+		const url = this._auth0Client.buildLogoutUrl(options);
+		await Browser.open({ url });
+		await this._auth0Client.logout({ localOnly: true });
 	};
 
 	getAccessToken = async (options: GetTokenSilentlyOptions) => await this._auth0Client.getTokenSilently(options);
 
-	private createAuth0Client = async (config: Auth0ClientOptions) => (this._auth0Client = await auth0(config));
+	private createAuth0Client = async (config: Auth0ClientOptions) => {
+		const cacheLocation = this._platform === "web" ? "memory" : "localstorage";
+		this._auth0Client = await auth0({ ...config, cacheLocation });
+	};
+
+	private tryLoadingFromLocalStorage = async () => {
+		try {
+			if (await this._auth0Client.isAuthenticated()) {
+				await this.handleAuthenticated(this._auth0Client);
+			} else {
+				await this.handleNotAuthenticated();
+			}
+		} catch (err) {
+			this.error.set(err as Error);
+			await this.handleNotAuthenticated();
+		} finally {
+			this.isLoading.set(false);
+		}
+	};
 
 	private handleAuth0RedirectCallback = async (url: string, onRedirectCallback?: OnRedirectCallback) => {
 		const params = new URL(url).searchParams;
