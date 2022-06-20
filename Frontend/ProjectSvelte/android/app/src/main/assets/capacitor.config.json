@@ -2,11 +2,5 @@
 	"appId": "com.gaiaproject.app",
 	"appName": "StarGate",
 	"webDir": "dist",
-	"bundledWebRuntime": false,
-	"server": {
-		"cleartext": true,
-		"hostname": "localhost:3000",
-		"androidScheme": "https",
-		"iosScheme": "https"
-	}
+	"bundledWebRuntime": false
 }

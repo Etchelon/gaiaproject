@@ -1,30 +1,32 @@
 import type { UserInfoDto } from "$dto/interfaces";
 import type { HttpClient } from "$utils/http-client";
 import type { HubClient } from "$utils/hub-client";
-import type {
-	Auth0Client,
-	Auth0ClientOptions,
-	GetTokenSilentlyOptions,
-	LogoutOptions,
-	RedirectLoginOptions,
-	User,
-} from "@auth0/auth0-spa-js";
-import auth0 from "@auth0/auth0-spa-js";
-import { App, URLOpenListener } from "@capacitor/app";
+import type { Auth0Client, GetTokenSilentlyOptions, LogoutOptions, RedirectLoginOptions, User } from "@auth0/auth0-spa-js";
 import { Browser } from "@capacitor/browser";
-import { Capacitor } from "@capacitor/core";
 import { toastController } from "@ionic/core/components";
 import { isNil } from "lodash";
 import { push } from "svelte-spa-router";
-import { derived, get, writable } from "svelte/store";
-import config, { redirectUri } from "./config";
+import { derived, get, Readable, Writable, writable } from "svelte/store";
+import { redirectUri } from "./config";
 
 const USER_INFO = "gp-user-info";
 
-type OnRedirectCallback = (appState?: any) => void;
+export type OnRedirectCallback = (appState?: any) => void;
 
-// TODO: extract interface and split implementation into 2: web and app
-export class AuthService {
+export interface IAuthService {
+	isLoading: Writable<boolean>;
+	auth0User: Writable<User | undefined>;
+	user: Writable<UserInfoDto | undefined>;
+	isAuthenticated: Readable<boolean>;
+	loggedUser: Readable<UserInfoDto>;
+	error: Writable<Error | null>;
+	initializeAuth0(): void;
+	login(options?: RedirectLoginOptions): Promise<void>;
+	logout(options: LogoutOptions): Promise<void>;
+	getAccessToken(options: GetTokenSilentlyOptions): Promise<string>;
+}
+
+export abstract class AuthServiceBase implements IAuthService {
 	isLoading = writable(true);
 	auth0User = writable<User | undefined>();
 	user = writable<UserInfoDto | undefined>();
@@ -37,33 +39,17 @@ export class AuthService {
 		return $user as UserInfoDto;
 	});
 	error = writable<Error | null>(null);
-	login: (options?: RedirectLoginOptions) => Promise<void>;
-	logout: (options: LogoutOptions) => Promise<void>;
-	private _auth0Client!: Auth0Client;
-	private _platform: string;
+	protected _auth0Client!: Auth0Client;
 
-	constructor(private readonly http: HttpClient, private readonly hub: HubClient) {
-		this._platform = Capacitor.getPlatform();
-		this.login = this._platform === "web" ? this.loginWeb : this.loginApp;
-		this.logout = this._platform === "web" ? this.logoutWeb : this.logoutApp;
-	}
+	constructor(protected readonly http: HttpClient, protected readonly hub: HubClient) {}
 
-	initializeAuth0 = (): void => {
-		if (this._platform !== "web") {
-			App.addListener("appUrlOpen", ({ url }) => this.onCallback(url));
-		}
+	getAccessToken = async (options: GetTokenSilentlyOptions) => await this._auth0Client.getTokenSilently(options);
 
-		this.createAuth0Client(config).then(() => {
-			this.isLoading.set(false);
-			if (this._platform === "web") {
-				this.onCallback(window.location.href);
-			} else {
-				this.tryLoadingFromLocalStorage();
-			}
-		});
-	};
+	abstract initializeAuth0(): void;
+	abstract login(options?: RedirectLoginOptions): Promise<void>;
+	abstract logout(options: LogoutOptions): Promise<void>;
 
-	private onCallback = async (url: string) => {
+	protected onCallback = async (url: string) => {
 		if (!url || !url.startsWith(redirectUri)) {
 			return;
 		}
@@ -84,36 +70,7 @@ export class AuthService {
 		}
 	};
 
-	private loginWeb = async (options?: RedirectLoginOptions) => {
-		await this._auth0Client.loginWithRedirect(options);
-	};
-
-	private logoutWeb = async (options: LogoutOptions) => {
-		this._auth0Client.logout({
-			...options,
-			returnTo: window.location.origin,
-		});
-	};
-
-	private loginApp = async (options?: RedirectLoginOptions) => {
-		const url = await this._auth0Client.buildAuthorizeUrl(options);
-		await Browser.open({ url, windowName: "_self" });
-	};
-
-	private logoutApp = async (options: LogoutOptions) => {
-		const url = this._auth0Client.buildLogoutUrl(options);
-		await Browser.open({ url });
-		await this._auth0Client.logout({ localOnly: true });
-	};
-
-	getAccessToken = async (options: GetTokenSilentlyOptions) => await this._auth0Client.getTokenSilently(options);
-
-	private createAuth0Client = async (config: Auth0ClientOptions) => {
-		const cacheLocation = this._platform === "web" ? "memory" : "localstorage";
-		this._auth0Client = await auth0({ ...config, cacheLocation });
-	};
-
-	private tryLoadingFromLocalStorage = async () => {
+	protected tryLoadingFromLocalStorage = async () => {
 		try {
 			if (await this._auth0Client.isAuthenticated()) {
 				await this.handleAuthenticated(this._auth0Client);

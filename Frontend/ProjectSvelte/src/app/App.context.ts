@@ -1,14 +1,17 @@
 import type { HttpClient } from "$utils/http-client";
 import type { HubClient } from "$utils/hub-client";
 import { getContext, setContext } from "svelte";
-import type { AuthService } from "../auth";
+import type { IAuthService } from "../auth/auth-service.base";
 
 const key = Symbol.for("AppContext");
 
+export type PlatformType = "web" | "android" | "ios";
+
 export interface IAppContext {
+	platform: PlatformType;
 	http: HttpClient;
 	hub: HubClient;
-	auth: AuthService;
+	auth: IAuthService;
 }
 
 export const getAppContext = () => getContext<IAppContext>(key);
