@@ -7,7 +7,9 @@
 	export let player: PlayerInfoDto;
 
 	let chipColorsStyle: string;
-	$: playerImg = !isNil(player.raceId)
+	$: playerImg = player.isActive
+		? assetUrl("PlayerLoader.gif")
+		: !isNil(player.raceId)
 		? assetUrl(`Races/${getRaceImage(player.raceId)}`)
 		: player.avatarUrl ?? `https://ui-avatars.com/api/?name=${player.username}`;
 	$: playerLabel = `${!isNil(player.placement) ? `${player.placement}° - ` : ""}${player.username}`;

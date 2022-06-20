@@ -20,5 +20,8 @@
 		</ion-header>
 
 		<slot />
+		<slot name="fixed" />
 	</ion-content>
+
+	<slot name="footer" />
 </div>

@@ -9,7 +9,7 @@ const authenticationGuard = auth => () => get(auth.isAuthenticated);
 
 const getRoutes = auth => ({
 	"/": HomePage,
-	"/games/:kind": wrap({
+	"/games": wrap({
 		asyncComponent: () => import("../games/index.svelte"),
 		conditions: [authenticationGuard(auth)],
 	}),

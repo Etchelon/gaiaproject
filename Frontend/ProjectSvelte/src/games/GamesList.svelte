@@ -40,7 +40,7 @@
 	</ion-list>
 {:catch error}
 	<div class="text-white gaia-font">
-		<p>Could not fetch finished games</p>
+		<p>Could not fetch games</p>
 		<small>{error?.message ?? error}</small>
 	</div>
 {/await}
