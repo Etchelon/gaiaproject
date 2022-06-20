@@ -1,9 +1,9 @@
 <script lang="ts">
 	import LoadingSpinner from "$components/LoadingSpinner.svelte";
 	import Page from "$components/Page.svelte";
-	import { isNil, noop } from "lodash";
+	import { isNil } from "lodash";
 	import type { Subscription } from "rxjs";
-	import { onDestroy, onMount } from "svelte";
+	import { onMount } from "svelte";
 	import { push } from "svelte-spa-router";
 	import { get, writable } from "svelte/store";
 	import { getAppContext } from "../app/App.context";
@@ -74,13 +74,11 @@
 	};
 	setGamePageContext(ctx);
 
-	let gameName$: Promise<string> = Promise.reject();
+	let gameName$: Promise<string> | null = null;
 	let pageTitle = "Loading...";
 	onMount(async () => {
 		try {
 			gameName$ = store.loadGame(id).then(name => {
-				console.log("game$ resolved");
-				signalR.connectToHub();
 				pageTitle = name;
 				return name;
 			});
@@ -90,19 +88,17 @@
 		}
 	});
 
-	onDestroy(async () => {
-		await signalR.disconnectFromHub();
-	});
-
 	$: {
 		$user && store.setCurrentUser($user.id);
 	}
 </script>
 
-<Page title={pageTitle}>
-	{#await gameName$}
-		<LoadingSpinner />
-	{:then}
-		<GamePage />
-	{/await}
-</Page>
+{#if gameName$}
+	<Page title={pageTitle}>
+		{#await gameName$}
+			<LoadingSpinner />
+		{:then}
+			<GamePage />
+		{/await}
+	</Page>
+{/if}

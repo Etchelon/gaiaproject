@@ -7,9 +7,11 @@
 
 <script lang="ts">
 	import { ActiveView, isDialogView } from "$utils/types";
-	import { Capacitor } from "@capacitor/core";
+	import { App } from "@capacitor/app";
+	import { Capacitor, PluginListenerHandle } from "@capacitor/core";
 	import { chain, isNil, noop, size } from "lodash";
 	import { onDestroy, onMount } from "svelte";
+	import { getAppContext } from "../app/App.context";
 	import DesktopView from "./desktop/DesktopView.svelte";
 	import AuctionDialog from "./dialogs/auction/AuctionDialog.svelte";
 	import ConversionsDialog from "./dialogs/conversions/ConversionsDialog.svelte";
@@ -22,8 +24,10 @@
 	import type { ActionWorkflow } from "./workflows/action-workflow.base";
 	import { fromAction, fromDecision } from "./workflows/utils";
 
+	const { platform } = getAppContext();
 	const { store, signalR, activeWorkflow, startWorkflow } = getGamePageContext();
 	const { activeView, currentPlayer, game, isSpectator, players } = store;
+	let appStateChangeListener: PluginListenerHandle;
 	let isMobile = false;
 
 	const checkIsMobile = () => {
@@ -33,10 +37,18 @@
 	onMount(async () => {
 		checkIsMobile();
 		await signalR.connectToHub();
+		appStateChangeListener = await App.addListener("appStateChange", async ({ isActive }) => {
+			if (isActive) {
+				await signalR.connectToHub();
+			} else {
+				platform !== "web" && isMobile && (await signalR.disconnectFromHub());
+			}
+		});
 	});
 
 	onDestroy(async () => {
 		await signalR.disconnectFromHub();
+		await appStateChangeListener.remove();
 	});
 
 	$: {

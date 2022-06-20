@@ -4,9 +4,12 @@ import { AuthServiceBase, IAuthService } from "./auth-service.base";
 import config from "./config";
 
 export class AuthServiceWeb extends AuthServiceBase implements IAuthService {
+	protected get storage() {
+		return window.sessionStorage;
+	}
+
 	initializeAuth0 = (): void => {
 		this.createAuth0Client(config).then(() => {
-			this.isLoading.set(false);
 			this.onCallback(window.location.href);
 		});
 	};

@@ -40,6 +40,7 @@ export abstract class AuthServiceBase implements IAuthService {
 	});
 	error = writable<Error | null>(null);
 	protected _auth0Client!: Auth0Client;
+	protected abstract get storage(): Storage;
 
 	constructor(protected readonly http: HttpClient, protected readonly hub: HubClient) {}
 
@@ -54,23 +55,11 @@ export abstract class AuthServiceBase implements IAuthService {
 			return;
 		}
 
-		try {
-			await this.handleAuth0RedirectCallback(url);
-			if (await this._auth0Client.isAuthenticated()) {
-				await this.handleAuthenticated(this._auth0Client);
-			} else {
-				await this.handleNotAuthenticated();
-			}
-		} catch (err) {
-			this.error.set(err as Error);
-			await this.handleNotAuthenticated();
-		} finally {
-			Browser.close();
-			this.isLoading.set(false);
-		}
+		await this.handleAuth0RedirectCallback(url);
+		await this.checkIfAuthenticated();
 	};
 
-	protected tryLoadingFromLocalStorage = async () => {
+	protected checkIfAuthenticated = async () => {
 		try {
 			if (await this._auth0Client.isAuthenticated()) {
 				await this.handleAuthenticated(this._auth0Client);
@@ -85,7 +74,7 @@ export abstract class AuthServiceBase implements IAuthService {
 		}
 	};
 
-	private handleAuth0RedirectCallback = async (url: string, onRedirectCallback?: OnRedirectCallback) => {
+	private handleAuth0RedirectCallback = async (url: string) => {
 		const params = new URL(url).searchParams;
 		const hasError = params.has("error");
 		const hasCode = params.has("code");
@@ -97,8 +86,7 @@ export abstract class AuthServiceBase implements IAuthService {
 		}
 
 		if (hasCode && hasState) {
-			const { appState } = await this._auth0Client.handleRedirectCallback(url);
-			onRedirectCallback?.(appState);
+			await this._auth0Client.handleRedirectCallback(url);
 		}
 	};
 
@@ -113,14 +101,14 @@ export abstract class AuthServiceBase implements IAuthService {
 	};
 
 	private fetchUserInfo = async () => {
-		const userFromSession = await this.getFromSessionStorage();
+		const userFromSession = await this.getUserFromStorage();
 		if (userFromSession) {
 			this.user.set(userFromSession);
 			return;
 		}
 
 		const { user, isFirstLogin } = await this.isFirstLogin();
-		this.saveToSessionStorage(user);
+		this.saveUserToStorage(user);
 		this.user.set(user);
 		if (!isFirstLogin) {
 			return;
@@ -131,24 +119,6 @@ export abstract class AuthServiceBase implements IAuthService {
 		});
 		await snack.present();
 		push("/profile");
-	};
-
-	private getFromSessionStorage = () => {
-		const userInfoStr = window.sessionStorage.getItem(USER_INFO);
-		if (!userInfoStr) {
-			return null;
-		}
-
-		return JSON.parse(userInfoStr) as UserInfoDto;
-	};
-
-	private saveToSessionStorage = (userInfo: UserInfoDto) => {
-		const userInfoStr = JSON.stringify(userInfo);
-		window.sessionStorage.setItem(USER_INFO, userInfoStr);
-	};
-
-	private clearFromSessionStorage = () => {
-		window.sessionStorage.removeItem(USER_INFO);
 	};
 
 	private async handleAuthenticated(client: Auth0Client) {
@@ -163,6 +133,24 @@ export abstract class AuthServiceBase implements IAuthService {
 		this.hub.setBearerTokenFactory(async () => null);
 		this.auth0User.set(void 0);
 		this.user.set(void 0);
-		this.clearFromSessionStorage();
+		this.clearUserFromStorage();
 	}
+
+	private getUserFromStorage = () => {
+		const userInfoStr = this.storage.getItem(USER_INFO);
+		if (!userInfoStr) {
+			return null;
+		}
+
+		return JSON.parse(userInfoStr) as UserInfoDto;
+	};
+
+	private saveUserToStorage = (userInfo: UserInfoDto) => {
+		const userInfoStr = JSON.stringify(userInfo);
+		this.storage.setItem(USER_INFO, userInfoStr);
+	};
+
+	private clearUserFromStorage = () => {
+		this.storage.removeItem(USER_INFO);
+	};
 }

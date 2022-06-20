@@ -6,12 +6,17 @@ import { AuthServiceBase, IAuthService } from "./auth-service.base";
 import config from "./config";
 
 export class AuthServiceApp extends AuthServiceBase implements IAuthService {
+	protected get storage() {
+		return window.localStorage;
+	}
+
 	initializeAuth0 = (): void => {
 		App.addListener("appUrlOpen", ({ url }) => this.onCallback(url));
-		this.createAuth0Client(config).then(() => {
-			this.isLoading.set(false);
-			this.tryLoadingFromLocalStorage();
-		});
+		this.createAuth0Client(config)
+			.then(() => {
+				this.checkIfAuthenticated();
+			})
+			.finally(() => Browser.close());
 	};
 
 	login = async (options?: RedirectLoginOptions) => {
