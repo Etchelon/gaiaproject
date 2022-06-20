@@ -1,11 +1,19 @@
 import type { Auth0ClientOptions, LogoutOptions, RedirectLoginOptions } from "@auth0/auth0-spa-js";
 import auth0 from "@auth0/auth0-spa-js";
-import { AuthServiceBase, IAuthService } from "./auth-service.base";
+import { AuthServiceBase, IAuthService, OnRedirectCallback } from "./auth-service.base";
 import config from "./config";
+
+const defaultOnRedirectCallback: OnRedirectCallback = (appState: any) => {
+	window.history.replaceState({}, document.title, appState && appState.targetUrl ? appState.targetUrl : window.location.pathname);
+};
 
 export class AuthServiceWeb extends AuthServiceBase implements IAuthService {
 	protected get storage() {
 		return window.sessionStorage;
+	}
+
+	protected get onRedirectCallback() {
+		return defaultOnRedirectCallback;
 	}
 
 	initializeAuth0 = (): void => {
@@ -24,6 +32,10 @@ export class AuthServiceWeb extends AuthServiceBase implements IAuthService {
 			returnTo: window.location.origin,
 		});
 	};
+
+	protected onCheckedIfAuthenticated() {
+		this.isLoading.set(false);
+	}
 
 	private createAuth0Client = async (config: Auth0ClientOptions) => {
 		const cacheLocation = "memory";

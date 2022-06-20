@@ -2,7 +2,6 @@ import type { UserInfoDto } from "$dto/interfaces";
 import type { HttpClient } from "$utils/http-client";
 import type { HubClient } from "$utils/hub-client";
 import type { Auth0Client, GetTokenSilentlyOptions, LogoutOptions, RedirectLoginOptions, User } from "@auth0/auth0-spa-js";
-import { Browser } from "@capacitor/browser";
 import { toastController } from "@ionic/core/components";
 import { isNil } from "lodash";
 import { push } from "svelte-spa-router";
@@ -41,6 +40,7 @@ export abstract class AuthServiceBase implements IAuthService {
 	error = writable<Error | null>(null);
 	protected _auth0Client!: Auth0Client;
 	protected abstract get storage(): Storage;
+	protected abstract get onRedirectCallback(): OnRedirectCallback | undefined;
 
 	constructor(protected readonly http: HttpClient, protected readonly hub: HubClient) {}
 
@@ -49,6 +49,7 @@ export abstract class AuthServiceBase implements IAuthService {
 	abstract initializeAuth0(): void;
 	abstract login(options?: RedirectLoginOptions): Promise<void>;
 	abstract logout(options: LogoutOptions): Promise<void>;
+	protected abstract onCheckedIfAuthenticated(): void | Promise<void>;
 
 	protected onCallback = async (url: string) => {
 		if (!url || !url.startsWith(redirectUri)) {
@@ -70,9 +71,24 @@ export abstract class AuthServiceBase implements IAuthService {
 			this.error.set(err as Error);
 			await this.handleNotAuthenticated();
 		} finally {
-			this.isLoading.set(false);
+			await this.onCheckedIfAuthenticated();
 		}
 	};
+
+	protected async handleAuthenticated(client: Auth0Client) {
+		this.http.setBearerTokenFactory(() => this.getAccessToken({}));
+		this.hub.setBearerTokenFactory(() => this.getAccessToken({}));
+		this.auth0User.set(await client.getUser());
+		await this.fetchUserInfo();
+	}
+
+	protected async handleNotAuthenticated() {
+		this.http.setBearerTokenFactory(async () => null);
+		this.hub.setBearerTokenFactory(async () => null);
+		this.auth0User.set(void 0);
+		this.user.set(void 0);
+		this.clearUserFromStorage();
+	}
 
 	private handleAuth0RedirectCallback = async (url: string) => {
 		const params = new URL(url).searchParams;
@@ -86,7 +102,8 @@ export abstract class AuthServiceBase implements IAuthService {
 		}
 
 		if (hasCode && hasState) {
-			await this._auth0Client.handleRedirectCallback(url);
+			const { appState } = await this._auth0Client.handleRedirectCallback(url);
+			this.onRedirectCallback?.(appState);
 		}
 	};
 
@@ -120,21 +137,6 @@ export abstract class AuthServiceBase implements IAuthService {
 		await snack.present();
 		push("/profile");
 	};
-
-	private async handleAuthenticated(client: Auth0Client) {
-		this.http.setBearerTokenFactory(() => this.getAccessToken({}));
-		this.hub.setBearerTokenFactory(() => this.getAccessToken({}));
-		this.auth0User.set(await client.getUser());
-		await this.fetchUserInfo();
-	}
-
-	private async handleNotAuthenticated() {
-		this.http.setBearerTokenFactory(async () => null);
-		this.hub.setBearerTokenFactory(async () => null);
-		this.auth0User.set(void 0);
-		this.user.set(void 0);
-		this.clearUserFromStorage();
-	}
 
 	private getUserFromStorage = () => {
 		const userInfoStr = this.storage.getItem(USER_INFO);
