@@ -9,7 +9,7 @@
 	export let subLog: GameSubLogDto;
 	export let isAnotherPlayer: boolean;
 
-	const [playerColor, textColor] = getRaceColors(subLog.race);
+	$: [playerColor, textColor] = getRaceColors(subLog.race);
 </script>
 
 <ListItem --background-color={playerColor} --color={textColor} noPadding>

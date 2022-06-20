@@ -4,7 +4,6 @@
 	import { getRaceColors } from "$utils/race-utils";
 
 	export let race: Race;
-	export let shape: "circle" | "octagon" = "circle";
 
 	let style = "";
 	$: {

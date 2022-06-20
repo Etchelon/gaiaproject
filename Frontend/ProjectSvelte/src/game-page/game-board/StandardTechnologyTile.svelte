@@ -29,7 +29,7 @@
 	$: ({ clickable, selected } = $interactionState);
 	$: tileClicked = clickable
 		? () => {
-				$activeWorkflow?.elementSelected(type, InteractiveElementType.AdvancedTile);
+				$activeWorkflow?.elementSelected(type, InteractiveElementType.StandardTile);
 		  }
 		: noop;
 </script>

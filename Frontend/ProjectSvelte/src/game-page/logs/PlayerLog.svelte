@@ -11,8 +11,8 @@
 	export let canRollback: boolean;
 	export let doRollback: (actionId: number) => void;
 
-	const imgUrl = assetUrl(`Races/${getRaceImage(log.race)}`);
-	const [playerColor, textColor] = getRaceColors(log.race);
+	$: imgUrl = assetUrl(`Races/${getRaceImage(log.race)}`);
+	$: [playerColor, textColor] = getRaceColors(log.race);
 </script>
 
 <ListItem --background-color={playerColor} --color={textColor}>
