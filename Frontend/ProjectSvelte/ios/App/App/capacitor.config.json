@@ -1,6 +1,6 @@
 {
 	"appId": "com.gaiaproject.app",
-	"appName": "StarGate",
+	"appName": "Star Gate",
 	"webDir": "dist",
 	"bundledWebRuntime": false
 }

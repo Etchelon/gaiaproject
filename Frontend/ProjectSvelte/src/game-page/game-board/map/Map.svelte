@@ -143,19 +143,16 @@
 </script>
 
 <script lang="ts">
-	import { isNil } from "lodash";
 	import type { MapDto } from "$dto/interfaces";
 	import Sector from "./Sector.svelte";
 
 	export let map: MapDto;
-	export let width: number;
-	export let height: number | undefined = undefined;
+	export let height: number;
 
 	let dimensions: HexDimensions;
 	$: {
 		const shape = map.shape;
-		height = isNil(height) ? 450 : Math.max(height, 450);
-		dimensions = isNil(height) ? calculateDimensionsFromWidth(width, shape) : calculateDimensionsFromHeight(height - 4, shape);
+		dimensions = calculateDimensionsFromHeight(height - 4, shape);
 	}
 	$: style = `width: ${dimensions.mapWidth}px; height: ${dimensions.mapHeight}px`;
 </script>

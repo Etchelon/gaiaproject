@@ -71,17 +71,19 @@
 
 	let container: HTMLDivElement;
 	let width: number;
+	let height: number;
 
 	onMount(() => {
 		width = container.clientWidth;
+		height = window.innerHeight / 2;
 	});
 
 	//#endregion
 </script>
 
 <div bind:this={container}>
-	<div id="map" class="w-full overflow-x-auto overflow-y-hidden py-1">
-		<GameMap {map} {width} />
+	<div id="map" class="flex justify-center w-full overflow-x-auto overflow-y-hidden py-1">
+		<GameMap {map} {height} />
 	</div>
 	<div class="w-full mt-2" />
 	<div id="researchBoard">

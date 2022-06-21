@@ -32,54 +32,51 @@
 
 <div class="main-view flex justify-center items-center overflow-auto relative wh-full">
 	{#if showMinimaps}
-		<div style="display: contents">
-			<div class="minimap scoring-track">
-				<ScoringTrack board={game.boardState.scoringBoard} width={width / 4} />
+		<div class="minimap scoring-track">
+			<ScoringTrack board={game.boardState.scoringBoard} width={width / 4} />
+			<div class="click-trap" onClick={() => minimapClicked(ActiveView.ScoringBoard)} />
+		</div>
+		<div class="minimap research-board zoomable">
+			<ResearchBoard board={game.boardState.researchBoard} width={width * 0.3} height={height * 0.3} />
+			<div class="click-trap" onClick={() => minimapClicked(ActiveView.ResearchBoard)} />
+		</div>
+		<div class="minimap boosters-and-federations">
+			<div class="round-boosters" style:width={`${nBoosters * BOOSTER_AND_FEDERATION_WIDTH + (nBoosters - 1) * BOOSTER_SPACING}px`}>
+				{#each boosters as booster, index (booster.id)}
+					<div
+						class="round-booster"
+						style:width={`${BOOSTER_AND_FEDERATION_WIDTH}px`}
+						style:right={`${(BOOSTER_AND_FEDERATION_WIDTH + BOOSTER_SPACING) * index}px`}
+					>
+						<RoundBooster {booster} withPlayerInfo={true} nonInteractive={true} />
+					</div>
+				{/each}
 				<div class="click-trap" onClick={() => minimapClicked(ActiveView.ScoringBoard)} />
 			</div>
-			<div class="minimap research-board zoomable">
-				<ResearchBoard board={game.boardState.researchBoard} width={width * 0.3} height={height * 0.3} />
-				<div class="click-trap" onClick={() => minimapClicked(ActiveView.ResearchBoard)} />
-			</div>
-			<div class="minimap boosters-and-federations">
-				<div
-					class="round-boosters"
-					style:width={`${nBoosters * BOOSTER_AND_FEDERATION_WIDTH + (nBoosters - 1) * BOOSTER_SPACING}px`}
-				>
-					{#each boosters as booster, index (booster.id)}
-						<div
-							class="round-booster"
-							style:width={`${BOOSTER_AND_FEDERATION_WIDTH}px`}
-							style:right={`${(BOOSTER_AND_FEDERATION_WIDTH + BOOSTER_SPACING) * index}px`}
-						>
-							<RoundBooster {booster} withPlayerInfo={true} nonInteractive={true} />
-						</div>
-					{/each}
-					<div class="click-trap" onClick={() => minimapClicked(ActiveView.ScoringBoard)} />
-				</div>
-				<div
-					class="federations"
-					style:width={`${nFederations * FEDERATION_WIDTH + (nFederations - 1) * FEDERATION_SPACING}px`}
-					style:top={`calc(${BOOSTER_HEIGHT_TO_WIDTH_RATIO * BOOSTER_AND_FEDERATION_WIDTH}px + 8px)`}
-				>
-					{#each federations as stack, index (stack.type)}
-						<div
-							class="federation"
-							style:width={`${FEDERATION_WIDTH}px`}
-							style:right={`${(FEDERATION_WIDTH + FEDERATION_SPACING) * index}px`}
-						>
-							<FederationTokenStack {stack} />
-						</div>
-					{/each}
-					<div class="click-trap" onClick={() => minimapClicked(ActiveView.ScoringBoard)} />
-				</div>
-			</div>
-			<div class="minimap turn-order">
-				<TurnOrderMinimap {game} direction="vertical" />
+			<div
+				class="federations"
+				style:width={`${nFederations * FEDERATION_WIDTH + (nFederations - 1) * FEDERATION_SPACING}px`}
+				style:top={`calc(${BOOSTER_HEIGHT_TO_WIDTH_RATIO * BOOSTER_AND_FEDERATION_WIDTH}px + 8px)`}
+			>
+				{#each federations as stack, index (stack.type)}
+					<div
+						class="federation"
+						style:width={`${FEDERATION_WIDTH}px`}
+						style:right={`${(FEDERATION_WIDTH + FEDERATION_SPACING) * index}px`}
+					>
+						<FederationTokenStack {stack} />
+					</div>
+				{/each}
+				<div class="click-trap" onClick={() => minimapClicked(ActiveView.ScoringBoard)} />
 			</div>
 		</div>
+		<div class="minimap turn-order">
+			<TurnOrderMinimap {game} direction="vertical" />
+		</div>
 	{/if}
-	<Map {map} {width} {height} />
+	<div class="wh-full overflow-auto">
+		<Map {map} {height} />
+	</div>
 </div>
 
 <style lang="scss">
