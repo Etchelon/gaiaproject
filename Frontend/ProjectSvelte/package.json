@@ -15,7 +15,7 @@
 		"ios:copy": "cap copy ios",
 		"ios:dev": "ionic cap run ios --livereload --external --port=3000 --ssl",
 		"ios:open": "cap open ios",
-		"ios:run": "cap run ios --target=E179F2EF-3DD9-484B-860E-CC818B064CD4",
+		"ios:run": "cap run ios",
 		"ios:sync": "cap sync ios",
 		"ionic:serve": "vite"
 	},
