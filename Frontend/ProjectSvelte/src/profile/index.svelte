@@ -33,8 +33,8 @@
 		await http.put(`api/Users/UpdateProfile/${user.id}`, user, { readAsString: true });
 		auth.updateUser(user);
 		const toast = await toastController.create({
-			message: "Error trying to search for users. Try again later",
-			color: "danger",
+			message: "Profile updated!",
+			color: "success",
 			duration: 3000,
 			position: "bottom",
 		});
@@ -44,23 +44,30 @@
 
 <Page title="Profile">
 	<div class="p-1 md:p-3">
-		<div class="grid grid-cols-2 gap-2 md:gap-4">
-			<div class="col-span-2 md:col-span-1">
-				<div class="flex flex-col items-center">
-					<ion-avatar class="user-img">
-						<img class="user-img" src={user.avatar ?? "/assets/person.png"} alt="" />
-					</ion-avatar>
+		<div class="lg:container lg:mx-auto">
+			<div class="flex flex-col items-center">
+				<ion-avatar class="user-img mb-2 md:mb-4">
+					<img class="user-img" src={user.avatar ?? "/assets/person.png"} alt="" />
+				</ion-avatar>
+				<ion-list class="self-stretch" lines="full">
 					<ion-item>
-						<ion-label class="gaia-font">Choose and avatar</ion-label>
+						<ion-label class="gaia-font" position="stacked">Choose an avatar</ion-label>
 						<ion-input type="text" value={user.avatar} on:ionChange={dispatch("avatar")} />
 					</ion-item>
 					<ion-item>
-						<ion-label class="gaia-font">Choose your username</ion-label>
-						<ion-input type="text" value={user.avatar} on:ionChange={dispatch("username")} />
+						<ion-label class="gaia-font" position="stacked">Choose your username</ion-label>
+						<ion-input type="text" value={user.username} on:ionChange={dispatch("username")} />
 					</ion-item>
-				</div>
+					<ion-item>
+						<ion-label class="gaia-font" position="stacked">Your first name</ion-label>
+						<ion-input type="text" value={user.firstName} on:ionChange={dispatch("firstName")} />
+					</ion-item>
+					<ion-item>
+						<ion-label class="gaia-font" position="stacked">Your last name</ion-label>
+						<ion-input type="text" value={user.lastName} on:ionChange={dispatch("lastName")} />
+					</ion-item>
+				</ion-list>
 			</div>
-			<div class="col-span-2 md:col-span-1" />
 		</div>
 	</div>
 	<ion-footer slot="footer">

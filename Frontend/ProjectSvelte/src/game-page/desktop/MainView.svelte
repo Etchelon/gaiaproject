@@ -74,7 +74,7 @@
 			<TurnOrderMinimap {game} direction="vertical" />
 		</div>
 	{/if}
-	<div class="wh-full overflow-auto">
+	<div class="flex justify-center wh-full overflow-auto">
 		<Map {map} {height} />
 	</div>
 </div>

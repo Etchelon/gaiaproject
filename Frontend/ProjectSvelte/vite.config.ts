@@ -16,7 +16,7 @@ export default defineConfig({
 	server: {
 		https: true,
 		host: "0.0.0.0",
-		open: true,
+		open: false,
 		port: 3000,
 	},
 	plugins: [

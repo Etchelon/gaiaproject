@@ -23,6 +23,7 @@ export interface IAuthService {
 	login(options?: RedirectLoginOptions): Promise<void>;
 	logout(options: LogoutOptions): Promise<void>;
 	getAccessToken(options: GetTokenSilentlyOptions): Promise<string>;
+	updateUser(user: UserInfoDto): void;
 }
 
 export abstract class AuthServiceBase implements IAuthService {
@@ -45,6 +46,11 @@ export abstract class AuthServiceBase implements IAuthService {
 	constructor(protected readonly http: HttpClient, protected readonly hub: HubClient) {}
 
 	getAccessToken = async (options: GetTokenSilentlyOptions) => await this._auth0Client.getTokenSilently(options);
+
+	updateUser(user: UserInfoDto): void {
+		this.saveUserToStorage(user);
+		this.user.set(user);
+	}
 
 	abstract initializeAuth0(): void;
 	abstract login(options?: RedirectLoginOptions): Promise<void>;

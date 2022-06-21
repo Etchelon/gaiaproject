@@ -3,11 +3,8 @@
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
-		"rbuild": "rollup -c",
-		"rdev": "rollup -c -w",
 		"dev": "vite",
 		"build": "tsc --noEmit && vite build",
-		"start": "sirv public --no-clear",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"android": "pnpm build && pnpm cap run android",
 		"android:copy": "cap copy android",
