@@ -3,6 +3,12 @@
 	import type { HttpClient } from "$utils/http-client";
 	import { orderBy } from "lodash";
 
+	const listTitles = new Map<GameKind, string>([
+		["active", "Active games"],
+		["waiting", "Waiting for you"],
+		["finished", "Finished games"],
+	]);
+
 	const fetchGames = async (http: HttpClient, kind: GameKind) => {
 		const games = await http.get<GameInfoDto[]>(`api/GaiaProject/GetUserGames?kind=${kind}`);
 		return orderBy(games, [g => g.created], ["desc"]);
@@ -20,16 +26,17 @@
 	const { http } = getAppContext();
 
 	let games$: Promise<GameInfoDto[]> = Promise.resolve([]);
-
 	$: {
 		games$ = fetchGames(http, kind);
 	}
+	$: listTitle = listTitles.get(kind) ?? "";
 </script>
 
 {#await games$}
 	<LoadingSpinner />
 {:then games}
 	<ion-list>
+		<ion-list-header class="gaia-font">{listTitle}</ion-list-header>
 		{#each games as game (game.id)}
 			<GameListItem {game} />
 		{:else}

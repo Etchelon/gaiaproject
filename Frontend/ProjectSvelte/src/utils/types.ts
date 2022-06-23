@@ -1,4 +1,4 @@
-export type GameKind = "active" | "finished";
+export type GameKind = "active" | "waiting" | "finished";
 
 export type LoadingStatus = "idle" | "loading" | "success" | "failure";
 
