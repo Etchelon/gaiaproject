@@ -26,7 +26,7 @@ namespace GaiaProject.Endpoint.Mapping.Resolvers
 		private readonly List<PowerActionType> PowerActionsForColonization = new List<PowerActionType> { PowerActionType.Gain1TerraformingStep, PowerActionType.Gain2TerraformingSteps };
 
 		// Id of the player that we're mapping the ViewModel for
-		public ActivePlayerInfoViewModel Resolve(GaiaProjectGame game, string requestPlayerId)
+		public ActivePlayerInfoViewModel Resolve(GaiaProjectGame game, string? requestPlayerId)
 		{
 			if (game.Ended.HasValue)
 			{

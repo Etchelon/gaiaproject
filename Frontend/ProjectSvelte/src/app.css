@@ -1,0 +1,67 @@
+@import "./tailwind.css";
+
+@import "@ionic/core/css/core";
+@import "./ionic-variables.css";
+
+/* Fonts */
+@font-face {
+	font-family: nulshock-bold;
+	src: url("/assets/nulshock-bold.ttf");
+}
+
+/* CSS vars */
+html {
+	--selectable-color: dodgerblue;
+	--selected-color: red;
+	--qic-color: #049E3F;
+}
+
+/* Slim scrollbar */
+::-webkit-scrollbar {
+	width: 0.25em;
+	height: 0.25em;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #708090;
+	border-radius: 15px;
+}
+
+::-webkit-scrollbar-track {
+	background: #b8c0c8;
+}
+
+/* Custom classes */
+.ellipsify {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.gaia-font {
+	font-family: nulshock-bold !important;
+}
+
+.interactive-element {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	border: 2px solid transparent;
+	border-radius: 5px;
+	z-index: 10;
+	pointer-events: none;
+	background-color: transparent;
+}
+
+.interactive-element.clickable {
+	border-color: var(--selectable-color);
+	cursor: pointer;
+	pointer-events: all;
+}
+
+.interactive-element.selected {
+	border-color: var(--selected-color);
+	pointer-events: none;
+}

@@ -97,7 +97,7 @@ namespace GaiaProject.Endpoint
 			}
 			app.UseCors(config =>
 			{
-				config.WithOrigins("http://localhost:3000", "http://192.168.1.*:3000", "https://localhost:3000", "https://192.168.1.*:3000", "capacitor://localhost");
+				config.WithOrigins("https://localhost:3000", "https://192.168.1.*:3000", "capacitor://localhost", "http://localhost");
 				config.AllowAnyHeader();
 				config.AllowAnyMethod();
 				config.AllowCredentials();

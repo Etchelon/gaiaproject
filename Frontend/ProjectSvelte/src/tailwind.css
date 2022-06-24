@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+	.wh-full {
+		@apply w-full h-full;
+	}
+}
