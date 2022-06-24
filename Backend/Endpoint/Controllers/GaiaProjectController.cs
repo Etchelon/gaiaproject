@@ -21,9 +21,9 @@ namespace GaiaProject.Endpoint.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<GameInfoViewModel[]>> Games(string userId, string kind)
+		public async Task<ActionResult<GameInfoViewModel[]>> UserGames(string userId, string kind)
 		{
-			userId ??= User.Id;
+			userId ??= UserId!;
 			bool onlyWaitingForAction = kind == "waiting";
 			bool finished = kind == "finished";
 			var games = finished
@@ -39,8 +39,8 @@ namespace GaiaProject.Endpoint.Controllers
 			return Ok(games);
 		}
 
-		[HttpGet("{id}")]
-		public async Task<ActionResult<GameStateViewModel>> GetGame(string id)
+		[HttpGet("{id}"), AllowAnonymous]
+		public async Task<ActionResult<GameStateViewModel>> Game(string id)
 		{
 			var game = await _workerService.GetGame(id, UserId);
 			return Ok(game);
