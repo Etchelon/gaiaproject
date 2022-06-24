@@ -16,4 +16,4 @@
 		<ion-label class="gaia-font">Login to play!</ion-label>
 	</ion-button>
 </div>
-<AllGamesList kind="finished" />
+<AllGamesList kind="active" />

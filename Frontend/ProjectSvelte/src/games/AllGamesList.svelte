@@ -7,36 +7,37 @@
 		["finished", "Finished games"],
 	]);
 
-	const fetchAllGames = async (http: HttpClient, kind: GameKind, skip: number, take: number) =>
-		await http.get<Page<GameInfoDto>>(`api/GaiaProject/AllGames?kind=${kind}&skip=${skip}&take=${take}`);
+	const fetchAllGames = async (http: HttpClient, kind: GameKind, page: number, pageSize: number) =>
+		await http.get<Page<GameInfoDto>>(`api/GaiaProject/AllGames?kind=${kind}&page=${page}&pageSize=${pageSize}`);
 </script>
 
 <script lang="ts">
 	import LoadingSpinner from "$components/LoadingSpinner.svelte";
 	import type { GameInfoDto, Page } from "$dto/interfaces";
+	import type { InfiniteScrollCustomEvent } from "@ionic/core";
+	import { onMount } from "svelte";
 	import { getAppContext } from "../app/App.context";
 	import GameListItem from "./GameListItem.svelte";
-	import { onMount } from "svelte";
-	import { writable } from "svelte/store";
 
 	export let kind: GameKind;
 
 	const { http } = getAppContext();
 
-	let skip = 0;
-	let take = 5;
+	let page = 0;
+	let pageSize = 5;
 	let hasMore = true;
 	let isLoading = false;
-	const games = writable<GameInfoDto[]>([]);
+	let games: GameInfoDto[] = [];
 	$: listTitle = listTitles.get(kind) ?? "";
 
-	const loadData = async () => {
-		isLoading = skip === 0;
+	const loadData = async (evt?: InfiniteScrollCustomEvent) => {
+		isLoading = page === 0;
 		try {
-			var { items, hasMore: hm } = await fetchAllGames(http, kind, skip++, take);
+			var { items, hasMore: hm } = await fetchAllGames(http, kind, page++, pageSize);
 			hasMore = hm;
-			games.update(current => [...current, ...items]);
+			games = [...games, ...items];
 		} finally {
+			evt?.target.complete();
 			isLoading = false;
 		}
 	};
@@ -52,7 +53,7 @@
 
 <ion-list>
 	<ion-list-header class="gaia-font">{listTitle}</ion-list-header>
-	{#each $games as game (game.id)}
+	{#each games as game (game.id)}
 		<GameListItem {game} />
 	{:else}
 		<ion-item>
@@ -60,6 +61,6 @@
 		</ion-item>
 	{/each}
 </ion-list>
-<ion-infinite-scroll disabled={!hasMore} on:ionInfinite={loadData}>
+<ion-infinite-scroll class="mt-3" disabled={!hasMore} on:ionInfinite={loadData}>
 	<ion-infinite-scroll-content loading-spinner="crescent" loading-text="Loading more games..." />
 </ion-infinite-scroll>
