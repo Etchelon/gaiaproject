@@ -11,6 +11,7 @@
 	import { Capacitor, PluginListenerHandle } from "@capacitor/core";
 	import { chain, isNil, noop, size } from "lodash";
 	import { onDestroy, onMount } from "svelte";
+	import { get } from "svelte/store";
 	import { getAppContext } from "../app/App.context";
 	import DesktopView from "./desktop/DesktopView.svelte";
 	import AuctionDialog from "./dialogs/auction/AuctionDialog.svelte";
@@ -24,7 +25,7 @@
 	import type { ActionWorkflow } from "./workflows/action-workflow.base";
 	import { fromAction, fromDecision } from "./workflows/utils";
 
-	const { platform } = getAppContext();
+	const { platform, auth } = getAppContext();
 	const { store, signalR, activeWorkflow, startWorkflow } = getGamePageContext();
 	const { activeView, currentPlayer, game, isSpectator, players } = store;
 	let appStateChangeListener: PluginListenerHandle;
@@ -36,6 +37,10 @@
 
 	onMount(async () => {
 		checkIsMobile();
+		if (!get(auth.isAuthenticated)) {
+			return;
+		}
+
 		await signalR.connectToHub();
 		appStateChangeListener = await App.addListener("appStateChange", async ({ isActive }) => {
 			if (isActive) {

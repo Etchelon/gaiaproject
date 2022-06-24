@@ -144,7 +144,12 @@ const StatusBar = ({ game, playerId, isSpectator, isMobile }: StatusBarProps) =>
 					)}
 					{showActionSelector && (
 						<div className={classes.actionSelector}>
-							<Button className={classes.command} onClick={evt => setMenuAnchor(evt.currentTarget)} variant="contained" color="primary">
+							<Button
+								className={classes.command}
+								onClick={evt => setMenuAnchor(evt.currentTarget)}
+								variant="contained"
+								color="primary"
+							>
 								<span className="gaia-font">Actions</span>
 							</Button>
 							<Menu

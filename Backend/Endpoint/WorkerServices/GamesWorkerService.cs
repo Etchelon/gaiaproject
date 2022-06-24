@@ -238,14 +238,11 @@ namespace GaiaProject.Endpoint.WorkerServices
 			{
 				opt.Items["Game"] = game;
 			});
-			if (userId != null)
-			{
-				gameState.ActivePlayer = MapActivePlayer(game, userId);
-			}
+			gameState.ActivePlayer = MapActivePlayer(game, userId);
 			return gameState;
 		}
 
-		private ActivePlayerInfoViewModel MapActivePlayer(GaiaProjectGame game, string requestPlayerId)
+		private ActivePlayerInfoViewModel MapActivePlayer(GaiaProjectGame game, string? requestPlayerId)
 		{
 			var activePlayerVm = new ActivePlayerResolver().Resolve(game, requestPlayerId);
 			return activePlayerVm;

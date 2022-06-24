@@ -43,7 +43,7 @@
 	};
 
 	$: useVerticalLayout = isMobile && $availableCommands.length > 1;
-	$: isActivePlayer = $game?.activePlayer?.id === $currentPlayer?.id;
+	$: isActivePlayer = $currentPlayer && $game?.activePlayer?.id === $currentPlayer?.id;
 	$: showActionSelector = isActivePlayer && !$activeWorkflow;
 	$: statusBarMessage = $isExecutingAction ? "Executing..." : $statusMessage;
 	$: isIdle = !$isExecutingAction;

@@ -139,7 +139,7 @@ export class GamePageStore implements IGamePageStore {
 	//#region Api calls
 
 	loadGame = async (id: string) => {
-		const gameState = await this.http.get<GameStateDto>(`api/GaiaProject/GetGame/${id}`);
+		const gameState = await this.http.get<GameStateDto>(`api/GaiaProject/Game/${id}`);
 		if (isNil(gameState)) {
 			throw new Error("Not found!!");
 		}
