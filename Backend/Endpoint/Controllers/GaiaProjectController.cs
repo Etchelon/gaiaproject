@@ -33,9 +33,9 @@ namespace GaiaProject.Endpoint.Controllers
 		}
 
 		[HttpGet, AllowAnonymous]
-		public async Task<ActionResult<Page<GameInfoViewModel>>> AllGames(string kind, int skip = 0, int take = 10)
+		public async Task<ActionResult<Page<GameInfoViewModel>>> AllGames(string kind, int page = 0, int pageSize = 10)
 		{
-			var games = await _workerService.GetAllGames(kind, skip, take);
+			var games = await _workerService.GetAllGames(kind, page, pageSize);
 			return Ok(games);
 		}
 
