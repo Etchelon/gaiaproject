@@ -50,6 +50,15 @@ namespace GaiaProject.Engine.Logic
 			return games.Where(g => g.Ended.HasValue).ToArray();
 		}
 
+		public async Task<(GaiaProjectGame[] games, bool hasMore)> GetAllGames(bool active, int skip, int take)
+		{
+			var games = await _gameDataProvider.GetAllGames(active, skip, take);
+			var totalCount = await _gameDataProvider.CountAllGames(active);
+			var nFetched = skip * take + games.Length;
+			var hasMore = nFetched < totalCount;
+			return (games, hasMore);
+		}
+
 		public async Task<GaiaProjectGame> GetGame(string id)
 		{
 			var game = await _gameDataProvider.GetGame(id);
