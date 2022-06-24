@@ -9,7 +9,7 @@ namespace GaiaProject.Engine.DataAccess.Abstractions
 		Task<GaiaProjectGame> GetGame(string id);
 		Task<InitialGaiaProjectGameState> GetInitialGameState(string gameId);
 		Task<GaiaProjectGame[]> GetUserGames(string userId, bool onlyActive = true);
-		Task<GaiaProjectGame[]> GetAllGames(bool active, int skip, int take);
+		Task<GaiaProjectGame[]> GetAllGames(bool active, int page, int pageSize);
 		Task<long> CountAllGames(bool active);
 		Task<string> CreateGame(GaiaProjectGame game);
 		Task SaveGame(GaiaProjectGame game);

@@ -75,9 +75,9 @@ namespace GaiaProject.Engine.DataAccess
 			return this._mongoGameProvider.GetUserGames(userId, onlyActive);
 		}
 
-		public async Task<GaiaProjectGame[]> GetAllGames(bool active, int skip, int take)
+		public async Task<GaiaProjectGame[]> GetAllGames(bool active, int page, int pageSize)
 		{
-			return await this._mongoGameProvider.GetAllGames(active, skip, take);
+			return await this._mongoGameProvider.GetAllGames(active, page, pageSize);
 		}
 
 		public async Task<long> CountAllGames(bool active)

@@ -60,9 +60,9 @@ namespace GaiaProject.Endpoint.WorkerServices
 			return games.Select(game => _mapper.Map<GameInfoViewModel>(game, opt => opt.Items["Game"] = game)).ToArray();
 		}
 
-		internal async Task<Page<GameInfoViewModel>> GetAllGames(string kind, int skip, int take)
+		internal async Task<Page<GameInfoViewModel>> GetAllGames(string kind, int page, int pageSize)
 		{
-			var (games, hasMore) = await _gameManager.GetAllGames(kind == "active", skip, take);
+			var (games, hasMore) = await _gameManager.GetAllGames(kind == "active", page, pageSize);
 			var gameDtos = games.Select(game => _mapper.Map<GameInfoViewModel>(game, opt => opt.Items["Game"] = game)).ToArray();
 			return new Page<GameInfoViewModel>
 			{
@@ -71,7 +71,7 @@ namespace GaiaProject.Endpoint.WorkerServices
 			};
 		}
 
-		internal async Task<GameStateViewModel> GetGame(string id, string userId)
+		internal async Task<GameStateViewModel> GetGame(string id, string? userId)
 		{
 			var game = await _gameManager.GetGame(id);
 			return MapGameState(game, userId);
@@ -223,6 +223,7 @@ namespace GaiaProject.Endpoint.WorkerServices
 				NotificationReason.YourTurn => $"It's your turn to move in game {gameVm.Name}",
 				NotificationReason.GameEnded => $"Game {gameVm.Name} has ended",
 				NotificationReason.GameDeleted => $"Game {gameVm.Name} has been deleted",
+				_ => $"Notification Reason ${reason} not handled"
 			};
 			if (reason == NotificationReason.GameDeleted)
 			{
@@ -232,7 +233,7 @@ namespace GaiaProject.Endpoint.WorkerServices
 			await _userManager.NotifyUserForGame(userId, gameVm.Id, notificationMessage);
 		}
 
-		private GameStateViewModel MapGameState(GaiaProjectGame game, string userId = null)
+		private GameStateViewModel MapGameState(GaiaProjectGame game, string? userId = null)
 		{
 			var gameState = _mapper.Map<GameStateViewModel>(game, opt =>
 			{
