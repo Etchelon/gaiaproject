@@ -15,7 +15,7 @@ const getRoutes = auth => ({
 	}),
 	"/game/:id": wrap({
 		asyncComponent: () => import("../game-page/index.svelte"),
-		conditions: [authenticationGuard(auth)],
+		// conditions: [authenticationGuard(auth)],
 	}),
 	"/profile": ProfilePage,
 	"/unauthorized": UnauthorizedPage,

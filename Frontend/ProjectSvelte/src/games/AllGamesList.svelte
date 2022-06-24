@@ -27,6 +27,7 @@
 	let pageSize = 5;
 	let hasMore = true;
 	let isLoading = false;
+	let hasLoaded = false;
 	let games: GameInfoDto[] = [];
 	$: listTitle = listTitles.get(kind) ?? "";
 
@@ -39,6 +40,7 @@
 		} finally {
 			evt?.target.complete();
 			isLoading = false;
+			hasLoaded = true;
 		}
 	};
 
@@ -56,9 +58,11 @@
 	{#each games as game (game.id)}
 		<GameListItem {game} />
 	{:else}
-		<ion-item>
-			<ion-label class="gaia-font">Nothing here!</ion-label>
-		</ion-item>
+		{#if hasLoaded}
+			<ion-item>
+				<ion-label class="gaia-font">Nothing here!</ion-label>
+			</ion-item>
+		{/if}
 	{/each}
 </ion-list>
 <ion-infinite-scroll class="mt-3" disabled={!hasMore} on:ionInfinite={loadData}>

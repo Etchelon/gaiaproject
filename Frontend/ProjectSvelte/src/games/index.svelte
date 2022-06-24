@@ -2,8 +2,8 @@
 	import type { GameKind } from "$utils/types";
 
 	const gameKindLabels = new Map<GameKind, string>([
-		["active", "Active Games"],
-		["finished", "Finished Games"],
+		["active", "Active"],
+		["finished", "Finished"],
 	]);
 </script>
 
