@@ -60,6 +60,17 @@ namespace GaiaProject.Endpoint.WorkerServices
 			return games.Select(game => _mapper.Map<GameInfoViewModel>(game, opt => opt.Items["Game"] = game)).ToArray();
 		}
 
+		internal async Task<Page<GameInfoViewModel>> GetAllGames(string kind, int skip, int take)
+		{
+			var (games, hasMore) = await _gameManager.GetAllGames(kind == "active", skip, take);
+			var gameDtos = games.Select(game => _mapper.Map<GameInfoViewModel>(game, opt => opt.Items["Game"] = game)).ToArray();
+			return new Page<GameInfoViewModel>
+			{
+				Items = gameDtos,
+				HasMore = hasMore
+			};
+		}
+
 		internal async Task<GameStateViewModel> GetGame(string id, string userId)
 		{
 			var game = await _gameManager.GetGame(id);

@@ -56,6 +56,25 @@ namespace GaiaProject.Engine.DataAccess
 			return games.ToArray();
 		}
 
+		public async Task<GaiaProjectGame[]> GetAllGames(bool active, int skip, int take)
+		{
+			var filter = active
+				? Builders<GaiaProjectGame>.Filter.Eq(g => g.Ended, null)
+				: Builders<GaiaProjectGame>.Filter.Ne(g => g.Ended, null);
+			var sorter = Builders<GaiaProjectGame>.Sort.Descending(o => o.Created);
+			var games = await _repository.GetPaginatedAsync(filter, sorter, skip, take);
+			return games.ToArray();
+		}
+
+		public async Task<long> CountAllGames(bool active)
+        {
+			var filter = active
+				? Builders<GaiaProjectGame>.Filter.Eq(g => g.Ended, null)
+				: Builders<GaiaProjectGame>.Filter.Ne(g => g.Ended, null);
+			var count = await _repository.CountAsync(filter);
+			return count;
+		}
+
 		public async Task SaveGame(GaiaProjectGame game)
 		{
 			var isOver = game.Ended.HasValue;

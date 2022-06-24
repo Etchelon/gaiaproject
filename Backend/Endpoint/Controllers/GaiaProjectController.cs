@@ -2,6 +2,7 @@
 using GaiaProject.Endpoint.WorkerServices;
 using GaiaProject.Engine.Commands;
 using GaiaProject.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -20,7 +21,7 @@ namespace GaiaProject.Endpoint.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<GameInfoViewModel[]>> GetUserGames(string userId, string kind)
+		public async Task<ActionResult<GameInfoViewModel[]>> Games(string userId, string kind)
 		{
 			userId ??= User.Id;
 			bool onlyWaitingForAction = kind == "waiting";
@@ -28,6 +29,13 @@ namespace GaiaProject.Endpoint.Controllers
 			var games = finished
 				? await _workerService.GetUserFinishedGames(userId)
 				: await _workerService.GetUserGames(userId, onlyWaitingForAction);
+			return Ok(games);
+		}
+
+		[HttpGet, AllowAnonymous]
+		public async Task<ActionResult<Page<GameInfoViewModel>>> AllGames(string kind, int skip = 0, int take = 10)
+		{
+			var games = await _workerService.GetAllGames(kind, skip, take);
 			return Ok(games);
 		}
 
