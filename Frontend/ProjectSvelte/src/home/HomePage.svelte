@@ -8,7 +8,7 @@
 	const { isAuthenticated } = auth;
 </script>
 
-<Page title="Gaia Project">
+<Page title="Star Gate">
 	{#if $isAuthenticated}
 		<AuthenticatedUserHome />
 	{:else}

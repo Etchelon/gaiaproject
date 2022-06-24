@@ -28,6 +28,8 @@ import { IonFooter } from "@ionic/core/components/ion-footer";
 import { IonGrid } from "@ionic/core/components/ion-grid";
 import { IonHeader } from "@ionic/core/components/ion-header";
 import { IonImg } from "@ionic/core/components/ion-img";
+import { IonInfiniteScroll } from "@ionic/core/components/ion-infinite-scroll";
+import { IonInfiniteScrollContent } from "@ionic/core/components/ion-infinite-scroll-content";
 import { IonInput } from "@ionic/core/components/ion-input";
 import { IonItem } from "@ionic/core/components/ion-item";
 import { IonItemDivider } from "@ionic/core/components/ion-item-divider";
@@ -122,6 +124,8 @@ export const setupIonic = async () => {
 	tryDefine("ion-item-options", IonItemOptions);
 	tryDefine("ion-item-sliding", IonItemSliding);
 	tryDefine("ion-item", IonItem);
+	tryDefine("ion-infinite-scroll", IonInfiniteScroll);
+	tryDefine("ion-infinite-scroll-content", IonInfiniteScrollContent);
 	tryDefine("ion-label", IonLabel);
 	tryDefine("ion-list-header", IonListHeader);
 	tryDefine("ion-list", IonList);

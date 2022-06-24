@@ -56,6 +56,11 @@ export interface GameInfoDto extends GameBaseDto {
 	players: PlayerInfoDto[];
 }
 
+export interface Page<T> {
+	items: T[];
+	hasMore: boolean;
+}
+
 export interface InteractionStateDto {
 	availableRaces?: Race[];
 	clickableHexes?: ColonizableHexDto[];

@@ -47,7 +47,7 @@
 		<div class="lg:container lg:mx-auto">
 			<div class="flex flex-col items-center">
 				<ion-avatar class="user-img mb-2 md:mb-4">
-					<img class="user-img" src={user.avatar ?? "/assets/person.png"} alt="" />
+					<ion-img class="user-img" src={user.avatar ?? "/assets/person.png"} alt="" />
 				</ion-avatar>
 				<ion-list class="self-stretch" lines="full">
 					<ion-item>

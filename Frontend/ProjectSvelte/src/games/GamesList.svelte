@@ -10,7 +10,7 @@
 	]);
 
 	const fetchGames = async (http: HttpClient, kind: GameKind) => {
-		const games = await http.get<GameInfoDto[]>(`api/GaiaProject/GetUserGames?kind=${kind}`);
+		const games = await http.get<GameInfoDto[]>(`api/GaiaProject/Games?kind=${kind}`);
 		return orderBy(games, [g => g.created], ["desc"]);
 	};
 </script>
