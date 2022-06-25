@@ -3,10 +3,10 @@
 	import { checkmarkDoneOutline, informationCircleOutline } from "ionicons/icons";
 
 	export let notification: GameNotificationDto;
-	export let onRead: (id: string) => void;
+	export let onRead: () => void;
 </script>
 
-<ion-item on:click={() => onRead(notification.id)}>
+<ion-item on:click={onRead}>
 	<ion-icon slot="start" icon={informationCircleOutline} />
 	<ion-label class="ion-text-wrap gaia-font">
 		<small>{notification.text}</small>

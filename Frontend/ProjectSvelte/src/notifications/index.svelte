@@ -39,11 +39,11 @@
 			hasLoadedNotifications = true;
 		}
 	};
-	const setNotificationRead = async (id: string) => {
-		await http.put(`api/Users/SetNotificationRead/${id}`);
+	const setNotificationRead = (notification: NotificationDto) => {
 		unreadNotificationsCount = Math.max(unreadNotificationsCount - 1, 0);
-		const notification = notifications.find(n => n.id === id)!;
 		notification.isRead = true;
+		notifications = [...notifications];
+		http.put(`api/Users/SetNotificationRead/${notification.id}`);
 	};
 
 	let appStateChangeListener: PluginListenerHandle;
@@ -104,7 +104,7 @@
 >
 	<ion-list>
 		{#each notifications as notification (notification.id)}
-			<Notification {notification} onRead={setNotificationRead} />
+			<Notification {notification} onRead={() => setNotificationRead(notification)} />
 		{:else}
 			{#if hasLoadedNotifications}
 				<ion-item>

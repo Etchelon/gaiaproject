@@ -12,7 +12,7 @@
 
 <script lang="ts">
 	export let notification: NotificationDto;
-	export let onRead: (id: string) => void;
+	export let onRead: () => void;
 
 	$: component = componentMap.get(notification.type) ?? GenericNotification;
 </script>
