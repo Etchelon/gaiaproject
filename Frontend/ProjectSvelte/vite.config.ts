@@ -7,7 +7,6 @@ type ViteMode = "development" | "production";
 
 export default ({ mode }: { mode: ViteMode }) => {
 	const production = mode === "production";
-
 	return defineConfig({
 		resolve: {
 			alias: {
