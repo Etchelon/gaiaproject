@@ -5,6 +5,7 @@ import { IonActionSheet } from "@ionic/core/components/ion-action-sheet";
 import { IonAlert } from "@ionic/core/components/ion-alert";
 import { IonApp } from "@ionic/core/components/ion-app";
 import { IonAvatar } from "@ionic/core/components/ion-avatar";
+import { IonBackdrop } from "@ionic/core/components/ion-backdrop";
 import { IonBackButton } from "@ionic/core/components/ion-back-button";
 import { IonBadge } from "@ionic/core/components/ion-badge";
 import { IonBreadcrumb } from "@ionic/core/components/ion-breadcrumb";
@@ -94,6 +95,7 @@ export const setupIonic = async () => {
 	tryDefine("ion-app", IonApp);
 	tryDefine("ion-avatar", IonAvatar);
 	tryDefine("ion-back-button", IonBackButton);
+	tryDefine("ion-backdrop", IonBackdrop);
 	tryDefine("ion-badge", IonBadge);
 	tryDefine("ion-breadcrumb", IonBreadcrumb);
 	tryDefine("ion-breadcrumbs", IonBreadcrumbs);
