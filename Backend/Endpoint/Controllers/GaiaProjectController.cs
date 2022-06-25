@@ -21,7 +21,7 @@ namespace GaiaProject.Endpoint.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<GameInfoViewModel[]>> UserGames(string userId, string kind)
+		public async Task<ActionResult<GameInfoViewModel[]>> UserGames(string kind, string? userId = null)
 		{
 			userId ??= UserId!;
 			bool onlyWaitingForAction = kind == "waiting";
