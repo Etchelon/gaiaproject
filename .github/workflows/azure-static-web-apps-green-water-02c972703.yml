@@ -26,7 +26,7 @@ jobs:
               - 'Frontend/ProjectSvelte/**'
 
       - name: Synthesize env.js file
-        if: ${{ steps.filter.outputs.frontend == 'true' }}
+        if: ${{ steps.filter.outputs.frontend == 'certainly_false' }}
         run: |
           echo $PROD_ENV >> Frontend/ProjectSvelte/.env.production
         shell: bash
