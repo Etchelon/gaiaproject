@@ -16,7 +16,7 @@ const getRoutes = auth => ({
 		asyncComponent: () => import("../game-page/index.svelte"),
 	}),
 	"/profile": wrap({
-		asyncComponent: () => import("../Profile/index.svelte"),
+		asyncComponent: () => import("../profile/index.svelte"),
 		conditions: [authenticationGuard(auth)],
 	}),
 	"/unauthorized": UnauthorizedPage,
