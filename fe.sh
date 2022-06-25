@@ -1,1 +1,0 @@
-cd ./Frontend/StarGate/ && npm start

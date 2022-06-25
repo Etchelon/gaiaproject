@@ -2,7 +2,6 @@ import { wrap } from "svelte-spa-router/wrap";
 import { get } from "svelte/store";
 import HomePage from "../home/HomePage.svelte";
 import NotFoundPage from "../not-found/NotFoundPage.svelte";
-import ProfilePage from "../Profile/index.svelte";
 import UnauthorizedPage from "../unauthorized/UnauthorizedPage.svelte";
 
 const authenticationGuard = auth => () => get(auth.isAuthenticated);
@@ -15,9 +14,11 @@ const getRoutes = auth => ({
 	}),
 	"/game/:id": wrap({
 		asyncComponent: () => import("../game-page/index.svelte"),
-		// conditions: [authenticationGuard(auth)],
 	}),
-	"/profile": ProfilePage,
+	"/profile": wrap({
+		asyncComponent: () => import("../Profile/index.svelte"),
+		conditions: [authenticationGuard(auth)],
+	}),
 	"/unauthorized": UnauthorizedPage,
 	"*": NotFoundPage,
 });

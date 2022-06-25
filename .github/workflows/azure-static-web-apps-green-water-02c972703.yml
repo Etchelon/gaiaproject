@@ -8,6 +8,7 @@ on:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build_and_deploy_job:
@@ -16,10 +17,25 @@ jobs:
     name: Build and Deploy Job
     steps:
       - uses: actions/checkout@v2
+
+      - uses: dorny/paths-filter@v2
+        id: filter
         with:
-          submodules: true
+          filters: |
+            frontend:
+              - 'Frontend/ProjectSvelte/**'
+
+      - name: Synthesize env.js file
+        if: ${{ steps.filter.outputs.frontend == 'true' }}
+        run: |
+          echo $PROD_ENV >> Frontend/ProjectSvelte/.env.production
+        shell: bash
+        env:
+          PROD_ENV: ${{ secrets.PROD_ENV }}
+
       - name: Build And Deploy
         id: builddeploy
+        if: ${{ steps.filter.outputs.frontend == 'true' }}
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GREEN_WATER_02C972703 }}
