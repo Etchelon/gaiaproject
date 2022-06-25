@@ -16,19 +16,30 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'Backend/**'
+
       - name: Set up .NET Core
+        if: ${{ steps.filter.outputs.backend == 'true' }}
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
           include-prerelease: true
 
       - name: Build with dotnet
+        if: ${{ steps.filter.outputs.backend == 'true' }}
         run: dotnet build ./Backend/Endpoint/ --configuration Release
 
       - name: dotnet publish
+        if: ${{ steps.filter.outputs.backend == 'true' }}
         run: dotnet publish ./Backend/Endpoint/ -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
+        if: ${{ steps.filter.outputs.backend == 'true' }}
         uses: actions/upload-artifact@v2
         with:
           name: .net-app

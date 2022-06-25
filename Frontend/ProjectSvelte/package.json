@@ -60,5 +60,8 @@
 		"typescript": "^4.0.0",
 		"vite": "^2.9.0"
 	},
-	"type": "module"
+	"type": "module",
+	"engines": {
+		"node": "^16.15.0"
+	}
 }
