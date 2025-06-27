@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<LangVersion>10</LangVersion>
+		<TargetFramework>net9.0</TargetFramework>
+		<LangVersion>13</LangVersion>
 		<RootNamespace>GaiaProject.ViewModels</RootNamespace>
 		<AssemblyName>GaiaProject.ViewModels</AssemblyName>
 	</PropertyGroup>
