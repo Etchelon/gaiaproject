@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using GaiaProject.Common.Database;
@@ -44,7 +45,7 @@ namespace GaiaProject.Endpoint
 			_services = services;
 
 			services.AddMemoryCache();
-			ConfigureDatabase(services);
+			ConfigureMongoDatabase(services);
 			ConfigureAuthentication(services);
 
 			services.AddSingleton<IClaimsTransformation, ApplicationUserFactory>();
@@ -112,7 +113,7 @@ namespace GaiaProject.Endpoint
 			});
 		}
 
-		private void ConfigureDatabase(IServiceCollection services)
+		private void ConfigureMongoDatabase(IServiceCollection services)
 		{
 			var connectionString = Configuration["AppSettings:MongoDbConnectionString"];
 			var url = MongoUrl.Create(connectionString);
@@ -127,7 +128,22 @@ namespace GaiaProject.Endpoint
 			services.AddSingleton(repo);
 		}
 
-		private void ConfigureAuthentication(IServiceCollection services)
+        private void ConfigureSupabase(IServiceCollection services)
+        {
+            var url = Environment.GetEnvironmentVariable("SUPABASE_URL") ?? throw new ArgumentNullException("SUPABASE_URL is required");
+            var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
+
+            var options = new Supabase.SupabaseOptions
+            {
+                AutoConnectRealtime = true
+            };
+
+            var supabase = new Supabase.Client(url, key, options);
+            supabase.InitializeAsync();
+            services.AddSingleton(supabase);
+        }
+
+        private void ConfigureAuthentication(IServiceCollection services)
 		{
 			string domain = $"https://{Configuration["Auth0:Domain"]}";
 
