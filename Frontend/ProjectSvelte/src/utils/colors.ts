@@ -9,7 +9,7 @@ function hexToRgb(color: string): string {
 	let colors = color.match(re);
 
 	if (colors && colors[0].length === 1) {
-		colors = colors.map(n => n + n);
+		colors = colors.map(n => n + n) as RegExpMatchArray;
 	}
 
 	return colors

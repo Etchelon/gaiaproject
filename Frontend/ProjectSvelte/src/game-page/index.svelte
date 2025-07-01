@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LoadingSpinner from "$components/LoadingSpinner.svelte";
-	import Page from "$components/Page.svelte";
+    import Page from "$components/Page.svelte";
 	import { isNil } from "lodash";
 	import type { Subscription } from "rxjs";
 	import { onMount } from "svelte";

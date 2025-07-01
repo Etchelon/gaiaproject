@@ -26,17 +26,6 @@ namespace MongoDbGenericRepository
 
 		static MongoDbContext()
 		{
-			// Avoid legacy UUID representation: use Binary 0x04 subtype.
-			MongoDefaults.GuidRepresentation = MongoDB.Bson.GuidRepresentation.Standard;
-		}
-
-		/// <summary>
-		/// Sets the Guid representation of the MongoDb Driver.
-		/// </summary>
-		/// <param name="guidRepresentation">The new value of the GuidRepresentation</param>
-		public void SetGuidRepresentation(MongoDB.Bson.GuidRepresentation guidRepresentation)
-		{
-			MongoDefaults.GuidRepresentation = guidRepresentation;
 		}
 
 		/// <summary>

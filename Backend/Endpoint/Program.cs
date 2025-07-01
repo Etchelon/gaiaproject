@@ -27,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using MongoDbGenericRepository;
+using MongoDbGenericRepository.Abstractions;
 using Newtonsoft.Json;
 using SendGrid.Extensions.DependencyInjection;
 
@@ -73,8 +74,7 @@ builder.Services.AddSignalR();
 // Register application services
 builder.Services.AddSingleton(builder.Services);
 builder.Services.AddTransient<MongoUserDataProvider>();
-builder.Services.AddTransient<CachedMongoUserDataProvider>();
-builder.Services.AddTransient<IProvideUserData, CachedMongoUserDataProvider>();
+builder.Services.AddTransient<IProvideUserData, MongoUserDataProvider>();
 builder.Services.AddTransient<MongoGameDataProvider>();
 builder.Services.AddTransient<CachedMongoGameDataProvider>();
 builder.Services.AddTransient<IProvideGameData, CachedMongoGameDataProvider>();
@@ -90,12 +90,12 @@ builder.Services.AddTransient<GamesWorkerService>();
 builder.Services.AddTransient(_ => new MapService(4, GaiaProject.Engine.Enums.MapShape.Standard4P));
 
 // Configure SendGrid
-builder.Services.AddSendGrid(options =>
-{
-    options.ApiKey = builder.Configuration["SendGrid:ApiKey"];
-});
-builder.Services.AddTransient<MailService>();
-builder.Services.AddSingleton(new MailHelper(builder.Configuration["App:Urls:ReactFrontend"] ?? ""));
+//builder.Services.AddSendGrid(options =>
+//{
+//    options.ApiKey = builder.Configuration["SendGrid:ApiKey"];
+//});
+//builder.Services.AddTransient<MailService>();
+//builder.Services.AddSingleton(new MailHelper(builder.Configuration["App:Urls:ReactFrontend"] ?? ""));
 
 var app = builder.Build();
 
@@ -125,21 +125,6 @@ app.MapHub<GaiaHub>("hubs/gaia");
 app.MapControllers();
 
 app.Run();
-
-static void ConfigureMongoDatabase(IServiceCollection services, IConfiguration configuration)
-{
-    var connectionString = configuration["AppSettings:MongoDbConnectionString"];
-    var url = MongoUrl.Create(connectionString);
-    var mongoClient = new MongoClient(url);
-    var mongoDatabase = mongoClient.GetDatabase(url.DatabaseName);
-    var mongoDbContext = new MongoDbContext(mongoDatabase);
-    var readonlyRepo = new ReadOnlyMongoEntityRepository(mongoDbContext);
-    var repo = new MongoEntityRepository(mongoDbContext);
-    services.AddSingleton(mongoClient);
-    services.AddSingleton(mongoDatabase);
-    services.AddSingleton(readonlyRepo);
-    services.AddSingleton(repo);
-}
 
 static void ConfigureSupabase(IServiceCollection services, IConfiguration configuration)
 {

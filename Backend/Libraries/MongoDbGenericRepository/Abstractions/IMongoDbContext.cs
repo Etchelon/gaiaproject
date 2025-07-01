@@ -53,11 +53,5 @@ namespace MongoDbGenericRepository.Abstractions
 		/// </summary>
 		/// <typeparam name="TDocument"></typeparam>
 		void DropCollection<TDocument>(string partitionKey);
-
-		/// <summary>
-		/// Sets the Guid representation of the MongoDb Driver.
-		/// </summary>
-		/// <param name="guidRepresentation">The new value of the GuidRepresentation</param>
-		void SetGuidRepresentation(MongoDB.Bson.GuidRepresentation guidRepresentation);
 	}
 }

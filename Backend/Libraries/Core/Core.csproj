@@ -9,6 +9,7 @@
 		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.6" />
 		<PackageReference Include="MongoDB.Bson" Version="3.4.0" />
 		<PackageReference Include="MongoDB.Driver" Version="3.4.0" />
+		<PackageReference Include="Supabase" Version="1.1.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Common\Common.csproj" />
