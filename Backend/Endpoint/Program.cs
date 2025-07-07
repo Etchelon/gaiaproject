@@ -73,8 +73,8 @@ builder.Services.AddSignalR();
 
 // Register application services
 builder.Services.AddSingleton(builder.Services);
-builder.Services.AddTransient<MongoUserDataProvider>();
-builder.Services.AddTransient<IProvideUserData, MongoUserDataProvider>();
+builder.Services.AddTransient<SupabaseUserDataProvider>();
+builder.Services.AddTransient<IProvideUserData, SupabaseUserDataProvider>();
 builder.Services.AddTransient<MongoGameDataProvider>();
 builder.Services.AddTransient<CachedMongoGameDataProvider>();
 builder.Services.AddTransient<IProvideGameData, CachedMongoGameDataProvider>();

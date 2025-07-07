@@ -23,18 +23,6 @@ namespace GaiaProject.Core.Logic
 			return user;
 		}
 
-		public async Task<User> GetUserByIdentifier(string auth0Id)
-		{
-			var user = await _userDataProvider.GetUserByIdentifier(auth0Id);
-			return user;
-		}
-
-		public async Task<User> GetUserByUsername(string username)
-		{
-			var user = await _userDataProvider.GetUserByUsername(username);
-			return user;
-		}
-
 		public async Task<string> GetUsername(string userId)
 		{
 			return await this._userDataProvider.GetUsername(userId);
@@ -48,26 +36,6 @@ namespace GaiaProject.Core.Logic
 		public async Task<User[]> GetAllUsers()
 		{
 			return await _userDataProvider.GetAllUsers();
-		}
-
-		public async Task<bool> UserExists(string id)
-		{
-			return (await _userDataProvider.GetUser(id)) != null;
-		}
-
-		public async Task<bool> Auth0UserExists(string identifier)
-		{
-			return (await _userDataProvider.GetUserByIdentifier(identifier)) != null;
-		}
-
-		public async Task<string> CreateUser(User user)
-		{
-			return await _userDataProvider.CreateUser(user);
-		}
-
-		public async Task UpdateUser(User user)
-		{
-			await _userDataProvider.UpdateUser(user);
 		}
 
 		public async Task<long> CountUnreadNotifications(string userId)

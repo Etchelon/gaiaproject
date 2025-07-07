@@ -22,7 +22,7 @@ namespace GaiaProject.Core.Model
         [Column("birthdate")]
         public DateTime? Birthdate { get; set; }
 
-        public string Identifier => Id.ToString();
+        public string IdStr => Id.ToString();
         public string Email { get; set; }
         public DateTime MemberSince { get; set; }
     }

@@ -208,7 +208,7 @@ namespace GaiaProject.Endpoint.WorkerServices
 
 		private async Task NotifyPlayerBySignalR(string id, string payload)
 		{
-			var auth0Id = (await _userManager.GetUser(id)).Identifier;
+			var auth0Id = (await _userManager.GetUser(id)).IdStr;
 			await _hubContext.Clients.User(auth0Id).SendAsync(GaiaHub.GameStateChanged, payload);
 		}
 

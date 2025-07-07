@@ -41,7 +41,7 @@ public class UsersController : ApiBaseController
 		var users = await _userManager.GetUsers(u => u.Username.ToLower().Contains(filter));
 		if (!includeSelf)
 		{
-			users.RemoveAll(u => u.Identifier == UserId);
+			users.RemoveAll(u => u.IdStr == UserId);
 		}
 		var dtos = _mapper.Map<UserViewModel[]>(users);
 		return Ok(dtos);

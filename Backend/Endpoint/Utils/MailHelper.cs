@@ -39,7 +39,7 @@ namespace GaiaProject.Endpoint.Utils
 			var subject = $"Your turn to move in Gaia Project game {game.Name}";
 
 			var activePlayer = game.ActivePlayer;
-			var otherPlayersNames = game.Players.Where(p => p.Id != recipient.Id).Select(p => p.Username);
+			var otherPlayersNames = game.Players.Where(p => p.Id != recipient.IdStr).Select(p => p.Username);
 			var content = @$"
 <h1>You {activePlayer.Reason}</h1>
 <p>It's your turn to play in game {game.Name} against {string.Join(", ", otherPlayersNames)}.</p>
@@ -53,7 +53,7 @@ namespace GaiaProject.Endpoint.Utils
 		{
 			var subject = $"The Gaia Project game {game.Name} has ended";
 
-			var targetPlayer = game.Players.Single(p => p.Id == recipient.Id);
+			var targetPlayer = game.Players.Single(p => p.Id == recipient.IdStr);
 			var content = @$"
 <h1>You ended up in {targetPlayer.Placement}° position</h1>
 <p>Here is the final situation.</p>

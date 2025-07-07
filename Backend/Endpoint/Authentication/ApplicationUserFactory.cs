@@ -18,7 +18,7 @@ namespace GaiaProject.Endpoint.Authentication
 		public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
 		{
 			var supabaseId = principal.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-			var user = await _userManager.GetUserByIdentifier(supabaseId);
+            var user = await _userManager.GetUser(supabaseId);
 			var applicationUser = new ActiveUser(principal, supabaseId, user?.Username, user?.Email);
 			return applicationUser;
 		}
